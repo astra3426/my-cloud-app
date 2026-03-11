@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Мой облачный проект</title>
+  <style>
+    body { font-family: sans-serif; display: flex; justify-content: center; padding: 50px; background-color: #f4f4f9; }
+    .form-container { background: white; padding: 30px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 3px; box-sizing: border-box; width: 300px; }
+    input { width: 100%; padding: 10px; margin-bottom: 10px; }
+    button { width: 100%; padding: 10px; background: #4b4ab0; border: none; color: white; font-weight: bold; cursor: pointer; border-radius: 5px; }
+    button:hover { background: #6fa400; }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h3>Отправить заявку</h3>
+    <form id="feedbackForm">
+      <input type="text" id="userName" placeholder="Ваше имя" required>
+      <input type="email" id="userEmail" placeholder="Ваш Email" required>
+      <button type="submit">Отправить в облако</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVz4TxqdDSSCn7Ztdt_c0rH9fuG3rYRIQ",
+      authDomain: "project-1377923308705650525.firebaseapp.com",
+      projectId: "project-1377923308705650525",
+      storageBucket: "project-1377923308705650525.firebasestorage.app",
+      messagingSenderId: "816182554603",
+      appId: "1:816182554603:web:624159d3c9c89a046c73ae"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.getElementById("feedbackForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nameInput = document.getElementById("userName").value;
+      const emailInput = document.getElementById("userEmail").value;
+      try {
+        await addDoc(collection(db, "requests"), {
+          name: nameInput,
+          email: emailInput,
+          timestamp: new Date()
+        });
+        alert("Данные сохранены в Firebase!");
+        document.getElementById("feedbackForm").reset();
+      } catch (error) {
+        console.error("Ошибка: ", error);
+        alert("Ошибка при отправке.");
+      }
+    });
+  </script>
+</body>
+</html>
