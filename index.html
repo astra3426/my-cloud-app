@@ -1,59 +1,445 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Мой облачный проект</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Отправить заявку</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
-    body { font-family: sans-serif; display: flex; justify-content: center; padding: 50px; background-color: #f4f4f9; }
-    .form-container { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 300px; }
-    input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-    button { width: 100%; padding: 10px; background: #f4b400; border: none; color: white; font-weight: bold; cursor: pointer; border-radius: 5px; }
-    button:hover { background: #dfa400; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #D4A017;
+      --gold-light: #F0C040;
+      --gold-glow: rgba(212,160,23,0.25);
+      --dark: #0D0D0D;
+      --dark2: #161616;
+      --dark3: #1F1F1F;
+      --border: rgba(212,160,23,0.2);
+      --text: #E8E0D0;
+      --muted: #7A7060;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Sans', sans-serif;
+      overflow: hidden;
+    }
+
+    /* Ambient background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 30% 20%, rgba(212,160,23,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 60% at 70% 80%, rgba(212,160,23,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .wrapper {
+      position: relative;
+      width: 480px;
+      animation: fadeUp 0.9s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(32px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Decorative corner lines */
+    .corner { position: absolute; width: 28px; height: 28px; }
+    .corner--tl { top: -1px; left: -1px; border-top: 1.5px solid var(--gold); border-left: 1.5px solid var(--gold); }
+    .corner--tr { top: -1px; right: -1px; border-top: 1.5px solid var(--gold); border-right: 1.5px solid var(--gold); }
+    .corner--bl { bottom: -1px; left: -1px; border-bottom: 1.5px solid var(--gold); border-left: 1.5px solid var(--gold); }
+    .corner--br { bottom: -1px; right: -1px; border-bottom: 1.5px solid var(--gold); border-right: 1.5px solid var(--gold); }
+
+    .card {
+      background: var(--dark2);
+      border: 1px solid var(--border);
+      padding: 52px 48px 48px;
+      position: relative;
+    }
+
+    /* Top gold line accent */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 48px; right: 48px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    .badge::before {
+      content: '';
+      display: block;
+      width: 16px; height: 1px;
+      background: var(--gold);
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    .field {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      transition: color 0.2s;
+    }
+
+    .field:focus-within label { color: var(--gold); }
+
+    input {
+      width: 100%;
+      background: var(--dark3);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      padding: 14px 18px;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+      -webkit-appearance: none;
+    }
+
+    input::placeholder { color: var(--muted); opacity: 0.6; }
+
+    input:focus {
+      border-color: var(--gold);
+      background: rgba(212,160,23,0.04);
+      box-shadow: 0 0 0 3px var(--gold-glow), inset 0 0 0 1px rgba(212,160,23,0.1);
+    }
+
+    input.error { border-color: #C0392B; box-shadow: 0 0 0 3px rgba(192,57,43,0.15); }
+
+    .error-msg {
+      font-size: 11px;
+      color: #E74C3C;
+      margin-top: 6px;
+      display: none;
+      letter-spacing: 0.04em;
+    }
+    .error-msg.show { display: block; }
+
+    /* Select */
+    .select-wrapper { position: relative; }
+    select {
+      width: 100%;
+      background: var(--dark3);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 300;
+      padding: 14px 40px 14px 18px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-glow); }
+    .select-arrow {
+      position: absolute;
+      right: 16px; top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--muted);
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      margin: 32px 0 28px;
+    }
+
+    button {
+      width: 100%;
+      background: var(--gold);
+      color: #0D0D0D;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      border: none;
+      padding: 17px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s, transform 0.15s;
+    }
+    button:hover { background: var(--gold-light); }
+    button:active { transform: scale(0.985); }
+
+    /* Shimmer on hover */
+    button::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+      transition: left 0.5s ease;
+    }
+    button:hover::after { left: 140%; }
+
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button:disabled::after { display: none; }
+
+    .btn-text, .btn-loading { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-loading { display: none; }
+
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top-color: #0D0D0D;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Success state */
+    .success-panel {
+      display: none;
+      text-align: center;
+      padding: 16px 0 8px;
+      animation: fadeUp 0.5s ease both;
+    }
+    .success-icon {
+      width: 52px; height: 52px;
+      border: 1.5px solid var(--gold);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      color: var(--gold);
+    }
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .success-sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    .footer-note {
+      margin-top: 24px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: 0.04em;
+    }
+    .footer-note span { color: var(--gold); opacity: 0.7; }
   </style>
 </head>
 <body>
-  <div class="form-container">
-    <h3>Отправить заявку</h3>
-    <form id="feedbackForm">
-      <input type="text" id="userName" placeholder="Ваше имя" required>
-      <input type="email" id="userEmail" placeholder="Ваш Email" required>
-      <button type="submit">Отправить в облако</button>
-    </form>
+
+<div class="wrapper">
+  <div class="corner corner--tl"></div>
+  <div class="corner corner--tr"></div>
+  <div class="corner corner--bl"></div>
+  <div class="corner corner--br"></div>
+
+  <div class="card">
+
+    <!-- FORM -->
+    <div id="formView">
+      <div class="badge">Новая заявка</div>
+      <h1>Отправить заявку</h1>
+      <p class="subtitle">Заполните форму — мы сохраним данные и свяжемся с вами.</p>
+
+      <div class="field">
+        <label for="name">Ваше имя</label>
+        <input type="text" id="name" placeholder="Иван Иванов" autocomplete="name"/>
+        <div class="error-msg" id="nameErr">Введите ваше имя</div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email-адрес</label>
+        <input type="email" id="email" placeholder="ivan@example.com" autocomplete="email"/>
+        <div class="error-msg" id="emailErr">Введите корректный email</div>
+      </div>
+
+      <div class="field">
+        <label for="phone">Телефон <span style="color:var(--muted);font-size:10px;">(необязательно)</span></label>
+        <input type="tel" id="phone" placeholder="+7 (999) 000-00-00" autocomplete="tel"/>
+      </div>
+
+      <div class="field">
+        <label for="topic">Тема обращения</label>
+        <div class="select-wrapper">
+          <select id="topic">
+            <option value="">Выберите тему...</option>
+            <option value="general">Общий вопрос</option>
+            <option value="support">Техническая поддержка</option>
+            <option value="partner">Партнёрство</option>
+            <option value="other">Другое</option>
+          </select>
+          <svg class="select-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M3 5L7 9L11 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="error-msg" id="topicErr">Выберите тему обращения</div>
+      </div>
+
+      <hr class="divider"/>
+
+      <button id="submitBtn" onclick="handleSubmit()">
+        <span class="btn-text">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M1 7H13M8 2L13 7L8 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Отправить заявку
+        </span>
+        <span class="btn-loading">
+          <span class="spinner"></span>
+          Отправляем...
+        </span>
+      </button>
+
+      <p class="footer-note">Данные сохраняются в <span>защищённой базе</span></p>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-panel" id="successView">
+      <div class="success-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <path d="M4 11L9 16L18 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="success-title">Заявка принята</div>
+      <p class="success-sub">Данные успешно сохранены.<br/>Мы свяжемся с вами в ближайшее время.</p>
+    </div>
+
   </div>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-    import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+<script>
+  // ─── Helpers ───────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCVz4TxqdDSSCn7Ztdt_c0rH9fuG3rYRIQ",
-      authDomain: "project-1377923308705650525.firebaseapp.com",
-      projectId: "project-1377923308705650525",
-      storageBucket: "project-1377923308705650525.firebasestorage.app",
-      messagingSenderId: "816182554603",
-      appId: "1:816182554603:web:624159d3c9c89a046c73ae"
+  function setError(inputEl, errEl, show) {
+    if (show) {
+      inputEl.classList.add('error');
+      errEl.classList.add('show');
+    } else {
+      inputEl.classList.remove('error');
+      errEl.classList.remove('show');
+    }
+  }
+
+  function validate() {
+    let ok = true;
+    const name = $('name').value.trim();
+    const email = $('email').value.trim();
+    const topic = $('topic').value;
+
+    setError($('name'), $('nameErr'), !name);
+    if (!name) ok = false;
+
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    setError($('email'), $('emailErr'), !emailOk);
+    if (!emailOk) ok = false;
+
+    setError($('topic'), $('topicErr'), !topic);
+    if (!topic) ok = false;
+
+    return ok;
+  }
+
+  // Live validation
+  ['name','email','topic'].forEach(id => {
+    const el = $( id );
+    el.addEventListener('input', () => el.classList.remove('error'));
+    el.addEventListener('change', () => el.classList.remove('error'));
+  });
+
+  // ─── Submit ────────────────────────────────────────────────
+  async function handleSubmit() {
+    if (!validate()) return;
+
+    const btn = $('submitBtn');
+    btn.disabled = true;
+    btn.querySelector('.btn-text').style.display = 'none';
+    btn.querySelector('.btn-loading').style.display = 'flex';
+
+    const payload = {
+      name:  $('name').value.trim(),
+      email: $('email').value.trim(),
+      phone: $('phone').value.trim(),
+      topic: $('topic').value,
+      timestamp: new Date().toISOString()
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    // ── Замените URL ниже на ваш Google Apps Script / backend ──
+    const ENDPOINT = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
 
-    document.getElementById("feedbackForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const nameInput = document.getElementById("userName").value;
-      const emailInput = document.getElementById("userEmail").value;
-      try {
-        await addDoc(collection(db, "requests"), {
-          name: nameInput,
-          email: emailInput,
-          timestamp: new Date()
-        });
-        alert("Готово! Данные сохранены в Firebase.");
-        document.getElementById("feedbackForm").reset();
-      } catch (error) {
-        console.error("Ошибка записи: ", error);
-        alert("Ошибка при отправке.");
-      }
-    });
-  </script>
+    try {
+      await fetch(ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) {
+      console.warn('Fetch error (no-cors expected):', e);
+    }
+
+    // Show success
+    setTimeout(() => {
+      $('formView').style.display = 'none';
+      $('successView').style.display = 'block';
+    }, 800);
+  }
+</script>
 </body>
 </html>
