@@ -8,17 +8,20 @@
     body {
       min-height: 100vh;
       background: #0a0a0a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       font-family: 'Georgia', serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
     }
     .card {
       background: #111;
       border: 1px solid #8a6a00;
-      padding: 50px 45px;
-      width: 420px;
-      box-shadow: 0 0 40px rgba(180, 130, 0, 0.15);
+      padding: 45px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 0 40px rgba(180,130,0,0.15);
+      margin-bottom: 30px;
     }
     .label-top {
       color: #b8860b;
@@ -27,31 +30,11 @@
       text-transform: uppercase;
       margin-bottom: 16px;
     }
-    .label-top::before {
-      content: '— ';
-    }
-    h1 {
-      color: #f0c040;
-      font-size: 32px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-    .subtitle {
-      color: #777;
-      font-size: 13px;
-      margin-bottom: 36px;
-      line-height: 1.6;
-    }
-    .field-label {
-      color: #888;
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-    .field {
-      margin-bottom: 24px;
-    }
+    .label-top::before { content: '— '; }
+    h1 { color: #f0c040; font-size: 28px; font-weight: bold; margin-bottom: 8px; }
+    .subtitle { color: #666; font-size: 13px; margin-bottom: 30px; line-height: 1.6; }
+    .field { margin-bottom: 20px; }
+    .field-label { color: #888; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
     input {
       width: 100%;
       background: #1a1a1a;
@@ -61,57 +44,101 @@
       font-size: 14px;
       outline: none;
       transition: border 0.3s;
+      font-family: 'Georgia', serif;
     }
     input::placeholder { color: #444; }
     input:focus { border-color: #b8860b; }
-    button {
+    .submit-btn {
       width: 100%;
       padding: 16px;
       background: #b8860b;
       color: #000;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: bold;
       letter-spacing: 3px;
       text-transform: uppercase;
       border: none;
       cursor: pointer;
-      margin-top: 10px;
       transition: background 0.3s;
+      font-family: 'Georgia', serif;
     }
-    button:hover { background: #d4a017; }
-    .footer-note {
-      text-align: center;
-      color: #444;
-      font-size: 11px;
-      margin-top: 20px;
-    }
+    .submit-btn:hover { background: #d4a017; }
+    .submit-btn:disabled { background: #555; color: #888; cursor: not-allowed; }
+    .footer-note { text-align: center; color: #444; font-size: 11px; margin-top: 16px; }
     .footer-note span { color: #b8860b; }
+
+    /* Лента */
+    .feed-title {
+      color: #b8860b;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      width: 100%;
+      max-width: 480px;
+      margin-bottom: 16px;
+    }
+    .feed-title::before { content: '— '; }
+    .post {
+      background: #111;
+      border: 1px solid #222;
+      padding: 20px 24px;
+      width: 100%;
+      max-width: 480px;
+      margin-bottom: 12px;
+      transition: border 0.3s;
+    }
+    .post:hover { border-color: #8a6a00; }
+    .post-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .post-name { color: #f0c040; font-size: 16px; font-weight: bold; }
+    .post-time { color: #444; font-size: 11px; }
+    .post-email { color: #666; font-size: 13px; margin-bottom: 14px; }
+    .like-btn {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #888;
+      padding: 7px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 20px;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .like-btn:hover { border-color: #b8860b; color: #f0c040; background: #1f1a0f; }
+    .empty { color: #444; font-size: 13px; text-align: center; padding: 30px; }
   </style>
 </head>
 <body>
+
   <div class="card">
     <div class="label-top">Новая заявка</div>
     <h1>Отправить заявку</h1>
     <p class="subtitle">Заполните форму — данные сохраняются в базе и мы с вами свяжемся.</p>
 
-    <form id="feedbackForm">
-      <div class="field">
-        <div class="field-label">Ваше имя</div>
-        <input type="text" id="userName" placeholder="Иван Иванов" required>
-      </div>
-      <div class="field">
-        <div class="field-label">Email-адрес</div>
-        <input type="email" id="userEmail" placeholder="ivan@example.com" required>
-      </div>
-      <button type="submit">→ Отправить заявку</button>
-    </form>
-
+    <div class="field">
+      <div class="field-label">Ваше имя</div>
+      <input type="text" id="name" placeholder="Иван Иванов">
+    </div>
+    <div class="field">
+      <div class="field-label">Email-адрес</div>
+      <input type="email" id="email" placeholder="ivan@example.com">
+    </div>
+    <button class="submit-btn" id="mainBtn">→ Опубликовать в облако</button>
     <div class="footer-note">Данные сохраняются в <span>Firebase Firestore</span></div>
+  </div>
+
+  <div class="feed-title">Лента заявок</div>
+  <div id="feed" style="width:100%;max-width:480px;">
+    <div class="empty">Загрузка...</div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-    import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+    import {
+      getFirestore, collection, addDoc, query, orderBy, onSnapshot,
+      serverTimestamp, updateDoc, doc, increment
+    } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCVz4TxqdDSSCn7Ztdt_c0rH9fuG3rYRIQ",
@@ -124,23 +151,53 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    window.db = db;
 
-    document.getElementById("feedbackForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const nameInput = document.getElementById("userName").value;
-      const emailInput = document.getElementById("userEmail").value;
+    window.processLike = async (id) => {
+      const docRef = doc(db, "requests", id);
+      try {
+        await updateDoc(docRef, { likes: increment(1) });
+      } catch (e) {
+        console.error("Validation Error:", e.message);
+      }
+    };
+
+    document.getElementById('mainBtn').onclick = async () => {
+      const btn = document.getElementById('mainBtn');
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      if (!name || !email) { alert("Заполните все поля."); return; }
+      btn.disabled = true;
       try {
         await addDoc(collection(db, "requests"), {
-          name: nameInput,
-          email: emailInput,
-          timestamp: new Date()
+          name, email, likes: 0, timestamp: serverTimestamp()
         });
-        alert("Готово! Данные сохранены в Firebase.");
-        document.getElementById("feedbackForm").reset();
-      } catch (error) {
-        console.error("Ошибка: ", error);
-        alert("Ошибка при отправке.");
+        document.getElementById('name').value = "";
+        document.getElementById('email').value = "";
+      } catch (e) {
+        alert("Ошибка безопасности: Данные отклонены сервером.");
       }
+      btn.disabled = false;
+    };
+
+    const q = query(collection(db, "requests"), orderBy("timestamp", "desc"));
+    onSnapshot(q, (snapshot) => {
+      const feed = document.getElementById('feed');
+      if (snapshot.empty) { feed.innerHTML = '<div class="empty">Заявок пока нет</div>'; return; }
+      feed.innerHTML = "";
+      snapshot.forEach((d) => {
+        const data = d.data();
+        const time = data.timestamp?.toDate().toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'}) || '...';
+        feed.innerHTML += `
+          <div class="post">
+            <div class="post-header">
+              <div class="post-name">${data.name}</div>
+              <div class="post-time">${time}</div>
+            </div>
+            <div class="post-email">${data.email}</div>
+            <button class="like-btn" onclick="processLike('${d.id}')">👍 ${data.likes || 0}</button>
+          </div>`;
+      });
     });
   </script>
 </body>
