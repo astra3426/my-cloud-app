@@ -15,61 +15,36 @@
       padding: 40px 20px;
     }
 
-    /* ── Тост-уведомления ── */
-    #toast-container {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    /* ── Тосты ── */
+    #toast-container { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
     .toast {
-      background: #1a1a1a;
-      border-left: 3px solid #b8860b;
-      color: #e0e0e0;
-      padding: 14px 20px;
-      font-size: 13px;
-      min-width: 260px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      background: #1a1a1a; border-left: 3px solid #b8860b;
+      color: #e0e0e0; padding: 14px 20px; font-size: 13px;
+      min-width: 260px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
       animation: slideIn 0.3s ease, fadeOut 0.4s ease 2.6s forwards;
       line-height: 1.5;
     }
     .toast.success { border-left-color: #2e7d32; }
     .toast.error   { border-left-color: #8b0000; }
     .toast-title   { font-weight: bold; color: #f0c040; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(30px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes fadeOut {
-      from { opacity: 1; }
-      to   { opacity: 0; transform: translateY(-6px); }
-    }
+    @keyframes slideIn { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes fadeOut { from { opacity:1; } to { opacity:0; transform:translateY(-6px); } }
 
     /* ── Форма ── */
     .card {
-      background: #111;
-      border: 1px solid #8a6a00;
-      padding: 45px;
-      width: 100%;
-      max-width: 480px;
-      box-shadow: 0 0 40px rgba(180,130,0,0.15);
-      margin-bottom: 30px;
+      background: #111; border: 1px solid #8a6a00; padding: 45px;
+      width: 100%; max-width: 480px;
+      box-shadow: 0 0 40px rgba(180,130,0,0.15); margin-bottom: 30px;
     }
-    .label-top {
-      color: #b8860b; font-size: 11px; letter-spacing: 3px;
-      text-transform: uppercase; margin-bottom: 16px;
-    }
+    .label-top { color: #b8860b; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px; }
     .label-top::before { content: '— '; }
     h1 { color: #f0c040; font-size: 28px; font-weight: bold; margin-bottom: 8px; }
     .subtitle { color: #666; font-size: 13px; margin-bottom: 30px; line-height: 1.6; }
     .field { margin-bottom: 20px; }
     .field-label { color: #888; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
     input {
-      width: 100%; background: #1a1a1a; border: 1px solid #333;
-      color: #eee; padding: 14px 16px; font-size: 14px; outline: none;
+      width: 100%; background: #1a1a1a; border: 1px solid #333; color: #eee;
+      padding: 14px 16px; font-size: 14px; outline: none;
       transition: border 0.3s; font-family: 'Georgia', serif;
     }
     input::placeholder { color: #444; }
@@ -84,58 +59,99 @@
     .footer-note { text-align: center; color: #444; font-size: 11px; margin-top: 16px; }
     .footer-note span { color: #b8860b; }
 
+    /* ── Админ-панель ── */
+    .admin-bar {
+      width: 100%; max-width: 480px;
+      background: #0f0f0f; border: 1px solid #2a2000;
+      padding: 16px 20px; margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      flex-wrap: wrap;
+    }
+    .admin-label { color: #b8860b; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
+    .admin-stats { color: #555; font-size: 12px; }
+    .admin-stats b { color: #f0c040; }
+    .admin-toggle {
+      background: #1a1a1a; border: 1px solid #333; color: #888;
+      padding: 7px 16px; font-size: 11px; letter-spacing: 1px;
+      cursor: pointer; transition: all 0.2s; font-family: 'Georgia', serif;
+    }
+    .admin-toggle.on { border-color: #b8860b; color: #f0c040; background: #1f1a0f; }
+    .admin-toggle:hover { border-color: #b8860b; color: #f0c040; }
+
+    /* ── Фильтр статуса ── */
+    .filter-bar {
+      width: 100%; max-width: 480px;
+      display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .filter-btn {
+      background: #111; border: 1px solid #222; color: #555;
+      padding: 7px 16px; font-size: 11px; letter-spacing: 1px;
+      cursor: pointer; border-radius: 4px; transition: all 0.2s; font-family: 'Georgia', serif;
+    }
+    .filter-btn:hover { border-color: #8a6a00; color: #b8860b; }
+    .filter-btn.active { border-color: #b8860b; color: #f0c040; background: #1f1a0f; }
+
     /* ── Лента ── */
     .feed-title {
-      color: #b8860b; font-size: 11px; letter-spacing: 3px;
-      text-transform: uppercase; width: 100%; max-width: 480px; margin-bottom: 16px;
+      color: #b8860b; font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+      width: 100%; max-width: 480px; margin-bottom: 16px;
     }
     .feed-title::before { content: '— '; }
 
     .post {
       background: #111; border: 1px solid #222; padding: 20px 24px;
-      width: 100%; max-width: 480px; margin-bottom: 12px; transition: border 0.3s;
+      width: 100%; max-width: 480px; margin-bottom: 12px; transition: border 0.3s, opacity 0.3s;
+      position: relative;
     }
     .post:hover { border-color: #8a6a00; }
+    .post.hidden { display: none; }
 
     .post-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
     .post-name   { color: #f0c040; font-size: 16px; font-weight: bold; }
     .post-time   { color: #444; font-size: 11px; }
-    .post-email  { color: #666; font-size: 13px; margin-bottom: 14px; }
+    .post-email  { color: #666; font-size: 13px; margin-bottom: 12px; }
 
     /* Статус-бейдж */
     .status-badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 10px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      font-weight: bold;
-      margin-bottom: 14px;
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+      font-weight: bold; margin-bottom: 14px;
     }
-    .status-new      { background: #1a1a2e; color: #6c8ebf; border: 1px solid #2a2a4a; }
-    .status-progress { background: #1f1a0f; color: #d4a017; border: 1px solid #3a2e00; }
-    .status-done     { background: #0f1f0f; color: #4caf50; border: 1px solid #1a3a1a; }
+    .s-new      { background: #1a1a2e; color: #6c8ebf; border: 1px solid #2a2a4a; }
+    .s-progress { background: #1f1a0f; color: #d4a017; border: 1px solid #3a2e00; }
+    .s-done     { background: #0f1f0f; color: #4caf50; border: 1px solid #1a3a1a; }
 
     /* Кнопки статуса */
     .status-controls { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
     .status-btn {
-      background: #1a1a1a; border: 1px solid #2a2a2a; color: #666;
-      padding: 6px 14px; font-size: 11px; letter-spacing: 1px;
-      cursor: pointer; border-radius: 4px; transition: all 0.2s;
-      font-family: 'Georgia', serif;
+      background: #1a1a1a; border: 1px solid #2a2a2a; color: #555;
+      padding: 6px 13px; font-size: 11px; letter-spacing: 1px;
+      cursor: pointer; border-radius: 4px; transition: all 0.2s; font-family: 'Georgia', serif;
     }
-    .status-btn:hover        { border-color: #b8860b; color: #f0c040; background: #1f1a0f; }
-    .status-btn.active-btn   { border-color: #b8860b; color: #f0c040; background: #1f1a0f; }
+    .status-btn:hover   { border-color: #b8860b; color: #f0c040; background: #1f1a0f; }
+    .status-btn.active  { border-color: #b8860b; color: #f0c040; background: #1f1a0f; }
 
-    .post-actions { display: flex; gap: 8px; }
+    /* Действия */
+    .post-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .like-btn {
       background: #1a1a1a; border: 1px solid #333; color: #888;
       padding: 7px 16px; font-size: 13px; cursor: pointer;
-      border-radius: 20px; transition: all 0.2s;
-      display: inline-flex; align-items: center; gap: 6px;
+      border-radius: 20px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
     }
     .like-btn:hover { border-color: #b8860b; color: #f0c040; background: #1f1a0f; }
+
+    /* Кнопка удалить — видна только в режиме админа */
+    .delete-btn {
+      display: none;
+      background: transparent; border: 1px solid #2a1a1a; color: #555;
+      padding: 7px 14px; font-size: 11px; letter-spacing: 1px;
+      cursor: pointer; border-radius: 20px; transition: all 0.2s; font-family: 'Georgia', serif;
+    }
+    .delete-btn:hover { border-color: #8b0000; color: #cc3333; background: #1a0f0f; }
+    body.admin-mode .delete-btn { display: inline-flex; }
+    body.admin-mode .status-controls { display: flex; }
+    body:not(.admin-mode) .status-controls { display: none; }
+
     .empty { color: #444; font-size: 13px; text-align: center; padding: 30px; }
   </style>
 </head>
@@ -160,6 +176,23 @@
   <div class="footer-note">Данные сохраняются в <span>Firebase Firestore</span></div>
 </div>
 
+<!-- Админ-панель -->
+<div class="admin-bar">
+  <div>
+    <div class="admin-label">Панель управления</div>
+    <div class="admin-stats">Всего заявок: <b id="totalCount">0</b></div>
+  </div>
+  <button class="admin-toggle" id="adminToggle" onclick="toggleAdmin()">⚙ Режим админа</button>
+</div>
+
+<!-- Фильтр по статусу -->
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="setFilter('all', this)">Все</button>
+  <button class="filter-btn" onclick="setFilter('new', this)">● Новые</button>
+  <button class="filter-btn" onclick="setFilter('progress', this)">◐ В работе</button>
+  <button class="filter-btn" onclick="setFilter('done', this)">✓ Выполненные</button>
+</div>
+
 <div class="feed-title">Лента заявок</div>
 <div id="feed" style="width:100%;max-width:480px;">
   <div class="empty">Загрузка...</div>
@@ -168,8 +201,9 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
   import {
-    getFirestore, collection, addDoc, query, orderBy,
-    onSnapshot, serverTimestamp, updateDoc, doc, increment
+    getFirestore, collection, addDoc, deleteDoc,
+    query, orderBy, onSnapshot,
+    serverTimestamp, updateDoc, doc, increment
   } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -182,82 +216,131 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  const db  = getFirestore(app);
 
-  // ═══════════════════════════════════════════════════════════════════
-  // ФУНКЦИЯ 1: showNotification(title, message, type)
-  //
-  // Показывает всплывающее уведомление (тост) в правом верхнем углу.
-  // type: 'default' | 'success' | 'error'
-  // Тост автоматически исчезает через 3 секунды.
-  // ═══════════════════════════════════════════════════════════════════
+  let currentFilter = 'all';
+  let allPosts = [];
+
+  // ─── Тост ────────────────────────────────────────────────────────
   function showNotification(title, message, type = 'default') {
     const container = document.getElementById('toast-container');
-
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.innerHTML = `<div class="toast-title">${title}</div>${message}`;
-
     container.appendChild(toast);
-
-    // Удаляем элемент из DOM после завершения анимации
     setTimeout(() => toast.remove(), 3000);
   }
 
   // ═══════════════════════════════════════════════════════════════════
-  // ФУНКЦИЯ 2: changeStatus(id, newStatus, authorName)
-  //
-  // Меняет статус заявки в Firestore и вызывает showNotification.
-  // Возможные статусы: 'new' | 'progress' | 'done'
+  // ФУНКЦИЯ 1: deleteRequest(id, name)
+  // Удаляет документ из коллекции "requests" по ID.
+  // Доступна только в режиме админа.
   // ═══════════════════════════════════════════════════════════════════
-  window.changeStatus = async (id, newStatus, authorName) => {
-    const statusLabels = {
-      new:      'Новая',
-      progress: 'В работе',
-      done:     'Выполнена'
-    };
-
+  window.deleteRequest = async (id, name) => {
+    if (!confirm(`Удалить заявку от "${name}"?`)) return;
     try {
-      const docRef = doc(db, "requests", id);
-      await updateDoc(docRef, { status: newStatus });
-
-      // После успешного обновления — показываем уведомление
-      const label = statusLabels[newStatus] || newStatus;
-      const type  = newStatus === 'done' ? 'success'
-                  : newStatus === 'new'  ? 'default'
-                  : 'default';
-
-      showNotification(
-        'Статус изменён',
-        `Заявка от <b>${authorName}</b> → <b>${label}</b>`,
-        type
-      );
-
+      await deleteDoc(doc(db, "requests", id));
+      showNotification('Удалено', `Заявка от <b>${name}</b> удалена`, 'error');
     } catch (e) {
-      console.error("Ошибка смены статуса:", e.message);
+      console.error(e);
+      showNotification('Ошибка', 'Не удалось удалить', 'error');
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════════════════
+  // ФУНКЦИЯ 2: changeStatus(id, newStatus, name)
+  // Меняет поле status в документе Firestore.
+  // onSnapshot автоматически обновит карточку на странице.
+  // ═══════════════════════════════════════════════════════════════════
+  window.changeStatus = async (id, newStatus, name) => {
+    const labels = { new: 'Новая', progress: 'В работе', done: 'Выполнена' };
+    try {
+      await updateDoc(doc(db, "requests", id), { status: newStatus });
+      const type = newStatus === 'done' ? 'success' : 'default';
+      showNotification('Статус изменён', `${name} → <b>${labels[newStatus]}</b>`, type);
+    } catch (e) {
       showNotification('Ошибка', 'Не удалось изменить статус', 'error');
     }
   };
 
-  // ── Лайки ───────────────────────────────────────────────────────
+  // ── Лайки ────────────────────────────────────────────────────────
   window.processLike = async (id) => {
-    const docRef = doc(db, "requests", id);
     try {
-      await updateDoc(docRef, { likes: increment(1) });
-    } catch (e) {
-      console.error("Ошибка лайка:", e.message);
-    }
+      await updateDoc(doc(db, "requests", id), { likes: increment(1) });
+    } catch (e) { console.error(e); }
   };
 
-  // ── Добавить заявку ─────────────────────────────────────────────
+  // ── Режим админа ─────────────────────────────────────────────────
+  window.toggleAdmin = () => {
+    const isAdmin = document.body.classList.toggle('admin-mode');
+    const btn = document.getElementById('adminToggle');
+    btn.classList.toggle('on', isAdmin);
+    btn.textContent = isAdmin ? '✓ Режим админа ВКЛ' : '⚙ Режим админа';
+    showNotification(
+      isAdmin ? 'Админ включён' : 'Админ выключен',
+      isAdmin ? 'Теперь можно удалять и менять статусы' : 'Управление скрыто',
+      isAdmin ? 'success' : 'default'
+    );
+  };
+
+  // ── Фильтр по статусу ────────────────────────────────────────────
+  window.setFilter = (filter, btn) => {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderFeed();
+  };
+
+  // ── Статусы ──────────────────────────────────────────────────────
+  const sClass = { new: 's-new', progress: 's-progress', done: 's-done' };
+  const sLabel = { new: '● Новая', progress: '◐ В работе', done: '✓ Выполнена' };
+
+  // ── Отрисовка ────────────────────────────────────────────────────
+  function renderFeed() {
+    const feed = document.getElementById('feed');
+    const posts = currentFilter === 'all'
+      ? allPosts
+      : allPosts.filter(p => (p.status || 'new') === currentFilter);
+
+    document.getElementById('totalCount').textContent = allPosts.length;
+
+    if (posts.length === 0) {
+      feed.innerHTML = '<div class="empty">Заявок нет</div>';
+      return;
+    }
+
+    feed.innerHTML = "";
+    posts.forEach(({ id, name, email, likes, time, status }) => {
+      const st = status || 'new';
+      feed.innerHTML += `
+        <div class="post">
+          <div class="post-header">
+            <div class="post-name">${name}</div>
+            <div class="post-time">${time}</div>
+          </div>
+          <div class="post-email">${email}</div>
+          <span class="status-badge ${sClass[st]}">${sLabel[st]}</span>
+
+          <div class="status-controls">
+            <button class="status-btn ${st==='new'      ? 'active':''}" onclick="changeStatus('${id}','new','${name}')">Новая</button>
+            <button class="status-btn ${st==='progress' ? 'active':''}" onclick="changeStatus('${id}','progress','${name}')">В работе</button>
+            <button class="status-btn ${st==='done'     ? 'active':''}" onclick="changeStatus('${id}','done','${name}')">Выполнена</button>
+          </div>
+
+          <div class="post-actions">
+            <button class="like-btn" onclick="processLike('${id}')">👍 ${likes || 0}</button>
+            <button class="delete-btn" onclick="deleteRequest('${id}','${name}')">✕ Удалить</button>
+          </div>
+        </div>`;
+    });
+  }
+
+  // ── Добавить заявку ──────────────────────────────────────────────
   document.getElementById('mainBtn').onclick = async () => {
     const btn   = document.getElementById('mainBtn');
     const name  = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
-    if (!name || !email) {
-      showNotification('Ошибка', 'Заполните все поля', 'error');
-      return;
-    }
+    if (!name || !email) { showNotification('Ошибка', 'Заполните все поля', 'error'); return; }
     btn.disabled = true;
     try {
       await addDoc(collection(db, "requests"), {
@@ -265,53 +348,28 @@
       });
       document.getElementById('name').value  = "";
       document.getElementById('email').value = "";
-      showNotification('Готово', `Заявка от <b>${name}</b> опубликована`, 'success');
+      showNotification('Готово', `Заявка от <b>${name}</b> отправлена`, 'success');
     } catch (e) {
       showNotification('Ошибка', 'Данные отклонены сервером', 'error');
     }
     btn.disabled = false;
   };
 
-  // ── Статус → классы и метки ─────────────────────────────────────
-  const statusClass = { new: 'status-new', progress: 'status-progress', done: 'status-done' };
-  const statusLabel = { new: '● Новая', progress: '◐ В работе', done: '✓ Выполнена' };
-
-  // ── Realtime лента ──────────────────────────────────────────────
+  // ── Realtime подписка ────────────────────────────────────────────
   const q = query(collection(db, "requests"), orderBy("timestamp", "desc"));
   onSnapshot(q, (snapshot) => {
-    const feed = document.getElementById('feed');
-    if (snapshot.empty) { feed.innerHTML = '<div class="empty">Заявок пока нет</div>'; return; }
-    feed.innerHTML = "";
-    snapshot.forEach((d) => {
-      const data   = d.data();
-      const id     = d.id;
-      const time   = data.timestamp?.toDate().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) || '...';
-      const status = data.status || 'new';
-
-      feed.innerHTML += `
-        <div class="post">
-          <div class="post-header">
-            <div class="post-name">${data.name}</div>
-            <div class="post-time">${time}</div>
-          </div>
-          <div class="post-email">${data.email}</div>
-
-          <span class="status-badge ${statusClass[status]}">${statusLabel[status]}</span>
-
-          <div class="status-controls">
-            <button class="status-btn ${status === 'new'      ? 'active-btn' : ''}"
-              onclick="changeStatus('${id}', 'new', '${data.name}')">Новая</button>
-            <button class="status-btn ${status === 'progress' ? 'active-btn' : ''}"
-              onclick="changeStatus('${id}', 'progress', '${data.name}')">В работе</button>
-            <button class="status-btn ${status === 'done'     ? 'active-btn' : ''}"
-              onclick="changeStatus('${id}', 'done', '${data.name}')">Выполнена</button>
-          </div>
-
-          <div class="post-actions">
-            <button class="like-btn" onclick="processLike('${id}')">👍 ${data.likes || 0}</button>
-          </div>
-        </div>`;
+    allPosts = snapshot.docs.map(d => {
+      const data = d.data();
+      return {
+        id:     d.id,
+        name:   data.name,
+        email:  data.email,
+        likes:  data.likes,
+        status: data.status || 'new',
+        time:   data.timestamp?.toDate().toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' }) || '...'
+      };
     });
+    renderFeed();
   });
 </script>
 </body>
