@@ -38,7 +38,6 @@
       display: flex; align-items: center; justify-content: space-between; gap: 14px;
       flex-wrap: wrap;
     }
-
     #loginBtn {
       display: flex; align-items: center; gap: 10px;
       background: #1a1a1a; border: 1px solid #b8860b; color: #f0c040;
@@ -47,18 +46,12 @@
       white-space: nowrap; width: 100%; justify-content: center;
     }
     #loginBtn:hover { background: #1f1a0f; }
-
     #userInfo {
-      display: none;
-      align-items: center; gap: 12px; flex-wrap: wrap; width: 100%;
+      display: none; align-items: center; gap: 12px; flex-wrap: wrap; width: 100%;
     }
-    #userPhoto {
-      width: 38px; height: 38px; border-radius: 50%;
-      border: 2px solid #b8860b; object-fit: cover;
-    }
+    #userPhoto { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #b8860b; object-fit: cover; }
     #userName  { color: #f0c040; font-size: 14px; font-weight: bold; }
     #userEmail { color: #666; font-size: 11px; }
-
     #logoutBtn {
       background: transparent; border: 1px solid #2a1a1a; color: #555;
       padding: 8px 16px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
@@ -79,14 +72,46 @@
     .subtitle { color: #666; font-size: 13px; margin-bottom: 30px; line-height: 1.6; }
     .field { margin-bottom: 20px; }
     .field-label { color: #888; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
-    input {
+    input[type="text"], input[type="email"] {
       width: 100%; background: #1a1a1a; border: 1px solid #333; color: #eee;
       padding: 14px 16px; font-size: 14px; outline: none;
       transition: border 0.3s; font-family: 'Georgia', serif;
     }
-    input::placeholder { color: #444; }
-    input:focus { border-color: #b8860b; }
+    input[type="text"]::placeholder,
+    input[type="email"]::placeholder { color: #444; }
+    input[type="text"]:focus,
+    input[type="email"]:focus { border-color: #b8860b; }
     input[readonly] { opacity: 0.6; cursor: default; }
+
+    /* ── Загрузка фото ── */
+    .photo-upload-area {
+      border: 2px dashed #333; background: #0f0f0f;
+      padding: 28px 20px; text-align: center; cursor: pointer;
+      transition: all 0.3s; position: relative; overflow: hidden;
+    }
+    .photo-upload-area:hover { border-color: #b8860b; background: #1a1500; }
+    .photo-upload-area.has-photo { border-style: solid; border-color: #8a6a00; padding: 0; }
+    .photo-upload-area input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .upload-icon { font-size: 32px; margin-bottom: 10px; }
+    .upload-text { color: #666; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; }
+    .upload-hint { color: #444; font-size: 11px; margin-top: 6px; }
+    #photoPreview {
+      display: none; width: 100%; max-height: 220px;
+      object-fit: cover; object-position: center;
+    }
+    .photo-upload-area.has-photo .upload-placeholder { display: none; }
+    .photo-upload-area.has-photo #photoPreview { display: block; }
+    .photo-remove {
+      display: none; position: absolute; top: 8px; right: 8px;
+      background: #0a0a0a; border: 1px solid #333; color: #888;
+      padding: 4px 10px; font-size: 11px; cursor: pointer;
+      font-family: 'Georgia', serif; z-index: 2;
+    }
+    .photo-remove:hover { border-color: #8b0000; color: #cc3333; }
+    .photo-upload-area.has-photo .photo-remove { display: block; }
+
     .submit-btn {
       width: 100%; padding: 16px; background: #b8860b; color: #000;
       font-size: 11px; font-weight: bold; letter-spacing: 3px; text-transform: uppercase;
@@ -99,8 +124,7 @@
 
     /* Заглушка для гостей */
     #guestNotice {
-      display: none;
-      width: 100%; max-width: 480px;
+      display: none; width: 100%; max-width: 480px;
       background: #111; border: 1px solid #2a2000;
       padding: 36px; text-align: center; margin-bottom: 30px;
     }
@@ -109,11 +133,9 @@
 
     /* ── Админ-панель ── */
     .admin-bar {
-      width: 100%; max-width: 480px;
-      background: #0f0f0f; border: 1px solid #2a2000;
+      width: 100%; max-width: 480px; background: #0f0f0f; border: 1px solid #2a2000;
       padding: 16px 20px; margin-bottom: 20px;
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      flex-wrap: wrap;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
     }
     .admin-label { color: #b8860b; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
     .admin-stats { color: #555; font-size: 12px; }
@@ -127,10 +149,7 @@
     .admin-toggle:hover { border-color: #b8860b; color: #f0c040; }
 
     /* ── Фильтр ── */
-    .filter-bar {
-      width: 100%; max-width: 480px;
-      display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
-    }
+    .filter-bar { width: 100%; max-width: 480px; display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
     .filter-btn {
       background: #111; border: 1px solid #222; color: #555;
       padding: 7px 16px; font-size: 11px; letter-spacing: 1px;
@@ -145,7 +164,6 @@
       width: 100%; max-width: 480px; margin-bottom: 16px;
     }
     .feed-title::before { content: '— '; }
-
     .post {
       background: #111; border: 1px solid #222; padding: 20px 24px;
       width: 100%; max-width: 480px; margin-bottom: 12px; transition: border 0.3s;
@@ -155,6 +173,7 @@
     .post-name   { color: #f0c040; font-size: 16px; font-weight: bold; }
     .post-time   { color: #444; font-size: 11px; }
     .post-email  { color: #666; font-size: 13px; margin-bottom: 12px; }
+    .post-img    { width: 100%; max-height: 200px; object-fit: cover; margin-bottom: 12px; border: 1px solid #2a2000; }
 
     .status-badge {
       display: inline-block; padding: 3px 10px; border-radius: 20px;
@@ -181,10 +200,8 @@
       border-radius: 20px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
     }
     .like-btn:hover { border-color: #b8860b; color: #f0c040; background: #1f1a0f; }
-
     .delete-btn {
-      display: none;
-      background: transparent; border: 1px solid #2a1a1a; color: #555;
+      display: none; background: transparent; border: 1px solid #2a1a1a; color: #555;
       padding: 7px 14px; font-size: 11px; letter-spacing: 1px;
       cursor: pointer; border-radius: 20px; transition: all 0.2s; font-family: 'Georgia', serif;
     }
@@ -202,7 +219,6 @@
 
 <!-- ═══ АВТОРИЗАЦИЯ ═══ -->
 <div id="authSection">
-  <!-- Кнопка входа (для гостей) -->
   <button id="loginBtn">
     <svg width="18" height="18" viewBox="0 0 48 48">
       <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -212,8 +228,6 @@
     </svg>
     Войти через Google
   </button>
-
-  <!-- Инфо о пользователе (после входа) -->
   <div id="userInfo">
     <img id="userPhoto" src="" alt="Avatar">
     <div>
@@ -224,11 +238,12 @@
   </div>
 </div>
 
-<!-- ═══ ФОРМА (только для авторизованных) ═══ -->
+<!-- ═══ ФОРМА ═══ -->
 <div id="messageForm" class="card" style="display:none;">
   <div class="label-top">Новая заявка</div>
   <h1>Отправить заявку</h1>
   <p class="subtitle">Данные из вашего Google-аккаунта сохраняются в облаке.</p>
+
   <div class="field">
     <div class="field-label">Ваше имя</div>
     <input type="text" id="name" readonly>
@@ -241,6 +256,22 @@
     <div class="field-label">Сообщение</div>
     <input type="text" id="content" placeholder="Что у вас нового?">
   </div>
+
+  <!-- ЗАГРУЗКА ФОТО -->
+  <div class="field">
+    <div class="field-label">Фотография</div>
+    <div class="photo-upload-area" id="uploadArea">
+      <input type="file" id="photoInput" accept="image/*">
+      <button class="photo-remove" id="photoRemove" onclick="removePhoto(event)">✕ Убрать</button>
+      <div class="upload-placeholder">
+        <div class="upload-icon">📷</div>
+        <div class="upload-text">Загрузите фото</div>
+        <div class="upload-hint">Нажмите или перетащите файл сюда</div>
+      </div>
+      <img id="photoPreview" src="" alt="Превью">
+    </div>
+  </div>
+
   <button class="submit-btn" id="mainBtn">→ Опубликовать в облако</button>
   <div class="footer-note">Данные сохраняются в <span>Firebase Firestore</span></div>
 </div>
@@ -259,7 +290,6 @@
   <button class="admin-toggle" id="adminToggle" onclick="toggleAdmin()">⚙ Режим админа</button>
 </div>
 
-<!-- Фильтр -->
 <div class="filter-bar">
   <button class="filter-btn active" onclick="setFilter('all', this)">Все</button>
   <button class="filter-btn" onclick="setFilter('new', this)">● Новые</button>
@@ -298,7 +328,7 @@
   const auth     = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  // ── Тост ─────────────────────────────────────────────────────────
+  // ── Тост ────────────────────────────────────────────────────────
   function showNotification(title, message, type = 'default') {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
@@ -308,7 +338,35 @@
     setTimeout(() => toast.remove(), 3000);
   }
 
-  // ── Авторизация ───────────────────────────────────────────────────
+  // ── Загрузка фото ────────────────────────────────────────────────
+  let selectedPhotoBase64 = null;
+
+  document.getElementById('photoInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      showNotification('Ошибка', 'Фото не должно превышать 2 МБ', 'error');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      selectedPhotoBase64 = ev.target.result;
+      document.getElementById('photoPreview').src = selectedPhotoBase64;
+      document.getElementById('uploadArea').classList.add('has-photo');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  window.removePhoto = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    selectedPhotoBase64 = null;
+    document.getElementById('photoPreview').src = '';
+    document.getElementById('photoInput').value = '';
+    document.getElementById('uploadArea').classList.remove('has-photo');
+  };
+
+  // ── Авторизация ──────────────────────────────────────────────────
   const loginBtn    = document.getElementById('loginBtn');
   const logoutBtn   = document.getElementById('logoutBtn');
   const userInfo    = document.getElementById('userInfo');
@@ -320,7 +378,6 @@
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      // Вошёл — показываем форму
       loginBtn.style.display    = 'none';
       userInfo.style.display    = 'flex';
       messageForm.style.display = 'block';
@@ -334,7 +391,6 @@
 
       showNotification('Добро пожаловать', `Вы вошли как <b>${user.displayName}</b>`, 'success');
     } else {
-      // Гость — скрываем форму
       loginBtn.style.display    = 'flex';
       userInfo.style.display    = 'none';
       messageForm.style.display = 'none';
@@ -342,7 +398,7 @@
     }
   });
 
-  // ── Удалить ───────────────────────────────────────────────────────
+  // ── Удалить ──────────────────────────────────────────────────────
   window.deleteRequest = async (id, name) => {
     if (!confirm(`Удалить заявку от "${name}"?`)) return;
     try {
@@ -353,7 +409,7 @@
     }
   };
 
-  // ── Статус ────────────────────────────────────────────────────────
+  // ── Статус ───────────────────────────────────────────────────────
   window.changeStatus = async (id, newStatus, name) => {
     const labels = { new: 'Новая', progress: 'В работе', done: 'Выполнена' };
     try {
@@ -365,7 +421,7 @@
     }
   };
 
-  // ── Лайк ──────────────────────────────────────────────────────────
+  // ── Лайк ─────────────────────────────────────────────────────────
   window.processLike = async (id) => {
     if (!auth.currentUser) {
       showNotification('Ошибка', 'Войдите, чтобы поставить лайк', 'error');
@@ -378,7 +434,7 @@
     }
   };
 
-  // ── Режим админа ──────────────────────────────────────────────────
+  // ── Режим админа ─────────────────────────────────────────────────
   window.toggleAdmin = () => {
     const isAdmin = document.body.classList.toggle('admin-mode');
     const btn = document.getElementById('adminToggle');
@@ -391,7 +447,7 @@
     );
   };
 
-  // ── Фильтр ────────────────────────────────────────────────────────
+  // ── Фильтр ───────────────────────────────────────────────────────
   let currentFilter = 'all';
   let allPosts = [];
 
@@ -402,7 +458,7 @@
     renderFeed();
   };
 
-  // ── Отрисовка ─────────────────────────────────────────────────────
+  // ── Отрисовка ────────────────────────────────────────────────────
   const sClass = { new: 's-new', progress: 's-progress', done: 's-done' };
   const sLabel = { new: '● Новая', progress: '◐ В работе', done: '✓ Выполнена' };
 
@@ -420,7 +476,7 @@
     }
 
     feed.innerHTML = "";
-    posts.forEach(({ id, name, email, text, likes, time, status }) => {
+    posts.forEach(({ id, name, email, text, image, likes, time, status }) => {
       const st = status || 'new';
       feed.innerHTML += `
         <div class="post">
@@ -430,6 +486,7 @@
           </div>
           <div class="post-email">${email}</div>
           ${text ? `<p style="color:#bbb;font-size:14px;margin-bottom:14px;">${text}</p>` : ''}
+          ${image ? `<img class="post-img" src="${image}" alt="Фото">` : ''}
           <span class="status-badge ${sClass[st]}">${sLabel[st]}</span>
           <div class="status-controls">
             <button class="status-btn ${st==='new'?'active':''}" onclick="changeStatus('${id}','new','${name}')">Новая</button>
@@ -444,7 +501,7 @@
     });
   }
 
-  // ── Отправить ─────────────────────────────────────────────────────
+  // ── Отправить ────────────────────────────────────────────────────
   document.getElementById('mainBtn').onclick = async () => {
     const user = auth.currentUser;
     if (!user) { showNotification('Ошибка', 'Вы не авторизованы', 'error'); return; }
@@ -454,25 +511,29 @@
     if (!content) { showNotification('Ошибка', 'Введите текст сообщения!', 'error'); return; }
 
     btn.disabled = true;
+    btn.textContent = '⏳ Отправка...';
     try {
       await addDoc(collection(db, "requests"), {
         name:      user.displayName,
         email:     user.email,
         photo:     user.photoURL,
         text:      content,
+        image:     selectedPhotoBase64 || null,
         likes:     0,
         status:    'new',
         timestamp: serverTimestamp()
       });
       document.getElementById('content').value = "";
+      window.removePhoto({ preventDefault: ()=>{}, stopPropagation: ()=>{} });
       showNotification('Готово', `Заявка от <b>${user.displayName}</b> отправлена`, 'success');
     } catch (e) {
-      showNotification('Ошибка безопасности', 'Проверьте правила (Rules) в Firebase', 'error');
+      showNotification('Ошибка', 'Проверьте правила (Rules) в Firebase', 'error');
     }
     btn.disabled = false;
+    btn.textContent = '→ Опубликовать в облако';
   };
 
-  // ── Realtime лента ────────────────────────────────────────────────
+  // ── Realtime ─────────────────────────────────────────────────────
   const q = query(collection(db, "requests"), orderBy("timestamp", "desc"));
   onSnapshot(q, (snapshot) => {
     allPosts = snapshot.docs.map(d => {
@@ -482,6 +543,7 @@
         name:   data.name,
         email:  data.email,
         text:   data.text || '',
+        image:  data.image || null,
         likes:  data.likes,
         status: data.status || 'new',
         time:   data.timestamp?.toDate().toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' }) || '...'
@@ -490,7 +552,6 @@
     renderFeed();
   });
 
-  // Для тестов в консоли F12
   window.db = db;
 </script>
 </body>
