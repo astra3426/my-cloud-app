@@ -32,9 +32,9 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);font-size:13px;}
-
+ 
 .app{display:grid;grid-template-columns:240px 1fr 300px;grid-template-rows:52px 1fr;height:100vh;}
-
+ 
 /* TOPBAR */
 .topbar{
   grid-column:1/-1;background:var(--white);
@@ -72,7 +72,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Inter',s
 .pill-name{font-size:12px;font-weight:600;color:var(--text);}
 .pill-out{margin-left:4px;color:var(--text3);font-size:14px;cursor:pointer;padding:0 0 0 4px;transition:color .15s;}
 .pill-out:hover{color:var(--red);}
-
+ 
 /* LEFT SIDEBAR */
 .sidebar-l{background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;}
 .sl-sec{padding:14px 10px 6px;}
@@ -98,7 +98,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Inter',s
 .sl-st{display:flex;justify-content:space-between;align-items:center;padding:5px 0;}
 .sl-st-l{font-size:11px;color:var(--text3);}
 .sl-st-v{font-size:12px;font-weight:700;color:var(--text);}
-
+ 
 /* MAIN */
 .main{display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
 .main-head{padding:14px 18px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
@@ -114,7 +114,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Inter',s
 .feed{flex:1;overflow-y:auto;padding:0 18px 18px;display:flex;flex-direction:column;gap:8px;}
 .feed::-webkit-scrollbar{width:4px;}
 .feed::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
-
+ 
 /* CARD */
 .card{
   background:var(--white);border:1px solid var(--border);border-radius:var(--r);
@@ -156,7 +156,7 @@ body.admin-mode .status-row{display:flex;}
 body.admin-mode .del-wrap{display:flex;}
 .del-wrap{display:none;}
 .empty-s{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--text3);}
-
+ 
 /* RIGHT SIDEBAR */
 .sidebar-r{background:var(--white);border-left:1px solid var(--border);display:flex;flex-direction:column;}
 .sr-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;}
@@ -166,7 +166,7 @@ body.admin-mode .del-wrap{display:flex;}
 }
 .sr-tab:hover{color:var(--text2);}
 .sr-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
-
+ 
 /* FORM */
 .form-panel{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
 .form-panel::-webkit-scrollbar{width:4px;}
@@ -220,7 +220,7 @@ body.admin-mode .del-wrap{display:flex;}
   box-shadow:var(--shadow);transition:box-shadow .2s,border-color .2s;
 }
 .g-login-btn:hover{border-color:var(--blue);box-shadow:var(--shadow2);}
-
+ 
 /* CHAT */
 .chat-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .chat-list-wrap{flex:1;overflow-y:auto;}
@@ -293,7 +293,7 @@ body.admin-mode .del-wrap{display:flex;}
   flex:1;display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:8px;color:var(--text3);font-size:12px;text-align:center;padding:24px;
 }
-
+ 
 /* TOAST */
 #toasts{position:fixed;top:62px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:6px;}
 .toast{
@@ -312,7 +312,7 @@ body.admin-mode .del-wrap{display:flex;}
 <body>
 <div id="toasts"></div>
 <div class="app">
-
+ 
 <!-- TOPBAR -->
 <header class="topbar">
   <span class="topbar-title">Управление заявками</span>
@@ -334,7 +334,7 @@ body.admin-mode .del-wrap{display:flex;}
     </button>
   </div>
 </header>
-
+ 
 <!-- LEFT SIDEBAR -->
 <nav class="sidebar-l">
   <div class="sl-sec">
@@ -355,7 +355,7 @@ body.admin-mode .del-wrap{display:flex;}
     <div class="sl-st"><span class="sl-st-l">Выполнено</span><span class="sl-st-v" id="st-done">0</span></div>
   </div>
 </nav>
-
+ 
 <!-- MAIN -->
 <main class="main">
   <div class="main-head">
@@ -371,14 +371,14 @@ body.admin-mode .del-wrap{display:flex;}
     <div class="empty-s"><span style="font-size:32px">📋</span><span>Загрузка...</span></div>
   </div>
 </main>
-
+ 
 <!-- RIGHT SIDEBAR -->
 <aside class="sidebar-r">
   <div class="sr-tabs">
     <div class="sr-tab active" id="tab-req" onclick="switchTab('req')">Новая заявка</div>
     <div class="sr-tab" id="tab-chat" onclick="switchTab('chat')">Чаты</div>
   </div>
-
+ 
   <!-- FORM PANEL -->
   <div id="panel-req" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
     <div id="guestBox" class="guest-box">
@@ -405,7 +405,7 @@ body.admin-mode .del-wrap{display:flex;}
       <button class="submit-btn" id="submitBtn">Отправить заявку →</button>
     </div>
   </div>
-
+ 
   <!-- CHAT PANEL -->
   <div id="panel-chat" class="chat-panel" style="display:none;">
     <div class="chat-list-wrap" id="chatListWrap">
@@ -431,17 +431,17 @@ body.admin-mode .del-wrap{display:flex;}
     </div>
   </div>
 </aside>
-
+ 
 </div>
-
+ 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import{getFirestore,collection,addDoc,deleteDoc,query,orderBy,onSnapshot,serverTimestamp,updateDoc,doc,increment,setDoc}from"https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 import{getAuth,signInWithPopup,GoogleAuthProvider,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-
+ 
 const cfg={apiKey:"AIzaSyCVz4TxqdDSSCn7Ztdt_c0rH9fuG3rYRIQ",authDomain:"project-1377923308705650525.firebaseapp.com",projectId:"project-1377923308705650525",storageBucket:"project-1377923308705650525.firebasestorage.app",messagingSenderId:"816182554603",appId:"1:816182554603:web:624159d3c9c89a046c73ae"};
 const app=initializeApp(cfg),db=getFirestore(app),auth=getAuth(app),prov=new GoogleAuthProvider();
-
+ 
 function toast(title,msg,type='info'){
   const icons={success:'✅',error:'❌',info:'ℹ️',warn:'⚠️'};
   const el=document.createElement('div');
@@ -451,7 +451,7 @@ function toast(title,msg,type='info'){
   setTimeout(()=>{el.style.transition='opacity .3s';el.style.opacity=0;},2600);
   setTimeout(()=>el.remove(),3000);
 }
-
+ 
 // Photo
 let photoB64=null;
 document.getElementById('photoFile').addEventListener('change',e=>{
@@ -465,13 +465,13 @@ document.getElementById('rmPh').onclick=e=>{
   e.preventDefault();e.stopPropagation();
   photoB64=null;document.getElementById('phPrev').src='';document.getElementById('photoFile').value='';document.getElementById('photoBox').classList.remove('filled');
 };
-
+ 
 // Auth
 const doLogin=()=>signInWithPopup(auth,prov);
 document.getElementById('loginTopBtn').onclick=doLogin;
 document.getElementById('loginWall').onclick=doLogin;
 document.getElementById('logoutX').onclick=()=>signOut(auth);
-
+ 
 onAuthStateChanged(auth,u=>{
   if(u){
     document.getElementById('loginTopBtn').style.display='none';
@@ -494,7 +494,7 @@ onAuthStateChanged(auth,u=>{
     document.getElementById('noChats').style.display='flex';
   }
 });
-
+ 
 // Submit
 document.getElementById('submitBtn').onclick=async()=>{
   const u=auth.currentUser;if(!u){toast('Ошибка','Войдите в систему','error');return;}
@@ -508,18 +508,18 @@ document.getElementById('submitBtn').onclick=async()=>{
   }catch{toast('Ошибка','Проверьте правила Firestore','error');}
   btn.disabled=false;btn.textContent='Отправить заявку →';
 };
-
+ 
 window.deleteReq=async(id,name)=>{if(!confirm(`Удалить заявку от "${name}"?`))return;try{await deleteDoc(doc(db,'requests',id));toast('Удалено',name,'warn');}catch{toast('Ошибка','Нет доступа','error');}};
 window.changeStatus=async(id,st,name)=>{const l={new:'Новая',progress:'В работе',done:'Выполнена'};try{await updateDoc(doc(db,'requests',id),{status:st});toast('Статус',`${name} → ${l[st]}`,st==='done'?'success':'info');}catch{toast('Ошибка','Нет доступа','error');}};
 window.likeReq=async id=>{if(!auth.currentUser){toast('Ошибка','Войдите для лайка','error');return;}try{await updateDoc(doc(db,'requests',id),{likes:increment(1)});}catch{toast('Ошибка','Нет доступа','error');}};
-
+ 
 window.toggleAdmin=()=>{
   const on=document.body.classList.toggle('admin-mode');
   const btn=document.getElementById('adminPill');btn.classList.toggle('active',on);
   btn.textContent=on?'✓ Режим админа':'⚙ Режим админа';
   toast(on?'Режим admin ВКЛ':'Режим admin ВЫКЛ',on?'Управление заявками доступно':'Управление скрыто',on?'warn':'info');
 };
-
+ 
 window.setView=(v,el)=>{
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
@@ -534,7 +534,7 @@ window.switchTab=t=>{
   document.getElementById('panel-req').style.display=t==='req'?'flex':'none';
   document.getElementById('panel-chat').style.display=t==='chat'?'flex':'none';
 };
-
+ 
 let filter='all',allPosts=[];
 window.setFilter=(f,el)=>{
   filter=f;
@@ -547,7 +547,7 @@ window.setFilterChip=(f,el)=>{
   filter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderFeed();
 };
 document.getElementById('searchInput').addEventListener('input',renderFeed);
-
+ 
 function ini(n){return n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();}
 function renderFeed(){
   const feed=document.getElementById('feedView');
@@ -585,13 +585,13 @@ function renderFeed(){
     </div>`;
   }).join('');
 }
-
+ 
 const q=query(collection(db,'requests'),orderBy('timestamp','desc'));
 onSnapshot(q,snap=>{
   allPosts=snap.docs.map(d=>{const data=d.data();return{id:d.id,name:data.name,email:data.email,text:data.text||'',image:data.image||null,likes:data.likes,status:data.status||'new',photo:data.photo||'',uid:data.uid||'',time:data.timestamp?.toDate().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})||'...'};});
   renderFeed();refreshChatList();
 });
-
+ 
 // CHATS
 let currentChatId=null,chatUnsub=null;
 function cid(a,b){return[a,b].sort().join('_');}
@@ -614,7 +614,7 @@ function refreshChatList(){
     </div>`;
   }).join('');
 }
-
+ 
 window.openChatFromPost=postId=>{
   const p=allPosts.find(x=>x.id===postId);
   if(!p||!p.uid){toast('Чат','Автор не зарегистрирован','warn');return;}
