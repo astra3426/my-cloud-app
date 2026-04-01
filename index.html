@@ -593,11 +593,13 @@ onSnapshot(q,snap=>{
 });
 
 // CHATS
-let currentChatId=null,chatUnsub=null;
-function cid(a,b){return[a,b].sort().join('_');}
 function authors(){
   const seen={};
-  allPosts.forEach(p=>{if(p.uid&&p.uid!==auth.currentUser?.uid&&!seen[p.uid])seen[p.uid]={uid:p.uid,name:p.name,email:p.email,photo:p.photo};});
+  allPosts.forEach(p=>{
+    if(p.uid&&!seen[p.uid])
+      seen[p.uid]={uid:p.uid,name:p.name,email:p.email,photo:p.photo};
+  });
+  delete seen[auth.currentUser?.uid];
   return Object.values(seen);
 }
 function refreshChatList(){
