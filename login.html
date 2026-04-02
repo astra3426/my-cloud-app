@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Заявки — Вход</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080a0f;
+    --bg2: #0d1018;
+    --surface: #161b28;
+    --surface2: #1c2234;
+    --border: rgba(255,255,255,.07);
+    --border2: rgba(255,255,255,.14);
+    --text: #f0ede8;
+    --text2: #8a8fa8;
+    --text3: #3a3f55;
+    --gold: #c9a96e;
+    --gold2: #e8c98a;
+    --gold3: #f5dfa5;
+    --gold-glow: rgba(201,169,110,.18);
+    --accent: #d4622a;
+    --accent2: #e8763d;
+    --accent-glow: rgba(212,98,42,.25);
+    --font-display: 'Cormorant Garamond', serif;
+    --font-body: 'Sora', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    overflow: hidden;
+  }
+
+  .login-wrap {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Animated background */
+  .bg-layer {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  }
+  .bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    animation: float 8s ease-in-out infinite;
+  }
+  .bg-orb:nth-child(1) {
+    width: 500px; height: 500px;
+    top: -150px; left: -100px;
+    background: radial-gradient(circle, rgba(201,169,110,.15), transparent 70%);
+    animation-delay: 0s;
+  }
+  .bg-orb:nth-child(2) {
+    width: 400px; height: 400px;
+    bottom: -100px; right: -80px;
+    background: radial-gradient(circle, rgba(212,98,42,.12), transparent 70%);
+    animation-delay: -4s;
+  }
+  .bg-orb:nth-child(3) {
+    width: 300px; height: 300px;
+    top: 40%; left: 60%;
+    background: radial-gradient(circle, rgba(96,165,250,.07), transparent 70%);
+    animation-delay: -2s;
+  }
+  .bg-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+  }
+
+  .login-card {
+    position: relative;
+    width: 440px;
+    background: linear-gradient(145deg, var(--surface), var(--bg2));
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 50px 44px;
+    box-shadow:
+      0 0 0 1px rgba(201,169,110,.05),
+      0 24px 80px rgba(0,0,0,.6),
+      0 0 80px rgba(201,169,110,.05);
+    animation: cardIn .6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(30px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Gold top line */
+  .login-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 20%; right: 20%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .card-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(201,169,110,.08);
+    border: 1px solid rgba(201,169,110,.2);
+    border-radius: 100px;
+    padding: 5px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+  }
+
+  .card-badge svg { opacity: .8; }
+
+  .login-title {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 10px;
+    letter-spacing: -.5px;
+  }
+
+  .login-title span {
+    background: linear-gradient(135deg, var(--gold2), var(--gold3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .login-sub {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.6;
+    margin-bottom: 36px;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--border2); }
+  .divider-txt { font-size: 11px; color: var(--text3); font-family: var(--font-mono); }
+
+  .google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, var(--accent), #b8521e);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(212,98,42,.3);
+  }
+
+  .google-btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,.1), transparent);
+    opacity: 0;
+    transition: opacity .2s;
+  }
+
+  .google-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 32px rgba(212,98,42,.4); }
+  .google-btn:hover::before { opacity: 1; }
+  .google-btn:active { transform: translateY(0); }
+
+  .google-icon-wrap {
+    width: 22px; height: 22px;
+    background: #fff;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .login-footer {
+    margin-top: 28px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text3);
+    line-height: 1.6;
+  }
+
+  .login-footer a { color: var(--gold); text-decoration: none; }
+
+  .features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+
+  .feature {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .feature-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+    box-shadow: 0 0 6px var(--gold-glow);
+  }
+
+  .loading-overlay {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+    transition: opacity .4s;
+  }
+
+  .spinner {
+    width: 36px; height: 36px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
+<div class="login-wrap">
+  <div class="bg-layer">
+    <div class="bg-orb"></div>
+    <div class="bg-orb"></div>
+    <div class="bg-orb"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <div class="login-card">
+    <div class="card-badge">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+      </svg>
+      Платформа заявок
+    </div>
+
+    <h1 class="login-title">Добро<br>пожаловать<br><span>обратно</span></h1>
+    <p class="login-sub">Управляйте заявками и общайтесь с командой в одном месте</p>
+
+    <div class="features">
+      <div class="feature"><div class="feature-dot"></div>Создавайте и отслеживайте заявки</div>
+      <div class="feature"><div class="feature-dot"></div>Общайтесь с другими пользователями</div>
+      <div class="feature"><div class="feature-dot"></div>Панель управления для администраторов</div>
+    </div>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-txt">ВОЙТИ ЧЕРЕЗ</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <button class="google-btn" id="loginBtn">
+      <div class="google-icon-wrap">
+        <svg width="14" height="14" viewBox="0 0 48 48">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.29-8.16 2.29-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+      </div>
+      Продолжить с Google
+    </button>
+
+    <div class="login-footer">
+      Входя в систему, вы соглашаетесь с условиями использования.<br>
+      Ваши данные защищены через Google OAuth.
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
+  const cfg = {
+    apiKey: "AIzaSyCVz4TxqdDSSCn7Ztdt_c0rH9fuG3rYRIQ",
+    authDomain: "project-1377923308705650525.firebaseapp.com",
+    projectId: "project-1377923308705650525",
+    storageBucket: "project-1377923308705650525.firebasestorage.app",
+    messagingSenderId: "816182554603",
+    appId: "1:816182554603:web:624159d3c9c89a046c73ae"
+  };
+
+  const app = initializeApp(cfg);
+  const auth = getAuth(app);
+  const prov = new GoogleAuthProvider();
+
+  // Check if already logged in → redirect immediately
+  onAuthStateChanged(auth, user => {
+    document.getElementById('loadingOverlay').style.opacity = '0';
+    setTimeout(() => document.getElementById('loadingOverlay').style.display = 'none', 400);
+    if (user) {
+      window.location.href = 'index.html';
+    }
+  });
+
+  document.getElementById('loginBtn').onclick = async () => {
+    try {
+      await signInWithPopup(auth, prov);
+      window.location.href = 'index.html';
+    } catch(e) {
+      console.error(e);
+    }
+  };
+</script>
+
+</body>
+</html>
