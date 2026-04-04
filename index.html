@@ -1597,7 +1597,7 @@ async function loadChatUsers() {
     div.innerHTML = `
       <div class="chat-avatar">${u.photoURL?`<img src="${u.photoURL}">`:`<div class="chat-avatar-placeholder">${initial}</div>`}</div>
       <div class="chat-user-row">
-        <div><div class="chat-user-name">${escapeHtml(u.displayName||'Пользователь')}</div><div class="chat-user-last">${escapeHtml(u.email||'')}</div></div>
+        <div><div class="chat-user-name">${escapeHtml(u.displayName||'Пользователь')}</div></div>
         <span class="unread-badge" id="unread-${u.uid}" style="display:none"></span>
       </div>`;
     div.onclick = () => openChat(u.uid, u.displayName, u.photoURL);
