@@ -1198,6 +1198,10 @@ window.createTicket = async () => {
   const desc = document.getElementById('ticket-desc').value.trim();
   if (!title) { showToast('ВВЕДИТЕ ЗАГОЛОВОК'); return; }
 
+  const btn = document.querySelector('.modal-foot .btn-create');
+  btn.textContent = 'ЗАГРУЗКА...';
+  btn.disabled = true;
+
   let photoURL = null;
   const file = document.getElementById('ticket-photo').files[0];
   if (file) {
@@ -1205,22 +1209,32 @@ window.createTicket = async () => {
       const storageRef = ref(storage, `tickets/${Date.now()}_${file.name}`);
       await uploadBytes(storageRef, file);
       photoURL = await getDownloadURL(storageRef);
-    } catch(e) { showToast('ОШИБКА ЗАГРУЗКИ ФОТО'); }
+    } catch(e) {
+      console.warn('Storage error:', e.code, e.message);
+      showToast('ФОТО НЕ ЗАГРУЖЕНО — ЗАЯВКА БЕЗ ФОТО');
+    }
   }
 
-  await addDoc(collection(db, 'tickets'), {
-    title, desc,
-    photoURL: photoURL || null,
-    status: 'new',
-    authorId: currentUser.uid,
-    authorName: currentUser.displayName,
-    authorPhoto: currentUser.photoURL,
-    likes: [],
-    createdAt: serverTimestamp()
-  });
-
-  closeModal();
-  showToast('ЗАЯВКА СОЗДАНА');
+  try {
+    await addDoc(collection(db, 'tickets'), {
+      title, desc,
+      photoURL: photoURL || null,
+      status: 'new',
+      authorId: currentUser.uid,
+      authorName: currentUser.displayName || currentUser.email,
+      authorPhoto: currentUser.photoURL || null,
+      likes: [],
+      createdAt: serverTimestamp()
+    });
+    closeModal();
+    showToast('ЗАЯВКА СОЗДАНА');
+  } catch(e) {
+    console.error('Firestore error:', e.code, e.message);
+    showToast('ОШИБКА: ' + (e.code || e.message));
+  } finally {
+    btn.textContent = 'СОЗДАТЬ ЗАЯВКУ';
+    btn.disabled = false;
+  }
 };
 
 window.toggleLike = async (id, likes) => {
