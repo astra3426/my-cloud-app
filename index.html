@@ -40,21 +40,84 @@
     overflow-x: hidden;
   }
 
-  /* Scanline overlay */
+  /* Background canvas */
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Radial vignette */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, rgba(6,6,11,0.7) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Animated corner accent top-left */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.03) 2px,
-      rgba(0,0,0,0.03) 4px
-    );
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.04) 2px,
+        rgba(0,0,0,0.04) 4px
+      );
     pointer-events: none;
     z-index: 9999;
   }
+
+  /* Pulse rings */
+  .bg-pulse {
+    position: fixed;
+    border-radius: 50%;
+    border: 1px solid;
+    pointer-events: none;
+    z-index: 1;
+    animation: bgPulse 6s ease-out infinite;
+    transform: translate(-50%, -50%);
+  }
+  .bg-pulse:nth-child(1) { width: 300px; height: 300px; top: 20%; left: 75%; border-color: rgba(245,166,35,0.35); animation-delay: 0s; }
+  .bg-pulse:nth-child(2) { width: 500px; height: 500px; top: 20%; left: 75%; border-color: rgba(245,166,35,0.2); animation-delay: 2s; }
+  .bg-pulse:nth-child(3) { width: 200px; height: 200px; top: 70%; left: 25%; border-color: rgba(0,212,255,0.3); animation-delay: 1s; }
+  .bg-pulse:nth-child(4) { width: 400px; height: 400px; top: 70%; left: 25%; border-color: rgba(0,212,255,0.15); animation-delay: 3s; }
+
+  @keyframes bgPulse {
+    0%   { opacity: 1; transform: translate(-50%,-50%) scale(0.6); }
+    100% { opacity: 0; transform: translate(-50%,-50%) scale(1.4); }
+  }
+
+  /* Floating glows */
+  .bg-glow {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+    filter: blur(80px);
+    animation: bgFloat linear infinite;
+  }
+  .bg-glow-1 { width: 600px; height: 600px; background: rgba(245,166,35,0.12); top: -150px; left: 60%; animation-duration: 20s; animation-delay: 0s; }
+  .bg-glow-2 { width: 500px; height: 500px; background: rgba(0,212,255,0.1); top: 40%; left: 5%; animation-duration: 25s; animation-delay: -8s; }
+  .bg-glow-3 { width: 700px; height: 700px; background: rgba(245,166,35,0.08); top: 55%; left: 65%; animation-duration: 30s; animation-delay: -15s; }
+
+  @keyframes bgFloat {
+    0%   { transform: translateY(0px) translateX(0px); }
+    25%  { transform: translateY(-40px) translateX(20px); }
+    50%  { transform: translateY(-20px) translateX(-20px); }
+    75%  { transform: translateY(30px) translateX(10px); }
+    100% { transform: translateY(0px) translateX(0px); }
+  }
+
+  /* All content above canvas */
+  #login-screen, #app { position: relative; z-index: 2; }
 
   /* ========== LOGIN ========== */
   #login-screen {
@@ -164,7 +227,7 @@
   .btn-login:hover { box-shadow: 0 0 30px rgba(245,166,35,0.3); }
 
   /* ========== MAIN LAYOUT ========== */
-  #app { display: none; min-height: 100vh; }
+  #app { display: block; min-height: 100vh; } /* AUTH_REMOVED: was display:none */
 
   /* Header */
   .hdr {
@@ -303,7 +366,7 @@
   .sidebar {
     width: 220px;
     flex-shrink: 0;
-    background: var(--bg2);
+    background: rgba(13,13,22,0.6);
     border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
@@ -392,9 +455,120 @@
   }
 
   /* Main content */
-  .main { flex: 1; overflow-y: auto; background: var(--bg); position: relative; }
+  .main { flex: 1; overflow-y: auto; background: rgba(6,6,11,0.55); position: relative; }
 
   .main-inner { padding: 24px; }
+  .feed-split {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  #tickets-container { flex: 0 0 50%; min-width: 0; }
+
+  /* Right panel */
+  .right-panel {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+  }
+
+  .rp-block {
+    background: rgba(26,26,42,0.6);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border);
+    backdrop-filter: blur(4px);
+    overflow: hidden;
+  }
+
+  .rp-header {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--text-dim);
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid rgba(42,42,66,0.5);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rp-header .rp-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 6px var(--amber);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .log-entry {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 7px 14px;
+    border-bottom: 1px solid rgba(42,42,66,0.3);
+    transition: background 0.15s;
+  }
+  .log-entry:last-child { border-bottom: none; }
+  .log-entry:hover { background: rgba(255,255,255,0.02); }
+
+  .log-time {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .log-text {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-mid);
+    line-height: 1.4;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .log-text b { color: var(--text); font-weight: 600; }
+  .log-text .log-new    { color: var(--cyan); }
+  .log-text .log-active { color: var(--amber); }
+  .log-text .log-done   { color: var(--green); }
+
+  .rp-empty {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 16px 14px;
+    letter-spacing: 1px;
+  }
+
+  /* Status indicators block */
+  .rp-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(42,42,66,0.3);
+  }
+  .rp-status-row:last-child { border-bottom: none; }
+
+  .rp-status-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  .rp-status-val {
+    font-family: var(--cond);
+    font-size: 16px;
+    font-weight: 700;
+  }
 
   /* Section header */
   .sec-header {
@@ -433,128 +607,172 @@
 
   .btn-create:hover { background: #fff; box-shadow: 0 0 20px rgba(245,166,35,0.4); }
 
-  /* Ticket card */
+  /* ===== TICKET CARD ===== */
   .ticket {
-    background: var(--panel);
+    background: rgba(26,26,42,0.7);
     border: 1px solid var(--border);
-    margin-bottom: 12px;
+    border-left: none;
+    margin-bottom: 8px;
     position: relative;
-    transition: border-color 0.2s, transform 0.2s;
-    animation: slideIn 0.3s ease-out;
+    display: grid;
+    grid-template-columns: 4px 1fr;
+    animation: slideIn 0.25s ease-out;
+    transition: background 0.2s, box-shadow 0.2s;
+    backdrop-filter: blur(4px);
   }
 
   @keyframes slideIn {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateX(-6px); }
+    to   { opacity: 1; transform: translateX(0); }
   }
 
-  .ticket:hover { border-color: var(--amber-dim); }
+  .ticket:hover {
+    background: rgba(26,26,42,0.9);
+    box-shadow: 0 2px 24px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(245,166,35,0.1);
+  }
 
+  /* colored left bar */
   .ticket-accent {
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
+    width: 4px;
     background: var(--text-dim);
+    transition: box-shadow 0.2s;
   }
+  .ticket.status-new    .ticket-accent { background: var(--cyan);  box-shadow: 0 0 12px var(--cyan); }
+  .ticket.status-active .ticket-accent { background: var(--amber); box-shadow: 0 0 14px var(--amber); }
+  .ticket.status-done   .ticket-accent { background: var(--green); box-shadow: 0 0 12px var(--green); }
 
-  .ticket.status-new .ticket-accent { background: var(--cyan); }
-  .ticket.status-active .ticket-accent { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
-  .ticket.status-done .ticket-accent { background: var(--green); }
+  /* inner wrapper */
+  .ticket-inner { display: flex; flex-direction: column; min-width: 0; }
 
-  .ticket-head {
+  /* main row */
+  .ticket-row {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
-    padding: 14px 16px 10px 20px;
+    padding: 12px 16px;
+    min-width: 0;
   }
 
   .ticket-id {
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: 10px;
     color: var(--text-dim);
-    letter-spacing: 1px;
+    letter-spacing: 2px;
     white-space: nowrap;
-    margin-top: 3px;
+    flex-shrink: 0;
+    width: 68px;
   }
-
-  .ticket-body { flex: 1; }
 
   .ticket-title {
-    font-size: 19px;
-    font-weight: 600;
+    font-family: var(--cond);
+    font-size: 18px;
+    font-weight: 700;
     color: var(--text);
-    margin-bottom: 6px;
-    line-height: 1.3;
-  }
-
-  .ticket-meta {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .ticket-author {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--text-dim);
-  }
-
-  .ticket-time {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--text-dim);
+    letter-spacing: 0.3px;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .status-tag {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 9px;
     letter-spacing: 2px;
-    padding: 2px 8px;
+    padding: 3px 10px;
     border: 1px solid;
+    white-space: nowrap;
+    flex-shrink: 0;
+    clip-path: polygon(5px 0%, 100% 0%, calc(100% - 5px) 100%, 0% 100%);
+  }
+  .status-tag.new    { border-color: var(--cyan);  color: var(--cyan);  background: rgba(0,212,255,0.07); }
+  .status-tag.active { border-color: var(--amber); color: var(--amber); background: rgba(245,166,35,0.1); }
+  .status-tag.done   { border-color: var(--green); color: var(--green); background: rgba(0,255,157,0.07); }
+
+  /* desc row */
+  .ticket-desc-row {
+    padding: 0 16px 10px 16px;
+  }
+  .ticket-desc-text {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.4;
   }
 
-  .status-tag.new { border-color: var(--cyan); color: var(--cyan); }
-  .status-tag.active { border-color: var(--amber); color: var(--amber); }
-  .status-tag.done { border-color: var(--green); color: var(--green); }
+  /* image */
+  .ticket-img {
+    margin: 0 16px 12px 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    position: relative;
+  }
+  .ticket-img img {
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    display: block;
+    opacity: 0.85;
+    transition: opacity 0.2s;
+  }
+  .ticket:hover .ticket-img img { opacity: 1; }
 
-  .ticket-actions {
+  /* footer */
+  .ticket-meta {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
+    gap: 10px;
+    padding: 6px 16px 8px 16px;
+    border-top: 1px solid rgba(42,42,66,0.5);
   }
+
+  .ticket-author-avatar {
+    width: 18px; height: 18px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 8px;
+    color: var(--amber);
+    flex-shrink: 0;
+    clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+  }
+
+  .ticket-author {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-mid);
+  }
+
+  .ticket-sep {
+    color: var(--text-dim);
+    font-size: 10px;
+  }
+
+  .ticket-time {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    flex: 1;
+  }
+
+  .ticket-actions { flex-shrink: 0; }
 
   .icon-btn {
     background: transparent;
-    border: 1px solid transparent;
+    border: none;
     color: var(--text-dim);
     cursor: pointer;
-    padding: 5px 8px;
+    padding: 2px 6px;
     transition: all 0.15s;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
     font-family: var(--mono);
-    font-size: 13px;
+    font-size: 12px;
   }
-
-  .icon-btn:hover { color: var(--amber); border-color: var(--amber-dim); }
+  .icon-btn:hover { color: var(--amber); }
   .icon-btn.liked { color: var(--amber); }
-
-  .ticket-img {
-    margin: 0 16px 12px 20px;
-    max-height: 200px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-
-  .ticket-img img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    display: block;
-  }
 
   /* Admin controls */
   .admin-controls {
@@ -739,7 +957,7 @@
     width: 260px;
     border-right: 1px solid var(--border);
     overflow-y: auto;
-    background: var(--bg2);
+    background: rgba(13,13,22,0.6);
     flex-shrink: 0;
   }
 
@@ -783,7 +1001,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: var(--bg);
+    background: rgba(6,6,11,0.5);
   }
 
   .chat-header {
@@ -922,7 +1140,7 @@
   /* ========== VIEWS ========== */
   .view { display: none; }
   .view.active { display: block; }
-  #chat-view.active { display: flex; }
+  #chat-view.active { display: flex; padding-top: 56px; }
 
   /* No tickets placeholder */
   .empty-state {
@@ -1029,6 +1247,16 @@
 </head>
 <body>
 
+<!-- Background -->
+<canvas id="bg-canvas"></canvas>
+<div class="bg-pulse"></div>
+<div class="bg-pulse"></div>
+<div class="bg-pulse"></div>
+<div class="bg-pulse"></div>
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+<div class="bg-glow bg-glow-3"></div>
+
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-grid"></div>
@@ -1052,7 +1280,7 @@
 <div id="app">
   <!-- Header -->
   <header class="hdr">
-    <div class="hdr-logo">DISPATCH <span>// v2.0</span></div>
+    <div class="hdr-logo">DISPATCH</div>
     <div class="hdr-divider"></div>
     <nav class="hdr-nav">
       <button class="nav-btn active" onclick="showView('feed-view', this)">ЛЕНТА</button>
@@ -1145,11 +1373,38 @@
               </div>
             </div>
           </div>
-          <div id="tickets-container">
-            <div class="empty-state">
-              <div class="empty-state-icon">⊡</div>
-              <div class="empty-state-text">ЗАЯВКИ ОТСУТСТВУЮТ</div>
+          <div class="feed-split">
+            <div id="tickets-container">
+              <div class="empty-state">
+                <div class="empty-state-icon">⊡</div>
+                <div class="empty-state-text">ЗАЯВКИ ОТСУТСТВУЮТ</div>
+              </div>
             </div>
+            <aside class="right-panel">
+              <div class="rp-block">
+                <div class="rp-header"><span class="rp-dot"></span>// ЖУРНАЛ СОБЫТИЙ</div>
+                <div id="rp-log"><div class="rp-empty">// НЕТ ДАННЫХ</div></div>
+              </div>
+              <div class="rp-block">
+                <div class="rp-header">// СТАТУС СИСТЕМЫ</div>
+                <div class="rp-status-row">
+                  <span class="rp-status-label">ВСЕГО ЗАЯВОК</span>
+                  <span class="rp-status-val" id="rp-total" style="color:var(--text)">0</span>
+                </div>
+                <div class="rp-status-row">
+                  <span class="rp-status-label">В РАБОТЕ</span>
+                  <span class="rp-status-val" id="rp-active" style="color:var(--amber)">0</span>
+                </div>
+                <div class="rp-status-row">
+                  <span class="rp-status-label">ВЫПОЛНЕНО</span>
+                  <span class="rp-status-val" id="rp-done" style="color:var(--green)">0</span>
+                </div>
+                <div class="rp-status-row">
+                  <span class="rp-status-label">НАГРУЗКА</span>
+                  <span class="rp-status-val" id="rp-load" style="color:var(--cyan)">—</span>
+                </div>
+              </div>
+            </aside>
           </div>
         </div>
       </main>
@@ -1413,41 +1668,68 @@ async function loadChatUsers() {
   if (!list.children.length) list.innerHTML = '<div style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text-dim)">// НЕТ ПОЛЬЗОВАТЕЛЕЙ</div>';
 }
 
+// Cached DOM refs — queried once
+const DOM = {};
+function getDOM(id) { return DOM[id] || (DOM[id] = document.getElementById(id)); }
+
+const STATUS_LABEL = { new: 'НОВАЯ', active: 'В РАБОТЕ', done: 'ВЫПОЛНЕНО' };
+const STATUS_CLASS = { new: 'log-new', active: 'log-active', done: 'log-done' };
+
 function renderTickets() {
-  const container = document.getElementById('tickets-container');
-  const search = document.getElementById('search-input').value.toLowerCase();
+  const container = getDOM('tickets-container');
+  const search = getDOM('search-input').value.toLowerCase();
   const isAdmin = currentUser?.email === ADMIN_EMAIL;
 
-  let filtered = allTickets.filter(t => {
-    if (currentFilter !== 'all' && t.status !== currentFilter) return false;
-    if (search && !t.title?.toLowerCase().includes(search) && !t.desc?.toLowerCase().includes(search)) return false;
-    return true;
-  });
-
-  const cntNew = allTickets.filter(t=>t.status==='new').length;
-  const cntActive = allTickets.filter(t=>t.status==='active').length;
-  const cntDone = allTickets.filter(t=>t.status==='done').length;
+  // Single pass: count + filter simultaneously
+  let cntNew = 0, cntActive = 0, cntDone = 0;
+  const filtered = [];
+  for (const t of allTickets) {
+    if (t.status === 'new') cntNew++;
+    else if (t.status === 'active') cntActive++;
+    else if (t.status === 'done') cntDone++;
+    if (currentFilter !== 'all' && t.status !== currentFilter) continue;
+    if (search && !t.title?.toLowerCase().includes(search) && !t.desc?.toLowerCase().includes(search)) continue;
+    filtered.push(t);
+  }
   const total = allTickets.length;
 
   // Update badges
-  document.getElementById('cnt-all').textContent = total;
-  document.getElementById('cnt-new').textContent = cntNew;
-  document.getElementById('cnt-active').textContent = cntActive;
-  document.getElementById('cnt-done').textContent = cntDone;
-  document.getElementById('stat-total').textContent = total;
+  getDOM('cnt-all').textContent = total;
+  getDOM('cnt-new').textContent = cntNew;
+  getDOM('cnt-active').textContent = cntActive;
+  getDOM('cnt-done').textContent = cntDone;
+  getDOM('stat-total').textContent = total;
+
+  // Update right panel
+  getDOM('rp-total').textContent = total;
+  getDOM('rp-active').textContent = cntActive;
+  getDOM('rp-done').textContent = cntDone;
+  getDOM('rp-load').textContent = total ? Math.round(cntActive / total * 100) + '%' : '0%';
+
+  const rpLog = getDOM('rp-log');
+  if (allTickets.length === 0) {
+    rpLog.innerHTML = '<div class="rp-empty">// НЕТ ДАННЫХ</div>';
+  } else {
+    rpLog.innerHTML = allTickets.slice(0, 8).map(t => {
+      const time = t.createdAt?.toDate?.()?.toLocaleTimeString('ru', {hour:'2-digit', minute:'2-digit'}) || '--:--';
+      return `<div class="log-entry">
+        <span class="log-time">${time}</span>
+        <span class="log-text"><b>${escapeHtml(t.title)}</b> — <span class="${STATUS_CLASS[t.status] || ''}">${STATUS_LABEL[t.status] || t.status}</span></span>
+      </div>`;
+    }).join('');
+  }
 
   // Update dashboard banner
-  document.getElementById('dash-total').textContent = total;
-  document.getElementById('dash-new').textContent = cntNew;
-  document.getElementById('dash-active').textContent = cntActive;
-  document.getElementById('dash-done').textContent = cntDone;
+  getDOM('dash-total').textContent = total;
+  getDOM('dash-new').textContent = cntNew;
+  getDOM('dash-active').textContent = cntActive;
+  getDOM('dash-done').textContent = cntDone;
   const pct = v => total ? Math.round(v / total * 100) + '%' : '0%';
-  document.getElementById('dash-bar-new').style.width = pct(cntNew);
-  document.getElementById('dash-bar-active').style.width = pct(cntActive);
-  document.getElementById('dash-bar-done').style.width = pct(cntDone);
+  getDOM('dash-bar-new').style.width = pct(cntNew);
+  getDOM('dash-bar-active').style.width = pct(cntActive);
+  getDOM('dash-bar-done').style.width = pct(cntDone);
 
-  // Sparkline — по дням последних 7 записей
-  const svg = document.getElementById('sparkline-svg');
+  const svg = getDOM('sparkline-svg');
   if (svg && total > 0) {
     const days = {};
     allTickets.forEach(t => {
@@ -1487,33 +1769,36 @@ function renderTickets() {
     const time = t.createdAt?.toDate?.()?.toLocaleDateString('ru', {day:'2-digit',month:'2-digit',year:'numeric'}) || '';
     const shortId = t.id.slice(-6).toUpperCase();
 
+    const authorInitial = (t.authorName || '?')[0].toUpperCase();
+    const svgHeart = `<svg width="13" height="13" viewBox="0 0 24 24" fill="${liked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
     return `<div class="ticket status-${t.status}">
       <div class="ticket-accent"></div>
-      <div class="ticket-head">
-        <div class="ticket-id">#${shortId}</div>
-        <div class="ticket-body">
+      <div class="ticket-inner">
+        <div class="ticket-row">
           <div class="ticket-title">${escapeHtml(t.title)}</div>
-          <div class="ticket-meta">
-            <span class="ticket-author">${escapeHtml(t.authorName || '')}</span>
-            <span class="ticket-time">${time}</span>
-            <span class="status-tag ${t.status}">${statusLabel}</span>
+          <span class="status-tag ${t.status}">${statusLabel}</span>
+        </div>
+        ${t.desc ? `<div class="ticket-desc-row"><div class="ticket-desc-text">${escapeHtml(t.desc)}</div></div>` : ''}
+        ${t.photoURL ? `<div class="ticket-img"><img src="${t.photoURL}" loading="lazy"></div>` : ''}
+        <div class="ticket-meta">
+          <div class="ticket-author-avatar">${authorInitial}</div>
+          <span class="ticket-author">${escapeHtml(t.authorName || '')}</span>
+          <span class="ticket-sep">/</span>
+          <span class="ticket-time">${time}</span>
+          <div class="ticket-actions">
+            <button class="icon-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${t.id}', ${JSON.stringify(t.likes || [])})">
+              ${svgHeart} ${t.likes?.length || 0}
+            </button>
           </div>
-          ${t.desc ? `<div style="margin-top:8px;font-size:15px;color:var(--text-mid);line-height:1.5">${escapeHtml(t.desc)}</div>` : ''}
         </div>
-        <div class="ticket-actions">
-          <button class="icon-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${t.id}', ${JSON.stringify(t.likes || [])})">
-            ♥ ${t.likes?.length || 0}
-          </button>
-        </div>
+        ${isAdmin ? `<div class="admin-controls">
+          <span class="admin-label">ADMIN</span>
+          <button class="admin-btn status-new" onclick="changeStatus('${t.id}','new')">НОВАЯ</button>
+          <button class="admin-btn status-active" onclick="changeStatus('${t.id}','active')">В РАБОТЕ</button>
+          <button class="admin-btn status-done" onclick="changeStatus('${t.id}','done')">ВЫПОЛНЕНО</button>
+          <button class="admin-btn" onclick="deleteTicket('${t.id}')" style="margin-left:auto">✕ УДАЛИТЬ</button>
+        </div>` : ''}
       </div>
-      ${t.photoURL ? `<div class="ticket-img"><img src="${t.photoURL}" loading="lazy"></div>` : ''}
-      ${isAdmin ? `<div class="admin-controls">
-        <span class="admin-label">ADMIN</span>
-        <button class="admin-btn status-new" onclick="changeStatus('${t.id}','new')">НОВАЯ</button>
-        <button class="admin-btn status-active" onclick="changeStatus('${t.id}','active')">В РАБОТЕ</button>
-        <button class="admin-btn status-done" onclick="changeStatus('${t.id}','done')">ВЫПОЛНЕНО</button>
-        <button class="admin-btn" onclick="deleteTicket('${t.id}')" style="margin-left:auto">✕ УДАЛИТЬ</button>
-      </div>` : ''}
     </div>`;
   }).join('');
 }
@@ -1531,36 +1816,138 @@ function showToast(msg) {
   setTimeout(() => t.remove(), 3000);
 }
 
-// Auth state
-onAuthStateChanged(auth, async user => {
-  currentUser = user;
-  if (user) {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    document.getElementById('hdr-name').textContent = user.displayName || user.email;
-    const ph = document.getElementById('hdr-photo');
-    ph.src = user.photoURL || '';
-    if (user.email === ADMIN_EMAIL) document.getElementById('admin-stat').style.display = 'block';
+/* AUTH_REMOVED_START — restore onAuthStateChanged block here later
+onAuthStateChanged(auth, async user => { ... });
+AUTH_REMOVED_END */
 
-    // Save user to Firestore
-    await setDoc(doc(db, 'users', user.uid), {
-      uid: user.uid,
-      displayName: user.displayName,
-      email: user.email,
-      photoURL: user.photoURL
-    }, { merge: true });
+// Temporary: bypass auth
+document.getElementById('login-screen').style.display = 'none';
+currentUser = { uid: 'temp-user', displayName: 'Temp User', email: 'temp@temp.com', photoURL: '' };
+document.getElementById('hdr-name').textContent = currentUser.displayName;
 
-    // Real-time tickets
-    const q = query(collection(db, 'tickets'), orderBy('createdAt', 'desc'));
-    onSnapshot(q, snap => {
-      allTickets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderTickets();
-    });
-  } else {
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('app').style.display = 'none';
-  }
+const q = query(collection(db, 'tickets'), orderBy('createdAt', 'desc'));
+onSnapshot(q, snap => {
+  allTickets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderTickets();
 });
+</script>
+
+<script>
+// ===== BACKGROUND CANVAS =====
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  const AMBER = 'rgba(245,166,35,';
+  const CYAN  = 'rgba(0,212,255,';
+  const COUNT = 60;
+  const CONNECT_DIST = 160;
+  const CONNECT_DIST_SQ = CONNECT_DIST * CONNECT_DIST;
+  let W, H, particles, gridCanvas, gridCtx;
+
+  function buildGrid() {
+    gridCanvas = document.createElement('canvas');
+    gridCanvas.width = W;
+    gridCanvas.height = H;
+    gridCtx = gridCanvas.getContext('2d');
+    const step = 80;
+    gridCtx.strokeStyle = 'rgba(80,80,140,0.8)';
+    gridCtx.lineWidth = 0.5;
+    gridCtx.beginPath();
+    for (let x = 0; x < W; x += step) { gridCtx.moveTo(x, 0); gridCtx.lineTo(x, H); }
+    for (let y = 0; y < H; y += step) { gridCtx.moveTo(0, y); gridCtx.lineTo(W, y); }
+    gridCtx.stroke();
+  }
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    buildGrid();
+  }
+
+  function Particle() {
+    this.x     = Math.random() * W;
+    this.y     = Math.random() * H;
+    this.vx    = (Math.random() - 0.5) * 0.4;
+    this.vy    = (Math.random() - 0.5) * 0.4;
+    this.r     = Math.random() * 2.5 + 1;
+    this.isCyan = Math.random() > 0.7;
+    this.pulse = Math.random() * Math.PI * 2;
+  }
+
+  Particle.prototype.update = function() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.pulse += 0.02;
+    if (this.x < 0 || this.x > W) this.vx *= -1;
+    if (this.y < 0 || this.y > H) this.vy *= -1;
+  };
+
+  function drawConnections() {
+    // Batch lines by color to minimise strokeStyle changes and ctx.stroke() calls
+    const amberLines = [], cyanLines = [];
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const a = particles[i], b = particles[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dSq = dx * dx + dy * dy;
+        if (dSq < CONNECT_DIST_SQ) {
+          const alpha = (1 - Math.sqrt(dSq) / CONNECT_DIST) * 0.7;
+          (a.isCyan ? cyanLines : amberLines).push(a.x, a.y, b.x, b.y, alpha);
+        }
+      }
+    }
+    ctx.lineWidth = 0.8;
+    for (const [lines, col] of [[amberLines, AMBER], [cyanLines, CYAN]]) {
+      ctx.beginPath();
+      for (let k = 0; k < lines.length; k += 5) {
+        ctx.globalAlpha = lines[k + 4];
+        ctx.moveTo(lines[k], lines[k+1]);
+        ctx.lineTo(lines[k+2], lines[k+3]);
+      }
+      ctx.strokeStyle = col + '1)';
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawParticles() {
+    // Batch by color
+    for (const [isCyan, col] of [[false, AMBER], [true, CYAN]]) {
+      ctx.beginPath();
+      for (const p of particles) {
+        if (p.isCyan !== isCyan) continue;
+        const alpha = 0.7 + 0.3 * Math.sin(p.pulse);
+        ctx.globalAlpha = alpha;
+        ctx.moveTo(p.x + p.r, p.y);
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      }
+      ctx.fillStyle = col + '1)';
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.drawImage(gridCanvas, 0, 0);
+    drawConnections();
+    particles.forEach(p => p.update());
+    drawParticles();
+    requestAnimationFrame(loop);
+  }
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(resize, 150);
+  });
+
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  buildGrid();
+  particles = Array.from({ length: COUNT }, () => new Particle());
+  loop();
+})();
 </script>
 </body>
 </html>
