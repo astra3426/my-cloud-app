@@ -1668,6 +1668,7 @@ window.sendMsg = async () => {
   if (!text && !chatPhotoB64 || !currentChatPartner) return;
   const chatId = [currentUser.uid, currentChatPartner.uid].sort().join('_');
   if (editMsgId) {
+    input.value = '';
     await updateDoc(doc(db,'chats',chatId,'messages',editMsgId), { text, editedAt: serverTimestamp() });
     editMsgId = null;
     document.getElementById('edit-bar').style.display = 'none';
@@ -1683,10 +1684,10 @@ window.sendMsg = async () => {
       replyTo = null;
       document.getElementById('reply-bar').style.display = 'none';
     }
-    await addDoc(collection(db,'chats',chatId,'messages'), payload);
+    input.value = '';
     if (chatPhotoB64) cancelChatPhoto();
+    await addDoc(collection(db,'chats',chatId,'messages'), payload);
   }
-  input.value = '';
 };
 
 let chatUserUnsubs = [];
