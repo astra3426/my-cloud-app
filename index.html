@@ -1122,7 +1122,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, getDocs, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
 
 const ADMIN_EMAIL = "markshelkonogov003@gmail.com";
 
@@ -1137,7 +1137,7 @@ const app = initializeApp({
 
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
+
 const provider = new GoogleAuthProvider();
 
 let currentUser = null;
@@ -1145,6 +1145,7 @@ let allTickets = [];
 let currentFilter = 'all';
 let currentChatPartner = null;
 let chatUnsub = null;
+let photoB64 = null;
 
 // Expose globals
 window.signIn = async () => {
@@ -1180,14 +1181,17 @@ window.closeModal = () => {
   document.getElementById('ticket-desc').value = '';
   document.getElementById('ticket-photo').value = '';
   document.getElementById('photo-preview').style.display = 'none';
+  photoB64 = null;
 };
 
 window.previewPhoto = (input) => {
   const file = input.files[0];
   if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { showToast('ФАЙЛ БОЛЬШЕ 2МБ'); input.value = ''; return; }
   const reader = new FileReader();
   reader.onload = e => {
-    document.getElementById('photo-preview-img').src = e.target.result;
+    photoB64 = e.target.result;
+    document.getElementById('photo-preview-img').src = photoB64;
     document.getElementById('photo-preview').style.display = 'block';
   };
   reader.readAsDataURL(file);
@@ -1202,23 +1206,10 @@ window.createTicket = async () => {
   btn.textContent = 'ЗАГРУЗКА...';
   btn.disabled = true;
 
-  let photoURL = null;
-  const file = document.getElementById('ticket-photo').files[0];
-  if (file) {
-    try {
-      const storageRef = ref(storage, `tickets/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      photoURL = await getDownloadURL(storageRef);
-    } catch(e) {
-      console.warn('Storage error:', e.code, e.message);
-      showToast('ФОТО НЕ ЗАГРУЖЕНО — ЗАЯВКА БЕЗ ФОТО');
-    }
-  }
-
   try {
     await addDoc(collection(db, 'tickets'), {
       title, desc,
-      photoURL: photoURL || null,
+      photoURL: photoB64 || null,
       status: 'new',
       authorId: currentUser.uid,
       authorName: currentUser.displayName || currentUser.email,
