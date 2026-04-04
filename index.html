@@ -123,7 +123,7 @@
   #login-screen {
     position: fixed;
     inset: 0;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     background: var(--bg);
@@ -997,6 +997,43 @@
   .chat-user-name { font-size: 15px; font-weight: 600; }
   .chat-user-last { font-family: var(--mono); font-size: 12px; color: var(--text-dim); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
 
+  .chat-user-row { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+
+  .unread-badge {
+    background: var(--amber);
+    color: #000;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    flex-shrink: 0;
+    box-shadow: 0 0 8px rgba(245,166,35,0.6);
+  }
+
+  .nav-unread {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--amber);
+    color: #000;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    min-width: 15px;
+    height: 15px;
+    border-radius: 8px;
+    padding: 0 4px;
+    margin-left: 5px;
+    vertical-align: middle;
+    box-shadow: 0 0 6px rgba(245,166,35,0.6);
+  }
+
   .chat-main {
     flex: 1;
     display: flex;
@@ -1471,7 +1508,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, getDocs, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy, where, serverTimestamp, getDocs, setDoc, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 
 const ADMIN_EMAIL = "markshelkonogov003@gmail.com";
@@ -1596,6 +1633,19 @@ window.changeStatus = async (id, status) => {
   showToast('СТАТУС ОБНОВЛЕН');
 };
 
+async function markMessagesRead(chatId) {
+  const unreadQ = query(
+    collection(db, 'chats', chatId, 'messages'),
+    where('senderId', '!=', currentUser.uid),
+    where('read', '==', false)
+  );
+  const snap = await getDocs(unreadQ);
+  if (snap.empty) return;
+  const batch = writeBatch(db);
+  snap.docs.forEach(d => batch.update(d.ref, { read: true }));
+  await batch.commit();
+}
+
 // Chat
 window.openChat = async (uid, name, photo) => {
   currentChatPartner = { uid, name, photo };
@@ -1610,6 +1660,10 @@ window.openChat = async (uid, name, photo) => {
 
   if (chatUnsub) chatUnsub();
   const chatId = [currentUser.uid, uid].sort().join('_');
+
+  // Mark incoming messages as read
+  markMessagesRead(chatId);
+
   const msgsRef = collection(db, 'chats', chatId, 'messages');
   const q = query(msgsRef, orderBy('createdAt'));
 
@@ -1626,6 +1680,8 @@ window.openChat = async (uid, name, photo) => {
       container.appendChild(div);
     });
     container.scrollTop = container.scrollHeight;
+    // Mark any new incoming messages as read immediately
+    markMessagesRead(chatId);
   });
 };
 
@@ -1639,15 +1695,23 @@ window.sendMsg = async () => {
     text,
     senderId: currentUser.uid,
     senderName: currentUser.displayName,
-    createdAt: serverTimestamp()
+    createdAt: serverTimestamp(),
+    read: false
   });
   input.value = '';
 };
 
+let chatUserUnsubs = [];
+
 async function loadChatUsers() {
+  // Unsubscribe previous unread listeners
+  chatUserUnsubs.forEach(fn => fn());
+  chatUserUnsubs = [];
+
   const snap = await getDocs(collection(db, 'users'));
   const list = document.getElementById('chat-users-list');
   list.innerHTML = '';
+
   snap.docs.forEach(d => {
     const u = d.data();
     if (u.uid === currentUser.uid) return;
@@ -1659,14 +1723,59 @@ async function loadChatUsers() {
       <div class="chat-avatar">
         ${u.photoURL ? `<img src="${u.photoURL}">` : `<div class="chat-avatar-placeholder">${initial}</div>`}
       </div>
-      <div>
-        <div class="chat-user-name">${escapeHtml(u.displayName || 'Пользователь')}</div>
-        <div class="chat-user-last">${escapeHtml(u.email || '')}</div>
+      <div class="chat-user-row">
+        <div>
+          <div class="chat-user-name">${escapeHtml(u.displayName || 'Пользователь')}</div>
+          <div class="chat-user-last">${escapeHtml(u.email || '')}</div>
+        </div>
+        <span class="unread-badge" id="unread-${u.uid}" style="display:none"></span>
       </div>`;
     div.onclick = () => openChat(u.uid, u.displayName, u.photoURL);
     list.appendChild(div);
+
+    // Live unread counter for this user
+    const chatId = [currentUser.uid, u.uid].sort().join('_');
+    const unreadQ = query(
+      collection(db, 'chats', chatId, 'messages'),
+      where('senderId', '==', u.uid),
+      where('read', '==', false)
+    );
+    const unsub = onSnapshot(unreadQ, snap => {
+      const badge = document.getElementById(`unread-${u.uid}`);
+      if (!badge) return;
+      const count = snap.size;
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
+      updateNavUnread();
+    });
+    chatUserUnsubs.push(unsub);
   });
+
   if (!list.children.length) list.innerHTML = '<div style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text-dim)">// НЕТ ПОЛЬЗОВАТЕЛЕЙ</div>';
+}
+
+function updateNavUnread() {
+  const total = [...document.querySelectorAll('.unread-badge')]
+    .filter(el => el.style.display !== 'none')
+    .reduce((sum, el) => sum + (parseInt(el.textContent) || 0), 0);
+  let navBadge = document.getElementById('nav-chat-unread');
+  if (!navBadge) {
+    const chatBtn = document.querySelector('[onclick="showView(\'chat-view\', this)"]');
+    navBadge = document.createElement('span');
+    navBadge.id = 'nav-chat-unread';
+    navBadge.className = 'nav-unread';
+    chatBtn.appendChild(navBadge);
+  }
+  if (total > 0) {
+    navBadge.textContent = total;
+    navBadge.style.display = 'inline-flex';
+  } else {
+    navBadge.style.display = 'none';
+  }
 }
 
 // Cached DOM refs — queried once
