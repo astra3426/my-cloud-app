@@ -123,7 +123,7 @@
   #login-screen {
     position: fixed;
     inset: 0;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     background: var(--bg);
@@ -1109,12 +1109,199 @@
     letter-spacing: 1px;
   }
 
-  .chat-input-area {
-    padding: 14px 20px;
-    border-top: none;
+  /* ── Context menu ── */
+  .ctx-menu {
+    position: fixed;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    min-width: 190px;
+    z-index: 9000;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    animation: ctxIn 0.1s ease-out;
+  }
+  @keyframes ctxIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
+
+  .ctx-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: background 0.1s;
+    border-bottom: 1px solid rgba(42,42,66,0.4);
+  }
+  .ctx-item:last-child { border-bottom: none; }
+  .ctx-item:hover { background: var(--bg3); color: var(--text); }
+  .ctx-item.danger { color: var(--red); }
+  .ctx-item.danger:hover { background: rgba(255,59,59,0.08); }
+  .ctx-item svg { flex-shrink: 0; opacity: 0.7; }
+  .ctx-sep { height: 1px; background: var(--border); margin: 2px 0; }
+
+  /* ── Reply bar ── */
+  .reply-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px 8px 20px;
+    background: var(--bg3);
+    border-top: 1px solid var(--border);
+    border-left: 3px solid var(--amber);
+  }
+  .reply-bar-text {
+    flex: 1;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-mid);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .reply-bar-text b { color: var(--amber); display: block; font-size: 10px; margin-bottom: 2px; }
+  .reply-cancel {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 4px;
+    line-height: 1;
+  }
+  .reply-cancel:hover { color: var(--red); }
+
+  /* ── Reply quote inside bubble ── */
+  .msg-reply-quote {
+    border-left: 2px solid rgba(255,255,255,0.4);
+    padding: 3px 8px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    opacity: 0.75;
+  }
+  .msg.mine .msg-reply-quote { border-color: rgba(0,0,0,0.3); }
+  .msg-reply-quote-name { font-weight: 700; font-size: 10px; margin-bottom: 1px; }
+
+  /* ── Edited / deleted labels ── */
+  .msg-edited {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-left: 6px;
+  }
+  .msg-deleted .msg-bubble {
+    opacity: 0.45;
+    font-style: italic;
+  }
+
+  /* ── Read tick ── */
+  .msg-tick { font-size: 12px; margin-left: 4px; }
+  .msg-tick.read { color: var(--cyan); }
+
+  /* ── Message info modal ── */
+  .msg-info-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 8000;
+    backdrop-filter: blur(4px);
+  }
+  .msg-info-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    width: 340px;
+    max-width: 95vw;
+  }
+  .msg-info-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+  }
+  .msg-info-close {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .msg-info-close:hover { color: var(--red); }
+  .msg-info-body { padding: 16px; }
+  .msg-info-bubble {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    word-break: break-word;
+  }
+  .msg-info-row {
     display: flex;
     gap: 10px;
+    align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(42,42,66,0.4);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .msg-info-row:last-child { border-bottom: none; }
+  .msg-info-key { color: var(--text-dim); letter-spacing: 1px; min-width: 90px; }
+  .msg-info-val { color: var(--text); }
+
+  /* ── Forward modal ── */
+  .forward-list { max-height: 260px; overflow-y: auto; }
+  .forward-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(42,42,66,0.4);
+    transition: background 0.15s;
+  }
+  .forward-user:hover { background: var(--bg3); }
+  .forward-user-name { font-size: 14px; font-weight: 600; }
+
+  /* ── Browser notification toast ── */
+  .notif-toast {
+    position: fixed;
+    top: 70px;
+    right: 20px;
     background: var(--bg2);
+    border: 1px solid var(--amber);
+    border-left: 3px solid var(--amber);
+    padding: 12px 16px;
+    z-index: 9998;
+    cursor: pointer;
+    min-width: 260px;
+    max-width: 340px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    animation: slideIn 0.25s ease-out;
+    transition: opacity 0.3s;
+  }
+  .notif-toast-name { font-family: var(--mono); font-size: 11px; color: var(--amber); letter-spacing: 1px; margin-bottom: 4px; }
+  .notif-toast-text { font-size: 14px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .chat-input-area {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg2);
+  }
+  .chat-input-row {
+    display: flex;
+    gap: 10px;
+    padding: 14px 20px;
   }
 
   .chat-input {
@@ -1464,8 +1651,18 @@
         </div>
         <div id="chat-messages" class="chat-messages" style="display:none"></div>
         <div class="chat-input-area" id="chat-input-area" style="display:none">
-          <input class="chat-input" id="chat-msg-input" placeholder="СООБЩЕНИЕ..." onkeydown="if(event.key==='Enter')sendMsg()">
-          <button class="btn-send" onclick="sendMsg()">ОТПРАВИТЬ</button>
+          <div id="reply-bar" style="display:none" class="reply-bar">
+            <div class="reply-bar-text"><b id="reply-bar-name"></b><span id="reply-bar-text"></span></div>
+            <button class="reply-cancel" onclick="cancelReply()">✕</button>
+          </div>
+          <div id="edit-bar" style="display:none" class="reply-bar" style="border-color:var(--cyan)">
+            <div class="reply-bar-text"><b style="color:var(--cyan)">РЕДАКТИРОВАНИЕ</b><span id="edit-bar-text"></span></div>
+            <button class="reply-cancel" onclick="cancelEdit()">✕</button>
+          </div>
+          <div class="chat-input-row">
+            <input class="chat-input" id="chat-msg-input" placeholder="СООБЩЕНИЕ..." onkeydown="if(event.key==='Enter')sendMsg()">
+            <button class="btn-send" onclick="sendMsg()">ОТПРАВИТЬ</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1508,7 +1705,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy, where, serverTimestamp, getDocs, setDoc, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy, where, serverTimestamp, getDocs, setDoc, getDoc, writeBatch, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 
 const ADMIN_EMAIL = "markshelkonogov003@gmail.com";
@@ -1633,22 +1830,38 @@ window.changeStatus = async (id, status) => {
   showToast('СТАТУС ОБНОВЛЕН');
 };
 
+// ============================================================
+// CHAT STATE
+// ============================================================
+let replyTo = null;       // { id, text, senderName }
+let editingId = null;     // message id being edited
+let currentChatId = null;
+let allUsers = {};        // uid -> userData cache
+let chatUserUnsubs = [];
+let ctxMenuEl = null;
+
+// ============================================================
+// MARK MESSAGES AS READ (batch)
+// ============================================================
 async function markMessagesRead(chatId) {
-  const unreadQ = query(
+  const snap = await getDocs(query(
     collection(db, 'chats', chatId, 'messages'),
     where('senderId', '!=', currentUser.uid),
     where('read', '==', false)
-  );
-  const snap = await getDocs(unreadQ);
+  ));
   if (snap.empty) return;
   const batch = writeBatch(db);
   snap.docs.forEach(d => batch.update(d.ref, { read: true }));
   await batch.commit();
 }
 
-// Chat
+// ============================================================
+// OPEN CHAT
+// ============================================================
 window.openChat = async (uid, name, photo) => {
   currentChatPartner = { uid, name, photo };
+  currentChatId = [currentUser.uid, uid].sort().join('_');
+
   document.getElementById('chat-empty').style.display = 'none';
   document.getElementById('chat-header').style.display = 'flex';
   document.getElementById('chat-messages').style.display = 'flex';
@@ -1658,53 +1871,315 @@ window.openChat = async (uid, name, photo) => {
   document.querySelectorAll('.chat-user-item').forEach(el => el.classList.remove('active'));
   document.querySelector(`[data-uid="${uid}"]`)?.classList.add('active');
 
+  cancelReply();
+  cancelEdit();
   if (chatUnsub) chatUnsub();
-  const chatId = [currentUser.uid, uid].sort().join('_');
 
-  // Mark incoming messages as read
-  markMessagesRead(chatId);
+  await markMessagesRead(currentChatId);
 
-  const msgsRef = collection(db, 'chats', chatId, 'messages');
-  const q = query(msgsRef, orderBy('createdAt'));
-
+  const q = query(collection(db, 'chats', currentChatId, 'messages'), orderBy('createdAt'));
   chatUnsub = onSnapshot(q, snap => {
-    const container = document.getElementById('chat-messages');
-    container.innerHTML = '';
-    snap.docs.forEach(d => {
-      const msg = d.data();
-      const isMine = msg.senderId === currentUser.uid;
-      const time = msg.createdAt?.toDate?.()?.toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'}) || '';
-      const div = document.createElement('div');
-      div.className = `msg ${isMine ? 'mine' : 'theirs'}`;
-      div.innerHTML = `<div class="msg-bubble">${escapeHtml(msg.text)}</div><div class="msg-time">${time}</div>`;
-      container.appendChild(div);
-    });
-    container.scrollTop = container.scrollHeight;
-    // Mark any new incoming messages as read immediately
-    markMessagesRead(chatId);
+    renderMessages(snap.docs);
+    // mark any newly arrived messages read
+    markMessagesRead(currentChatId);
   });
 };
 
+// ============================================================
+// RENDER MESSAGES
+// ============================================================
+function renderMessages(docs) {
+  const container = document.getElementById('chat-messages');
+  container.innerHTML = '';
+  docs.forEach(d => {
+    const msg = { id: d.id, ...d.data() };
+    container.appendChild(buildMsgEl(msg));
+  });
+  container.scrollTop = container.scrollHeight;
+}
+
+function buildMsgEl(msg) {
+  const isMine = msg.senderId === currentUser.uid;
+  const time = msg.createdAt?.toDate?.()?.toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'}) || '';
+  const isRead = msg.read;
+  const isDeleted = msg.deleted;
+
+  const div = document.createElement('div');
+  div.className = `msg ${isMine ? 'mine' : 'theirs'}${isDeleted ? ' msg-deleted' : ''}`;
+  div.dataset.id = msg.id;
+
+  let bubbleContent = '';
+
+  // Reply quote
+  if (msg.replyTo) {
+    bubbleContent += `<div class="msg-reply-quote"><div class="msg-reply-quote-name">${escapeHtml(msg.replyTo.senderName)}</div>${escapeHtml(msg.replyTo.text)}</div>`;
+  }
+
+  // Forwarded label
+  if (msg.forwarded) {
+    bubbleContent += `<div style="font-size:10px;opacity:0.6;margin-bottom:4px;font-style:italic">⟫ Переслано от ${escapeHtml(msg.forwarded.from)}</div>`;
+  }
+
+  // Main text
+  if (isDeleted) {
+    bubbleContent += `<span style="opacity:0.5;font-style:italic">🗑 Сообщение удалено</span>`;
+  } else {
+    bubbleContent += escapeHtml(msg.text);
+    if (msg.edited) bubbleContent += ` <span class="msg-edited">(изм.)</span>`;
+  }
+
+  // Read tick (only mine)
+  const tick = isMine ? `<span class="msg-tick ${isRead ? 'read' : ''}">✓✓</span>` : '';
+
+  div.innerHTML = `
+    <div class="msg-bubble">${bubbleContent}</div>
+    <div class="msg-time">${time}${tick}</div>`;
+
+  // Right-click / long-press context menu
+  if (!isDeleted) {
+    div.addEventListener('contextmenu', e => { e.preventDefault(); showCtxMenu(e, msg, isMine); });
+    div.addEventListener('dblclick', e => { showCtxMenu(e, msg, isMine); });
+  }
+
+  return div;
+}
+
+// ============================================================
+// CONTEXT MENU
+// ============================================================
+function showCtxMenu(e, msg, isMine) {
+  closeCtxMenu();
+  const menu = document.createElement('div');
+  menu.className = 'ctx-menu';
+  ctxMenuEl = menu;
+
+  const items = [
+    { icon: 'ℹ', label: 'Данные о сообщении', fn: () => showMsgInfo(msg) },
+    { icon: '↩', label: 'Ответить',            fn: () => startReply(msg) },
+    { icon: '⎘', label: 'Копировать',          fn: () => { navigator.clipboard.writeText(msg.text); showToast('СКОПИРОВАНО'); } },
+    { icon: '⟫', label: 'Переслать',           fn: () => showForwardModal(msg) },
+  ];
+
+  if (isMine) {
+    items.push({ icon: '✎', label: 'Изменить', fn: () => startEdit(msg) });
+    items.push({ sep: true });
+    items.push({ icon: '🗑', label: 'Удалить у меня',   fn: () => deleteMsg(msg, false), danger: true });
+    items.push({ icon: '🗑', label: 'Удалить у всех',   fn: () => deleteMsg(msg, true),  danger: true });
+  } else {
+    items.push({ sep: true });
+    items.push({ icon: '🗑', label: 'Удалить у меня',   fn: () => deleteMsg(msg, false), danger: true });
+  }
+
+  items.forEach(item => {
+    if (item.sep) { const s = document.createElement('div'); s.className = 'ctx-sep'; menu.appendChild(s); return; }
+    const el = document.createElement('div');
+    el.className = 'ctx-item' + (item.danger ? ' danger' : '');
+    el.innerHTML = `<span style="font-size:14px">${item.icon}</span> ${item.label}`;
+    el.onclick = () => { item.fn(); closeCtxMenu(); };
+    menu.appendChild(el);
+  });
+
+  // Position
+  const x = Math.min(e.clientX, window.innerWidth - 210);
+  const y = Math.min(e.clientY, window.innerHeight - items.length * 38 - 10);
+  menu.style.left = x + 'px';
+  menu.style.top  = y + 'px';
+  document.body.appendChild(menu);
+
+  setTimeout(() => document.addEventListener('click', closeCtxMenu, { once: true }), 10);
+}
+
+function closeCtxMenu() {
+  if (ctxMenuEl) { ctxMenuEl.remove(); ctxMenuEl = null; }
+}
+
+// ============================================================
+// REPLY
+// ============================================================
+function startReply(msg) {
+  replyTo = { id: msg.id, text: msg.text, senderName: msg.senderName };
+  const bar = document.getElementById('reply-bar');
+  document.getElementById('reply-bar-name').textContent = msg.senderName;
+  document.getElementById('reply-bar-text').textContent = msg.text;
+  bar.style.display = 'flex';
+  document.getElementById('chat-msg-input').focus();
+}
+
+function cancelReply() {
+  replyTo = null;
+  const bar = document.getElementById('reply-bar');
+  if (bar) bar.style.display = 'none';
+}
+window.cancelReply = cancelReply;
+
+// ============================================================
+// EDIT
+// ============================================================
+function startEdit(msg) {
+  editingId = msg.id;
+  const input = document.getElementById('chat-msg-input');
+  input.value = msg.text;
+  input.focus();
+  document.getElementById('edit-bar').style.display = 'flex';
+  document.getElementById('edit-bar-text').textContent = msg.text;
+}
+
+function cancelEdit() {
+  editingId = null;
+  const bar = document.getElementById('edit-bar');
+  if (bar) bar.style.display = 'none';
+  document.getElementById('chat-msg-input').value = '';
+}
+window.cancelEdit = cancelEdit;
+
+// ============================================================
+// DELETE
+// ============================================================
+async function deleteMsg(msg, forAll) {
+  if (!currentChatId) return;
+  const ref = doc(db, 'chats', currentChatId, 'messages', msg.id);
+  if (forAll) {
+    await updateDoc(ref, { deleted: true, text: '' });
+    showToast('УДАЛЕНО У ВСЕХ');
+  } else {
+    // Soft-delete only for me: mark hiddenFor array
+    await updateDoc(ref, { hiddenFor: arrayUnion(currentUser.uid) });
+    showToast('УДАЛЕНО У ВАС');
+  }
+}
+
+// ============================================================
+// MSG INFO MODAL
+// ============================================================
+async function showMsgInfo(msg) {
+  const time = msg.createdAt?.toDate?.()?.toLocaleString('ru') || '—';
+  const readBy = msg.read ? 'Да' : 'Нет';
+  const editedAt = msg.editedAt ? msg.editedAt.toDate?.()?.toLocaleString('ru') : null;
+
+  // Get reader info (partner's name)
+  const partnerName = currentChatPartner?.name || '—';
+
+  const overlay = document.createElement('div');
+  overlay.className = 'msg-info-overlay';
+  overlay.innerHTML = `
+    <div class="msg-info-box">
+      <div class="msg-info-head">
+        // ДАННЫЕ О СООБЩЕНИИ
+        <button class="msg-info-close" onclick="this.closest('.msg-info-overlay').remove()">✕</button>
+      </div>
+      <div class="msg-info-body">
+        <div class="msg-info-bubble">${escapeHtml(msg.text || '(удалено)')}</div>
+        <div class="msg-info-row"><span class="msg-info-key">ОТПРАВЛЕНО</span><span class="msg-info-val">${time}</span></div>
+        <div class="msg-info-row"><span class="msg-info-key">ОТПРАВИТЕЛЬ</span><span class="msg-info-val">${escapeHtml(msg.senderName || '—')}</span></div>
+        <div class="msg-info-row"><span class="msg-info-key">ПРОЧИТАНО</span><span class="msg-info-val" style="color:${msg.read ? 'var(--cyan)' : 'var(--text-dim)'}">${msg.read ? '✓✓ ' + partnerName : '— Не прочитано'}</span></div>
+        ${editedAt ? `<div class="msg-info-row"><span class="msg-info-key">ИЗМЕНЕНО</span><span class="msg-info-val">${editedAt}</span></div>` : ''}
+        ${msg.replyTo ? `<div class="msg-info-row"><span class="msg-info-key">ОТВЕТ НА</span><span class="msg-info-val">${escapeHtml(msg.replyTo.text)}</span></div>` : ''}
+      </div>
+    </div>`;
+  overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
+  document.body.appendChild(overlay);
+}
+
+// ============================================================
+// FORWARD MODAL
+// ============================================================
+async function showForwardModal(msg) {
+  const snap = await getDocs(collection(db, 'users'));
+  const users = snap.docs.map(d => d.data()).filter(u => u.uid !== currentUser.uid);
+
+  const overlay = document.createElement('div');
+  overlay.className = 'msg-info-overlay';
+  overlay.innerHTML = `
+    <div class="msg-info-box">
+      <div class="msg-info-head">// ПЕРЕСЛАТЬ СООБЩЕНИЕ <button class="msg-info-close" onclick="this.closest('.msg-info-overlay').remove()">✕</button></div>
+      <div class="forward-list">
+        ${users.map(u => `
+          <div class="forward-user" onclick="forwardMsg('${u.uid}', '${escapeHtml(u.displayName)}', ${JSON.stringify(msg.text)}, this)">
+            <div class="chat-avatar" style="width:32px;height:32px">
+              ${u.photoURL ? `<img src="${u.photoURL}">` : `<div class="chat-avatar-placeholder">${(u.displayName||'?')[0]}</div>`}
+            </div>
+            <div class="forward-user-name">${escapeHtml(u.displayName || u.email)}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
+  document.body.appendChild(overlay);
+}
+
+window.forwardMsg = async (toUid, toName, text, el) => {
+  el.closest('.msg-info-overlay').remove();
+  const chatId = [currentUser.uid, toUid].sort().join('_');
+  await addDoc(collection(db, 'chats', chatId, 'messages'), {
+    text,
+    senderId: currentUser.uid,
+    senderName: currentUser.displayName,
+    forwarded: { from: currentUser.displayName },
+    read: false,
+    createdAt: serverTimestamp()
+  });
+  showToast('ПЕРЕСЛАНО → ' + toName);
+};
+
+// ============================================================
+// SEND / EDIT MESSAGE
+// ============================================================
 window.sendMsg = async () => {
   const input = document.getElementById('chat-msg-input');
   const text = input.value.trim();
   if (!text || !currentChatPartner) return;
 
-  const chatId = [currentUser.uid, currentChatPartner.uid].sort().join('_');
-  await addDoc(collection(db, 'chats', chatId, 'messages'), {
+  if (editingId) {
+    // Edit existing message
+    await updateDoc(doc(db, 'chats', currentChatId, 'messages', editingId), {
+      text,
+      edited: true,
+      editedAt: serverTimestamp()
+    });
+    cancelEdit();
+    showToast('СООБЩЕНИЕ ИЗМЕНЕНО');
+    return;
+  }
+
+  const msgData = {
     text,
     senderId: currentUser.uid,
     senderName: currentUser.displayName,
-    createdAt: serverTimestamp(),
-    read: false
-  });
+    read: false,
+    createdAt: serverTimestamp()
+  };
+  if (replyTo) { msgData.replyTo = replyTo; }
+
+  await addDoc(collection(db, 'chats', currentChatId, 'messages'), msgData);
   input.value = '';
+  cancelReply();
 };
 
-let chatUserUnsubs = [];
+// ============================================================
+// NOTIFICATION TOAST
+// ============================================================
+function showNotifToast(senderName, text, uid, displayName, photo) {
+  const old = document.querySelector('.notif-toast');
+  if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'notif-toast';
+  t.innerHTML = `<div class="notif-toast-name">✉ ${escapeHtml(senderName)}</div><div class="notif-toast-text">${escapeHtml(text)}</div>`;
+  t.onclick = () => {
+    t.remove();
+    // Switch to chat view and open this chat
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('chat-view').classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('[onclick*="chat-view"]')?.classList.add('active');
+    loadChatUsers().then(() => openChat(uid, displayName, photo));
+  };
+  document.body.appendChild(t);
+  setTimeout(() => t?.remove(), 5000);
+}
 
+// ============================================================
+// LOAD CHAT USERS + LIVE UNREAD COUNTERS
+// ============================================================
 async function loadChatUsers() {
-  // Unsubscribe previous unread listeners
   chatUserUnsubs.forEach(fn => fn());
   chatUserUnsubs = [];
 
@@ -1712,9 +2187,10 @@ async function loadChatUsers() {
   const list = document.getElementById('chat-users-list');
   list.innerHTML = '';
 
-  snap.docs.forEach(d => {
-    const u = d.data();
-    if (u.uid === currentUser.uid) return;
+  const users = snap.docs.map(d => d.data()).filter(u => u.uid !== currentUser.uid);
+  users.forEach(u => { allUsers[u.uid] = u; });
+
+  users.forEach(u => {
     const initial = (u.displayName || '?')[0].toUpperCase();
     const div = document.createElement('div');
     div.className = 'chat-user-item';
@@ -1733,25 +2209,32 @@ async function loadChatUsers() {
     div.onclick = () => openChat(u.uid, u.displayName, u.photoURL);
     list.appendChild(div);
 
-    // Live unread counter for this user
+    // Live unread counter
     const chatId = [currentUser.uid, u.uid].sort().join('_');
-    const unreadQ = query(
-      collection(db, 'chats', chatId, 'messages'),
-      where('senderId', '==', u.uid),
-      where('read', '==', false)
-    );
-    const unsub = onSnapshot(unreadQ, snap => {
-      const badge = document.getElementById(`unread-${u.uid}`);
-      if (!badge) return;
-      const count = snap.size;
-      if (count > 0) {
-        badge.textContent = count;
-        badge.style.display = 'flex';
-      } else {
-        badge.style.display = 'none';
+    let prevCount = 0;
+    let lastNotifText = '';
+    const unsub = onSnapshot(
+      query(collection(db, 'chats', chatId, 'messages'), where('senderId', '==', u.uid), where('read', '==', false)),
+      snap => {
+        const badge = document.getElementById(`unread-${u.uid}`);
+        if (!badge) return;
+        const count = snap.size;
+
+        // Show notification toast for new messages when chat is not open
+        if (count > prevCount) {
+          const newMsg = snap.docs[snap.docs.length - 1]?.data();
+          if (newMsg && newMsg.text !== lastNotifText && currentChatPartner?.uid !== u.uid) {
+            lastNotifText = newMsg.text;
+            showNotifToast(u.displayName, newMsg.text, u.uid, u.displayName, u.photoURL);
+          }
+        }
+        prevCount = count;
+
+        if (count > 0) { badge.textContent = count; badge.style.display = 'flex'; }
+        else { badge.style.display = 'none'; }
+        updateNavUnread();
       }
-      updateNavUnread();
-    });
+    );
     chatUserUnsubs.push(unsub);
   });
 
@@ -1764,18 +2247,15 @@ function updateNavUnread() {
     .reduce((sum, el) => sum + (parseInt(el.textContent) || 0), 0);
   let navBadge = document.getElementById('nav-chat-unread');
   if (!navBadge) {
-    const chatBtn = document.querySelector('[onclick="showView(\'chat-view\', this)"]');
+    const chatBtn = document.querySelector('[onclick*="chat-view"]');
+    if (!chatBtn) return;
     navBadge = document.createElement('span');
     navBadge.id = 'nav-chat-unread';
     navBadge.className = 'nav-unread';
     chatBtn.appendChild(navBadge);
   }
-  if (total > 0) {
-    navBadge.textContent = total;
-    navBadge.style.display = 'inline-flex';
-  } else {
-    navBadge.style.display = 'none';
-  }
+  navBadge.textContent = total;
+  navBadge.style.display = total > 0 ? 'inline-flex' : 'none';
 }
 
 // Cached DOM refs — queried once
