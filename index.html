@@ -987,7 +987,7 @@
     </nav>
     <div class="hdr-search">
       <span class="hdr-search-icon">⌕</span>
-      <input type="text" id="search-input" placeholder="ПОИСК ЗАЯВОК..." oninput="filterTickets()">
+      <input type="text" id="search-input" placeholder="ПОИСК ЗАЯВОК..." oninput="debouncedFilter()">
     </div>
     <div class="hdr-user">
       <div class="hdr-avatar"><img id="hdr-photo" src="" alt=""></div>
@@ -1198,6 +1198,10 @@ let currentFilter = 'all';
 let currentChatPartner = null;
 let chatUnsub = null;
 let photoB64 = null;
+let cachedUsers = [];
+let usersUnsub = null;
+let isAdminCached = false;
+let _filterTimer;
 
 window.signIn = async () => {
   try { await signInWithPopup(auth, provider); } catch(e) { showToast('ОШИБКА ВХОДА'); }
@@ -1228,6 +1232,7 @@ window.setFilter = (f, btn) => {
 };
 
 window.filterTickets = renderTickets;
+window.debouncedFilter = () => { clearTimeout(_filterTimer); _filterTimer = setTimeout(renderTickets, 120); };
 window.openModal = () => document.getElementById('create-modal').classList.add('open');
 window.closeModal = () => {
   document.getElementById('create-modal').classList.remove('open');
@@ -1396,32 +1401,29 @@ function openForward() {
   overlay.className = 'msg-info-overlay';
   overlay.innerHTML = `<div class="msg-info-box">
     <div class="msg-info-head">// ПЕРЕСЛАТЬ<button class="msg-info-close" onclick="this.closest('.msg-info-overlay').remove()">×</button></div>
-    <div class="forward-list" id="fwd-list"><div style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text-dim)">Загрузка...</div></div>
+    <div class="forward-list" id="fwd-list"></div>
   </div>`;
   overlay.addEventListener('click', e => { if (e.target===overlay) overlay.remove(); });
   document.body.appendChild(overlay);
-  getDocs(collection(db, 'users')).then(snap => {
-    const list = document.getElementById('fwd-list');
-    list.innerHTML = '';
-    snap.docs.forEach(d => {
-      const u = d.data();
-      if (u.uid === currentUser.uid) return;
-      const initial = (u.displayName||'?')[0].toUpperCase();
-      const row = document.createElement('div');
-      row.className = 'forward-user';
-      row.innerHTML = `<div class="chat-avatar" style="width:32px;height:32px">${u.photoURL?`<img src="${u.photoURL}">`:`<div class="chat-avatar-placeholder" style="font-size:13px">${initial}</div>`}</div><div class="forward-user-name">${escapeHtml(u.displayName||'Пользователь')}</div>`;
-      row.onclick = async () => {
-        overlay.remove();
-        const fid = [currentUser.uid, u.uid].sort().join('_');
-        await addDoc(collection(db,'chats',fid,'messages'), {
-          text: '↪ ' + msgText, senderId: currentUser.uid,
-          senderName: currentUser.displayName,
-          createdAt: serverTimestamp(), readBy: [currentUser.uid]
-        });
-        showToast('ПЕРЕСЛАНО');
-      };
-      list.appendChild(row);
-    });
+  const fwdList = document.getElementById('fwd-list');
+  fwdList.innerHTML = '';
+  cachedUsers.forEach(u => {
+    if (u.uid === currentUser.uid) return;
+    const initial = (u.displayName||'?')[0].toUpperCase();
+    const row = document.createElement('div');
+    row.className = 'forward-user';
+    row.innerHTML = `<div class="chat-avatar" style="width:32px;height:32px">${u.photoURL?`<img src="${u.photoURL}">`:`<div class="chat-avatar-placeholder" style="font-size:13px">${initial}</div>`}</div><div class="forward-user-name">${escapeHtml(u.displayName||'Пользователь')}</div>`;
+    row.onclick = async () => {
+      overlay.remove();
+      const fid = [currentUser.uid, u.uid].sort().join('_');
+      await addDoc(collection(db,'chats',fid,'messages'), {
+        text: '↪ ' + msgText, senderId: currentUser.uid,
+        senderName: currentUser.displayName,
+        createdAt: serverTimestamp(), readBy: [currentUser.uid]
+      });
+      showToast('ПЕРЕСЛАНО');
+    };
+    fwdList.appendChild(row);
   });
 }
 
@@ -1547,8 +1549,8 @@ window.openChat = async (uid, name, photo) => {
       div.innerHTML = `<div class="msg-bubble">${replyHtml}${escapeHtml(msg.text)}${edited}</div><div class="msg-time">${time}${tick}</div>`;
       div.addEventListener('contextmenu', e => showCtxMenu(e, msgId, msg, chatId));
       let pressTimer;
-      div.addEventListener('touchstart', e => { pressTimer = setTimeout(() => showCtxMenu(e.touches[0], msgId, msg, chatId), 600); });
-      div.addEventListener('touchend', () => clearTimeout(pressTimer));
+      div.addEventListener('touchstart', e => { pressTimer = setTimeout(() => showCtxMenu(e.touches[0], msgId, msg, chatId), 600); }, { passive: true });
+      div.addEventListener('touchend', () => clearTimeout(pressTimer), { passive: true });
       container.appendChild(div);
     });
     container.scrollTop = container.scrollHeight;
@@ -1583,33 +1585,37 @@ window.sendMsg = async () => {
 
 let chatUserUnsubs = [];
 
-async function loadChatUsers() {
-  chatUserUnsubs.forEach(fn => fn()); chatUserUnsubs = [];
-  const snap = await getDocs(collection(db, 'users'));
+function renderChatList() {
   const list = document.getElementById('chat-users-list');
-  list.innerHTML = '';
-  snap.docs.forEach(d => {
-    const u = d.data();
+  if (!list) return;
+  const frag = document.createDocumentFragment();
+  let count = 0;
+  cachedUsers.forEach(u => {
     if (u.uid === currentUser.uid) return;
+    count++;
     const initial = (u.displayName||'?')[0].toUpperCase();
     const div = document.createElement('div');
     div.className = 'chat-user-item'; div.dataset.uid = u.uid;
     div.innerHTML = `
-      <div class="chat-avatar">${u.photoURL?`<img src="${u.photoURL}">`:`<div class="chat-avatar-placeholder">${initial}</div>`}</div>
+      <div class="chat-avatar">${u.photoURL?`<img src="${u.photoURL}" loading="lazy">`:`<div class="chat-avatar-placeholder">${initial}</div>`}</div>
       <div class="chat-user-row">
         <div><div class="chat-user-name">${escapeHtml(u.displayName||'Пользователь')}</div></div>
         <span class="unread-badge" id="unread-${u.uid}" style="display:none"></span>
       </div>`;
     div.onclick = () => openChat(u.uid, u.displayName, u.photoURL);
-    list.appendChild(div);
-
-    const chatId = [currentUser.uid, u.uid].sort().join('_');
-    // ── FIX 1: Subscribe globally (not just in chat view) for notifications ──
-    subscribeToChat(u.uid, u.displayName, u.photoURL, chatId);
+    frag.appendChild(div);
   });
-  if (!list.children.length) {
+  list.innerHTML = '';
+  if (count === 0) {
     list.innerHTML = '<div style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text-dim)">// НЕТ ПОЛЬЗОВАТЕЛЕЙ</div>';
+  } else {
+    list.appendChild(frag);
+    updateNavUnread();
   }
+}
+
+async function loadChatUsers() {
+  renderChatList();
 }
 
 // ── FIX 1: Global chat subscription — started on login, not just when chat view opens ──
@@ -1617,13 +1623,19 @@ let globalChatUnsubs = [];
 
 function subscribeToAllChats() {
   globalChatUnsubs.forEach(fn => fn()); globalChatUnsubs = [];
-  getDocs(collection(db, 'users')).then(snap => {
-    snap.docs.forEach(d => {
-      const u = d.data();
-      if (u.uid === currentUser.uid) return;
-      const chatId = [currentUser.uid, u.uid].sort().join('_');
-      subscribeToChat(u.uid, u.displayName, u.photoURL, chatId);
-    });
+  cachedUsers.forEach(u => {
+    if (u.uid === currentUser.uid) return;
+    const chatId = [currentUser.uid, u.uid].sort().join('_');
+    subscribeToChat(u.uid, u.displayName, u.photoURL, chatId);
+  });
+}
+
+function initUsersCache() {
+  if (usersUnsub) usersUnsub();
+  usersUnsub = onSnapshot(collection(db, 'users'), snap => {
+    cachedUsers = snap.docs.map(d => d.data());
+    subscribeToAllChats();
+    if (document.getElementById('chat-view').classList.contains('active')) renderChatList();
   });
 }
 
@@ -1708,7 +1720,7 @@ const STATUS_CLASS = { new: 'log-new', active: 'log-active', done: 'log-done' };
 function renderTickets() {
   const container = getDOM('tickets-container');
   const search = getDOM('search-input').value.toLowerCase();
-  const isAdmin = currentUser?.email === ADMIN_EMAIL;
+  const isAdmin = isAdminCached;
 
   let cntNew = 0, cntActive = 0, cntDone = 0;
   // ── FIX 2: Activity counters ──
@@ -1855,6 +1867,9 @@ onAuthStateChanged(auth, async user => {
       photoURL: user.photoURL
     }, { merge: true });
 
+    isAdminCached = user.email === ADMIN_EMAIL;
+    if (isAdminCached) document.getElementById('admin-stat')?.style && (document.getElementById('admin-stat').style.display = '');
+
     const q = query(collection(db, 'tickets'), orderBy('createdAt', 'desc'));
     onSnapshot(q, snap => {
       allTickets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -1862,7 +1877,7 @@ onAuthStateChanged(auth, async user => {
     });
 
     // ── FIX 1: Start global chat subscriptions immediately after login ──
-    subscribeToAllChats();
+    initUsersCache();
 
   } else {
     document.getElementById('login-screen').style.display = 'flex';
@@ -1955,14 +1970,20 @@ onAuthStateChanged(auth, async user => {
     ctx.globalAlpha = 1;
   }
 
+  let rafId;
   function loop() {
     ctx.clearRect(0, 0, W, H);
     ctx.drawImage(gridCanvas, 0, 0);
     drawConnections();
     particles.forEach(p => p.update());
     drawParticles();
-    requestAnimationFrame(loop);
+    rafId = requestAnimationFrame(loop);
   }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { cancelAnimationFrame(rafId); rafId = null; }
+    else if (!rafId) { rafId = requestAnimationFrame(loop); }
+  });
 
   let resizeTimer;
   window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(resize, 150); });
