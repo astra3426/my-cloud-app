@@ -888,6 +888,45 @@
   .chat-input { flex: 1; background: var(--bg3); border: 1px solid var(--border); color: var(--text); font-family: var(--sans); font-size: 15px; padding: 10px 14px; outline: none; transition: border-color 0.2s; }
   .chat-input:focus { border-color: var(--amber); }
 
+  .chat-attach-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; background: transparent;
+    border: 1px solid var(--border); color: var(--text-dim);
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+  .chat-attach-btn:hover { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 12px rgba(0,212,255,0.2); }
+
+  .chat-photo-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 16px; background: var(--bg3);
+    border-top: 1px solid var(--border);
+    border-left: 3px solid var(--cyan);
+  }
+  .chat-photo-thumb { width: 48px; height: 48px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; }
+  .chat-photo-bar-info { flex: 1; font-family: var(--mono); font-size: 10px; color: var(--cyan); letter-spacing: 1px; }
+  .chat-photo-bar-size { color: var(--text-dim); font-size: 9px; margin-top: 2px; }
+  .chat-photo-cancel { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 18px; line-height: 1; padding: 0 4px; }
+  .chat-photo-cancel:hover { color: var(--red); }
+
+  .msg-img {
+    display: block; width: 100%; max-width: 260px; max-height: 220px;
+    object-fit: cover; cursor: zoom-in; transition: opacity 0.15s;
+    margin-bottom: 2px;
+  }
+  .msg-img:hover { opacity: 0.9; }
+  .msg.mine .msg-bubble.has-photo { padding: 0; overflow: hidden; }
+  .msg.theirs .msg-bubble.has-photo { padding: 0; overflow: hidden; }
+  .msg-bubble.has-photo .msg-caption { padding: 6px 12px 4px; font-size: 14px; }
+  .msg-bubble.has-photo .msg-edited { display: inline; }
+
+  .img-lightbox {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10000; cursor: zoom-out; animation: toastIn 0.15s ease-out;
+  }
+  .img-lightbox img { max-width: 92vw; max-height: 90vh; object-fit: contain; box-shadow: 0 0 60px rgba(0,0,0,0.8); }
+
   .btn-send { background: var(--amber); border: none; color: #000; font-family: var(--mono); font-size: 13px; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; font-weight: 700; transition: all 0.15s; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
   .btn-send:hover { background: #fff; }
 
@@ -1128,8 +1167,20 @@
             <div class="reply-bar-text"><b style="color:var(--cyan)">РЕДАКТИРОВАНИЕ</b><span id="edit-bar-text"></span></div>
             <button class="reply-cancel" onclick="cancelEdit()">✕</button>
           </div>
+          <div id="chat-photo-bar" style="display:none" class="chat-photo-bar">
+            <img class="chat-photo-thumb" id="chat-photo-thumb" src="">
+            <div class="chat-photo-bar-info">
+              ФОТО ПРИКРЕПЛЕНО
+              <div class="chat-photo-bar-size" id="chat-photo-size"></div>
+            </div>
+            <button class="chat-photo-cancel" onclick="cancelChatPhoto()">✕</button>
+          </div>
           <div class="chat-input-row">
-            <input class="chat-input" id="chat-msg-input" placeholder="СООБЩЕНИЕ..." onkeydown="if(event.key==='Enter')sendMsg()">
+            <label class="chat-attach-btn" title="Прикрепить фото">
+              <input type="file" id="chat-photo-input" accept="image/*" style="display:none" onchange="previewChatPhoto(this)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </label>
+            <input class="chat-input" id="chat-msg-input" placeholder="СООБЩЕНИЕ ИЛИ ПОДПИСЬ К ФОТО..." onkeydown="if(event.key==='Enter')sendMsg()">
             <button class="btn-send" onclick="sendMsg()">ОТПРАВИТЬ</button>
           </div>
         </div>
@@ -1202,6 +1253,7 @@ let cachedUsers = [];
 let usersUnsub = null;
 let isAdminCached = false;
 let _filterTimer;
+let chatPhotoB64 = null;
 
 window.signIn = async () => {
   try { await signInWithPopup(auth, provider); } catch(e) { showToast('ОШИБКА ВХОДА'); }
@@ -1215,6 +1267,51 @@ window.signOut = async () => {
 
 window.cancelReply = () => { replyTo = null; document.getElementById('reply-bar').style.display = 'none'; };
 window.cancelEdit  = () => { editMsgId = null; document.getElementById('edit-bar').style.display = 'none'; document.getElementById('chat-msg-input').value = ''; };
+
+window.previewChatPhoto = (input) => {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { showToast('ФАЙЛ БОЛЬШЕ 10МБ'); input.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 1024;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+        else { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      chatPhotoB64 = canvas.toDataURL('image/jpeg', 0.78);
+      const kb = Math.round(chatPhotoB64.length * 0.75 / 1024);
+      document.getElementById('chat-photo-thumb').src = chatPhotoB64;
+      document.getElementById('chat-photo-size').textContent = kb + ' KB';
+      document.getElementById('chat-photo-bar').style.display = 'flex';
+      document.getElementById('chat-msg-input').placeholder = 'ПОДПИСЬ К ФОТО (НЕОБЯЗАТЕЛЬНО)...';
+      document.getElementById('chat-msg-input').focus();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
+window.cancelChatPhoto = () => {
+  chatPhotoB64 = null;
+  document.getElementById('chat-photo-input').value = '';
+  document.getElementById('chat-photo-bar').style.display = 'none';
+  document.getElementById('chat-msg-input').placeholder = 'СООБЩЕНИЕ ИЛИ ПОДПИСЬ К ФОТО...';
+};
+
+window.viewChatImg = (src) => {
+  const lb = document.createElement('div');
+  lb.className = 'img-lightbox';
+  lb.innerHTML = `<img src="${src}">`;
+  lb.onclick = () => lb.remove();
+  document.body.appendChild(lb);
+};
 
 window.showView = (id, btn) => {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1544,9 +1641,15 @@ window.openChat = async (uid, name, photo) => {
       let replyHtml = '';
       if (msg.replyTo) replyHtml = `<div class="msg-reply-quote"><div class="msg-reply-quote-name">${escapeHtml(msg.replyTo.senderName)}</div>${escapeHtml(msg.replyTo.text)}</div>`;
 
+      const hasPhoto = !!msg.photoURL;
+      const imgHtml = hasPhoto ? `<img class="msg-img" src="${msg.photoURL}" loading="lazy" onclick="viewChatImg(this.src)">` : '';
+      const captionHtml = hasPhoto
+        ? (msg.text ? `<div class="msg-caption">${escapeHtml(msg.text)}${edited}</div>` : (edited ? `<div class="msg-caption">${edited}</div>` : ''))
+        : `${escapeHtml(msg.text)}${edited}`;
+
       const div = document.createElement('div');
       div.className = `msg ${isMine?'mine':'theirs'}`;
-      div.innerHTML = `<div class="msg-bubble">${replyHtml}${escapeHtml(msg.text)}${edited}</div><div class="msg-time">${time}${tick}</div>`;
+      div.innerHTML = `<div class="msg-bubble${hasPhoto?' has-photo':''}">${replyHtml}${imgHtml}${captionHtml}</div><div class="msg-time">${time}${tick}</div>`;
       div.addEventListener('contextmenu', e => showCtxMenu(e, msgId, msg, chatId));
       let pressTimer;
       div.addEventListener('touchstart', e => { pressTimer = setTimeout(() => showCtxMenu(e.touches[0], msgId, msg, chatId), 600); }, { passive: true });
@@ -1562,7 +1665,7 @@ window.openChat = async (uid, name, photo) => {
 window.sendMsg = async () => {
   const input = document.getElementById('chat-msg-input');
   const text = input.value.trim();
-  if (!text || !currentChatPartner) return;
+  if (!text && !chatPhotoB64 || !currentChatPartner) return;
   const chatId = [currentUser.uid, currentChatPartner.uid].sort().join('_');
   if (editMsgId) {
     await updateDoc(doc(db,'chats',chatId,'messages',editMsgId), { text, editedAt: serverTimestamp() });
@@ -1570,7 +1673,9 @@ window.sendMsg = async () => {
     document.getElementById('edit-bar').style.display = 'none';
   } else {
     const payload = {
-      text, senderId: currentUser.uid, senderName: currentUser.displayName,
+      text: text || '',
+      photoURL: chatPhotoB64 || null,
+      senderId: currentUser.uid, senderName: currentUser.displayName,
       createdAt: serverTimestamp(), readBy: [currentUser.uid]
     };
     if (replyTo) {
@@ -1579,6 +1684,7 @@ window.sendMsg = async () => {
       document.getElementById('reply-bar').style.display = 'none';
     }
     await addDoc(collection(db,'chats',chatId,'messages'), payload);
+    if (chatPhotoB64) cancelChatPhoto();
   }
   input.value = '';
 };
