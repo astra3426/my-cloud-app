@@ -1743,18 +1743,8 @@ window.signOut = async () => {
   document.getElementById('app').style.display = 'none';
 };
 
-window.cancelReply = () => {
-  replyTo = null;
-  const bar = document.getElementById('reply-bar');
-  if (bar) bar.style.display = 'none';
-};
-
-window.cancelEdit = () => {
-  editMsgId = null;
-  const bar = document.getElementById('edit-bar');
-  if (bar) bar.style.display = 'none';
-  document.getElementById('chat-msg-input').value = '';
-};
+window.cancelReply = () => { replyTo = null; document.getElementById('reply-bar').style.display = 'none'; };
+window.cancelEdit  = () => { editMsgId = null; document.getElementById('edit-bar').style.display = 'none'; document.getElementById('chat-msg-input').value = ''; };
 
 window.showView = (id, btn) => {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1843,112 +1833,78 @@ window.changeStatus = async (id, status) => {
   showToast('СТАТУС ОБНОВЛЕН');
 };
 
-// ─── Context menu state ─────────────────────────────────────────────────────
-let ctxMsgId = null;
-let ctxMsgData = null;
-let ctxChatId = null;
-let replyTo = null;   // { id, text, senderName }
-let editMsgId = null;
+// ─── Context menu ────────────────────────────────────────────────────────────
+let ctxMsgId = null, ctxMsgData = null, ctxChatId = null;
+let replyTo = null, editMsgId = null;
 
-function closeCtxMenu() {
-  const m = document.getElementById('ctx-menu');
-  if (m) m.remove();
-}
+function closeCtxMenu() { document.getElementById('ctx-menu')?.remove(); }
 
 function showCtxMenu(e, msgId, msgData, chatId) {
   e.preventDefault();
   closeCtxMenu();
-  ctxMsgId = msgId;
-  ctxMsgData = msgData;
-  ctxChatId = chatId;
-
+  ctxMsgId = msgId; ctxMsgData = msgData; ctxChatId = chatId;
   const isMine = msgData.senderId === currentUser.uid;
   const isDeleted = msgData.deleted;
-
-  const menu = document.createElement('div');
-  menu.id = 'ctx-menu';
-  menu.className = 'ctx-menu';
-
   const items = [];
-
   if (!isDeleted) {
-    items.push({ icon: 'ℹ️', label: 'INFO', fn: showMsgInfo });
-    items.push({ icon: '↩️', label: 'ОТВЕТИТЬ', fn: startReply });
-    items.push({ icon: '📋', label: 'КОПИРОВАТЬ', fn: copyMsgText });
-    items.push({ icon: '➡️', label: 'ПЕРЕСЛАТЬ', fn: openForward });
-    if (isMine) {
-      items.push({ icon: '✏️', label: 'ИЗМЕНИТЬ', fn: startEdit });
-    }
+    items.push({ icon: 'ℹ️', label: 'INFO',        fn: showMsgInfo });
+    items.push({ icon: '↩️', label: 'ОТВЕТИТЬ',    fn: startReply });
+    items.push({ icon: '📋', label: 'КОПИРОВАТЬ',  fn: copyMsgText });
+    items.push({ icon: '➡️', label: 'ПЕРЕСЛАТЬ',   fn: openForward });
+    if (isMine) items.push({ icon: '✏️', label: 'ИЗМЕНИТЬ', fn: startEdit });
   }
-
   if (isMine) {
     items.push({ icon: '🗑️', label: 'УДАЛИТЬ У МЕНЯ', fn: deleteForMe, danger: true });
     items.push({ icon: '❌', label: 'УДАЛИТЬ У ВСЕХ', fn: deleteForAll, danger: true });
   } else {
     items.push({ icon: '🗑️', label: 'УДАЛИТЬ У МЕНЯ', fn: deleteForMe, danger: true });
   }
-
+  const menu = document.createElement('div');
+  menu.id = 'ctx-menu'; menu.className = 'ctx-menu';
   menu.innerHTML = items.map((it, i) =>
-    `<div class="ctx-item${it.danger ? ' danger' : ''}" data-idx="${i}">${it.icon} ${it.label}</div>`
+    `<div class="ctx-item${it.danger?' danger':''}" data-i="${i}">${it.icon} ${it.label}</div>`
   ).join('');
-
   document.body.appendChild(menu);
-
-  // Position
-  const vw = window.innerWidth, vh = window.innerHeight;
-  let x = e.clientX, y = e.clientY;
-  menu.style.left = x + 'px';
-  menu.style.top  = y + 'px';
-  const rect = menu.getBoundingClientRect();
-  if (rect.right  > vw) menu.style.left = (x - rect.width)  + 'px';
-  if (rect.bottom > vh) menu.style.top  = (y - rect.height) + 'px';
-
+  let x = e.clientX || e.pageX, y = e.clientY || e.pageY;
+  menu.style.cssText = `left:${x}px;top:${y}px`;
+  const r = menu.getBoundingClientRect();
+  if (r.right  > window.innerWidth)  menu.style.left = (x - r.width)  + 'px';
+  if (r.bottom > window.innerHeight) menu.style.top  = (y - r.height) + 'px';
   menu.querySelectorAll('.ctx-item').forEach((el, i) => {
     el.addEventListener('click', () => { closeCtxMenu(); items[i].fn(); });
   });
-
   setTimeout(() => document.addEventListener('click', closeCtxMenu, { once: true }), 0);
 }
 
-// ─── Context menu actions ────────────────────────────────────────────────────
 function showMsgInfo() {
   const d = ctxMsgData;
   const time = d.createdAt?.toDate?.()?.toLocaleString('ru') || '—';
   const editedTime = d.editedAt?.toDate?.()?.toLocaleString('ru') || null;
-  const readBy = d.readBy ? d.readBy.filter(u => u !== d.senderId).length > 0 ? 'Прочитано' : 'Доставлено' : 'Доставлено';
-
+  const readStatus = (d.readBy||[]).some(u => u !== d.senderId) ? 'Прочитано ✓✓' : 'Доставлено ✓';
   const overlay = document.createElement('div');
   overlay.className = 'msg-info-overlay';
-  overlay.innerHTML = `
-    <div class="msg-info-box">
-      <div class="msg-info-head">
-        // ДАННЫЕ СООБЩЕНИЯ
-        <button class="msg-info-close" onclick="this.closest('.msg-info-overlay').remove()">×</button>
-      </div>
-      <div class="msg-info-body">
-        <div class="msg-info-bubble">${escapeHtml(d.deleted ? '[Сообщение удалено]' : d.text)}</div>
-        <div class="msg-info-row"><span class="msg-info-key">ОТПРАВИТЕЛЬ</span><span class="msg-info-val">${escapeHtml(d.senderName || '—')}</span></div>
-        <div class="msg-info-row"><span class="msg-info-key">ВРЕМЯ</span><span class="msg-info-val">${time}</span></div>
-        ${editedTime ? `<div class="msg-info-row"><span class="msg-info-key">ИЗМЕНЕНО</span><span class="msg-info-val">${editedTime}</span></div>` : ''}
-        <div class="msg-info-row"><span class="msg-info-key">СТАТУС</span><span class="msg-info-val">${readBy}</span></div>
-        <div class="msg-info-row"><span class="msg-info-key">ID</span><span class="msg-info-val" style="font-size:9px;word-break:break-all">${ctxMsgId}</span></div>
-      </div>
-    </div>`;
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  overlay.innerHTML = `<div class="msg-info-box">
+    <div class="msg-info-head">// ДАННЫЕ СООБЩЕНИЯ<button class="msg-info-close" onclick="this.closest('.msg-info-overlay').remove()">×</button></div>
+    <div class="msg-info-body">
+      <div class="msg-info-bubble">${escapeHtml(d.deleted ? '[Удалено]' : d.text)}</div>
+      <div class="msg-info-row"><span class="msg-info-key">ОТПРАВИТЕЛЬ</span><span class="msg-info-val">${escapeHtml(d.senderName||'—')}</span></div>
+      <div class="msg-info-row"><span class="msg-info-key">ВРЕМЯ</span><span class="msg-info-val">${time}</span></div>
+      ${editedTime ? `<div class="msg-info-row"><span class="msg-info-key">ИЗМЕНЕНО</span><span class="msg-info-val">${editedTime}</span></div>` : ''}
+      <div class="msg-info-row"><span class="msg-info-key">СТАТУС</span><span class="msg-info-val">${readStatus}</span></div>
+    </div>
+  </div>`;
+  overlay.addEventListener('click', e => { if (e.target===overlay) overlay.remove(); });
   document.body.appendChild(overlay);
 }
 
 function startReply() {
   replyTo = { id: ctxMsgId, text: ctxMsgData.text, senderName: ctxMsgData.senderName };
   editMsgId = null;
+  document.getElementById('edit-bar').style.display = 'none';
   const bar = document.getElementById('reply-bar');
-  const editBar = document.getElementById('edit-bar');
-  if (editBar) editBar.style.display = 'none';
-  if (bar) {
-    bar.style.display = 'flex';
-    document.getElementById('reply-bar-text').textContent = ctxMsgData.text;
-    document.getElementById('reply-bar-name').textContent = ctxMsgData.senderName;
-  }
+  bar.style.display = 'flex';
+  document.getElementById('reply-bar-name').textContent = ctxMsgData.senderName;
+  document.getElementById('reply-bar-text').textContent = ctxMsgData.text;
   document.getElementById('chat-msg-input').focus();
 }
 
@@ -1960,110 +1916,86 @@ function openForward() {
   const msgText = ctxMsgData.text;
   const overlay = document.createElement('div');
   overlay.className = 'msg-info-overlay';
-  overlay.innerHTML = `
-    <div class="msg-info-box">
-      <div class="msg-info-head">
-        // ПЕРЕСЛАТЬ СООБЩЕНИЕ
-        <button class="msg-info-close" onclick="this.closest('.msg-info-overlay').remove()">×</button>
-      </div>
-      <div class="forward-list" id="forward-user-list">
-        <div style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text-dim)">Загрузка...</div>
-      </div>
-    </div>`;
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  overlay.innerHTML = `<div class="msg-info-box">
+    <div class="msg-info-head">// ПЕРЕСЛАТЬ<button class="msg-info-close" onclick="this.closest('.msg-info-overlay').remove()">×</button></div>
+    <div class="forward-list" id="fwd-list"><div style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text-dim)">Загрузка...</div></div>
+  </div>`;
+  overlay.addEventListener('click', e => { if (e.target===overlay) overlay.remove(); });
   document.body.appendChild(overlay);
-
   getDocs(collection(db, 'users')).then(snap => {
-    const list = document.getElementById('forward-user-list');
+    const list = document.getElementById('fwd-list');
     list.innerHTML = '';
     snap.docs.forEach(d => {
       const u = d.data();
       if (u.uid === currentUser.uid) return;
-      const initial = (u.displayName || '?')[0].toUpperCase();
+      const initial = (u.displayName||'?')[0].toUpperCase();
       const row = document.createElement('div');
       row.className = 'forward-user';
-      row.innerHTML = `
-        <div class="chat-avatar" style="width:32px;height:32px">
-          ${u.photoURL ? `<img src="${u.photoURL}">` : `<div class="chat-avatar-placeholder" style="font-size:13px">${initial}</div>`}
-        </div>
-        <div class="forward-user-name">${escapeHtml(u.displayName || 'Пользователь')}</div>`;
+      row.innerHTML = `<div class="chat-avatar" style="width:32px;height:32px">${u.photoURL?`<img src="${u.photoURL}">`:`<div class="chat-avatar-placeholder" style="font-size:13px">${initial}</div>`}</div><div class="forward-user-name">${escapeHtml(u.displayName||'Пользователь')}</div>`;
       row.onclick = async () => {
         overlay.remove();
-        const fwdChatId = [currentUser.uid, u.uid].sort().join('_');
-        await addDoc(collection(db, 'chats', fwdChatId, 'messages'), {
-          text: '↪ ' + msgText,
-          senderId: currentUser.uid,
+        const fid = [currentUser.uid, u.uid].sort().join('_');
+        await addDoc(collection(db,'chats',fid,'messages'), {
+          text: '↪ ' + msgText, senderId: currentUser.uid,
           senderName: currentUser.displayName,
-          createdAt: serverTimestamp(),
-          readBy: [currentUser.uid]
+          createdAt: serverTimestamp(), readBy: [currentUser.uid]
         });
         showToast('ПЕРЕСЛАНО');
       };
       list.appendChild(row);
     });
-    if (!list.children.length) list.innerHTML = '<div style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text-dim)">// НЕТ ПОЛЬЗОВАТЕЛЕЙ</div>';
   });
 }
 
 function startEdit() {
-  editMsgId = ctxMsgId;
-  replyTo = null;
+  editMsgId = ctxMsgId; replyTo = null;
+  document.getElementById('reply-bar').style.display = 'none';
   const bar = document.getElementById('edit-bar');
-  const replyBar = document.getElementById('reply-bar');
-  if (replyBar) replyBar.style.display = 'none';
-  if (bar) {
-    bar.style.display = 'flex';
-    document.getElementById('edit-bar-text').textContent = ctxMsgData.text;
-  }
+  bar.style.display = 'flex';
+  document.getElementById('edit-bar-text').textContent = ctxMsgData.text;
   const input = document.getElementById('chat-msg-input');
-  input.value = ctxMsgData.text;
-  input.focus();
+  input.value = ctxMsgData.text; input.focus();
 }
 
 async function deleteForMe() {
-  if (!confirm('Удалить это сообщение у себя?')) return;
-  const ref = doc(db, 'chats', ctxChatId, 'messages', ctxMsgId);
-  await updateDoc(ref, { [`deletedFor.${currentUser.uid}`]: true });
+  if (!confirm('Удалить у себя?')) return;
+  await updateDoc(doc(db,'chats',ctxChatId,'messages',ctxMsgId), { [`deletedFor.${currentUser.uid}`]: true });
   showToast('УДАЛЕНО У ВАС');
 }
 
 async function deleteForAll() {
-  if (!confirm('Удалить сообщение у всех?')) return;
-  const ref = doc(db, 'chats', ctxChatId, 'messages', ctxMsgId);
-  await updateDoc(ref, { deleted: true, text: 'Сообщение удалено' });
+  if (!confirm('Удалить у всех?')) return;
+  await updateDoc(doc(db,'chats',ctxChatId,'messages',ctxMsgId), { deleted: true, text: 'Сообщение удалено' });
   showToast('УДАЛЕНО У ВСЕХ');
 }
 
-// ─── Mark messages read (client-side filter, no compound index needed) ───────
+// ─── Mark read — NO compound queries, pure client-side filter ────────────────
 async function markMessagesRead(chatId) {
   try {
-    const snap = await getDocs(query(collection(db, 'chats', chatId, 'messages'), orderBy('createdAt')));
+    const snap = await getDocs(collection(db, 'chats', chatId, 'messages'));
     const batch = writeBatch(db);
-    let hasUpdate = false;
+    let n = 0;
     snap.docs.forEach(d => {
       const data = d.data();
-      if (data.senderId !== currentUser.uid && !(data.readBy || []).includes(currentUser.uid)) {
-        batch.update(d.ref, { readBy: arrayUnion(currentUser.uid) });
-        hasUpdate = true;
+      if (data.senderId !== currentUser.uid && !(data.readBy||[]).includes(currentUser.uid)) {
+        batch.update(d.ref, { readBy: arrayUnion(currentUser.uid) }); n++;
       }
     });
-    if (hasUpdate) await batch.commit();
-  } catch(e) { /* ignore */ }
+    if (n > 0) await batch.commit();
+  } catch(e) { /* silent */ }
 }
 
 // ─── Notification toast ───────────────────────────────────────────────────────
-let lastNotifMsgId = null;
-function showNotifToast(senderName, text, uid, photoURL) {
+let lastNotifId = null;
+function showNotifToast(name, text, uid, photo) {
   document.querySelectorAll('.notif-toast').forEach(el => el.remove());
   const toast = document.createElement('div');
   toast.className = 'notif-toast';
-  toast.innerHTML = `
-    <div class="notif-toast-name">💬 ${escapeHtml(senderName)}</div>
-    <div class="notif-toast-text">${escapeHtml(text)}</div>`;
+  toast.innerHTML = `<div class="notif-toast-name">💬 ${escapeHtml(name)}</div><div class="notif-toast-text">${escapeHtml(text)}</div>`;
   toast.onclick = () => {
     toast.remove();
     showView('chat-view', document.querySelector('[onclick*="chat-view"]'));
-    openChat(uid, senderName, photoURL);
+    openChat(uid, name, photo);
   };
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 5000);
@@ -2077,68 +2009,41 @@ window.openChat = async (uid, name, photo) => {
   document.getElementById('chat-messages').style.display = 'flex';
   document.getElementById('chat-input-area').style.display = 'flex';
   document.getElementById('chat-partner-name').textContent = name;
-
   document.querySelectorAll('.chat-user-item').forEach(el => el.classList.remove('active'));
   document.querySelector(`[data-uid="${uid}"]`)?.classList.add('active');
-
-  // Cancel reply/edit
-  const rBar = document.getElementById('reply-bar');
-  const eBar = document.getElementById('edit-bar');
-  if (rBar) rBar.style.display = 'none';
-  if (eBar) eBar.style.display = 'none';
+  document.getElementById('reply-bar').style.display = 'none';
+  document.getElementById('edit-bar').style.display = 'none';
   replyTo = null; editMsgId = null;
 
   if (chatUnsub) chatUnsub();
   const chatId = [currentUser.uid, uid].sort().join('_');
-
-  // Mark read
   markMessagesRead(chatId);
 
-  const msgsRef = collection(db, 'chats', chatId, 'messages');
-  const q = query(msgsRef, orderBy('createdAt'));
-
-  chatUnsub = onSnapshot(q, snap => {
+  // Single orderBy — no compound index needed
+  chatUnsub = onSnapshot(query(collection(db,'chats',chatId,'messages'), orderBy('createdAt')), snap => {
     const container = document.getElementById('chat-messages');
     container.innerHTML = '';
-
     snap.docs.forEach(d => {
-      const msg = d.data();
-      const msgId = d.id;
-
-      // Hide if deleted for me
+      const msg = d.data(), msgId = d.id;
       if (msg.deletedFor?.[currentUser.uid]) return;
-
       const isMine = msg.senderId === currentUser.uid;
       const isDeleted = msg.deleted;
-      const time = msg.createdAt?.toDate?.()?.toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'}) || '';
-      const isRead = (msg.readBy || []).some(u => u !== msg.senderId);
-      const tick = isMine ? `<span class="msg-tick ${isRead ? 'read' : ''}">✓✓</span>` : '';
-      const editedMark = msg.editedAt ? `<span class="msg-edited">(изм.)</span>` : '';
-
+      const time = msg.createdAt?.toDate?.()?.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}) || '';
+      const isRead = (msg.readBy||[]).some(u => u !== msg.senderId);
+      const tick = isMine ? `<span class="msg-tick${isRead?' read':''}">✓✓</span>` : '';
+      const edited = msg.editedAt ? `<span class="msg-edited"> (изм.)</span>` : '';
       let replyHtml = '';
-      if (msg.replyTo) {
-        replyHtml = `<div class="msg-reply-quote">
-          <div class="msg-reply-quote-name">${escapeHtml(msg.replyTo.senderName)}</div>
-          ${escapeHtml(msg.replyTo.text)}
-        </div>`;
-      }
+      if (msg.replyTo) replyHtml = `<div class="msg-reply-quote"><div class="msg-reply-quote-name">${escapeHtml(msg.replyTo.senderName)}</div>${escapeHtml(msg.replyTo.text)}</div>`;
 
       const div = document.createElement('div');
-      div.className = `msg ${isMine ? 'mine' : 'theirs'}${isDeleted ? ' msg-deleted' : ''}`;
-      div.innerHTML = `
-        <div class="msg-bubble">${replyHtml}${escapeHtml(isDeleted ? '🚫 Сообщение удалено' : msg.text)}${editedMark}</div>
-        <div class="msg-time">${time}${tick}</div>`;
-
-      // Right-click context menu
+      div.className = `msg ${isMine?'mine':'theirs'}${isDeleted?' msg-deleted':''}`;
+      div.innerHTML = `<div class="msg-bubble">${replyHtml}${escapeHtml(isDeleted?'🚫 Сообщение удалено':msg.text)}${edited}</div><div class="msg-time">${time}${tick}</div>`;
       div.addEventListener('contextmenu', e => showCtxMenu(e, msgId, msg, chatId));
-      // Long press for mobile
       let pressTimer;
-      div.addEventListener('touchstart', e => { pressTimer = setTimeout(() => { showCtxMenu(e.touches[0], msgId, msg, chatId); }, 600); });
+      div.addEventListener('touchstart', e => { pressTimer = setTimeout(() => showCtxMenu(e.touches[0], msgId, msg, chatId), 600); });
       div.addEventListener('touchend', () => clearTimeout(pressTimer));
-
       container.appendChild(div);
     });
-
     container.scrollTop = container.scrollHeight;
     markMessagesRead(chatId);
   });
@@ -2147,36 +2052,17 @@ window.openChat = async (uid, name, photo) => {
 // ─── Send message ─────────────────────────────────────────────────────────────
 window.sendMsg = async () => {
   const input = document.getElementById('chat-msg-input');
-  let text = input.value.trim();
+  const text = input.value.trim();
   if (!text || !currentChatPartner) return;
-
   const chatId = [currentUser.uid, currentChatPartner.uid].sort().join('_');
-
   if (editMsgId) {
-    // Edit existing message
-    await updateDoc(doc(db, 'chats', chatId, 'messages', editMsgId), {
-      text,
-      editedAt: serverTimestamp()
-    });
+    await updateDoc(doc(db,'chats',chatId,'messages',editMsgId), { text, editedAt: serverTimestamp() });
     editMsgId = null;
-    const eBar = document.getElementById('edit-bar');
-    if (eBar) eBar.style.display = 'none';
+    document.getElementById('edit-bar').style.display = 'none';
   } else {
-    // New message
-    const payload = {
-      text,
-      senderId: currentUser.uid,
-      senderName: currentUser.displayName,
-      createdAt: serverTimestamp(),
-      readBy: [currentUser.uid]
-    };
-    if (replyTo) {
-      payload.replyTo = { id: replyTo.id, text: replyTo.text, senderName: replyTo.senderName };
-      replyTo = null;
-      const rBar = document.getElementById('reply-bar');
-      if (rBar) rBar.style.display = 'none';
-    }
-    await addDoc(collection(db, 'chats', chatId, 'messages'), payload);
+    const payload = { text, senderId: currentUser.uid, senderName: currentUser.displayName, createdAt: serverTimestamp(), readBy: [currentUser.uid] };
+    if (replyTo) { payload.replyTo = { id: replyTo.id, text: replyTo.text, senderName: replyTo.senderName }; replyTo = null; document.getElementById('reply-bar').style.display = 'none'; }
+    await addDoc(collection(db,'chats',chatId,'messages'), payload);
   }
   input.value = '';
 };
@@ -2185,96 +2071,60 @@ window.sendMsg = async () => {
 let chatUserUnsubs = [];
 
 async function loadChatUsers() {
-  chatUserUnsubs.forEach(fn => fn());
-  chatUserUnsubs = [];
-
+  chatUserUnsubs.forEach(fn => fn()); chatUserUnsubs = [];
   const snap = await getDocs(collection(db, 'users'));
   const list = document.getElementById('chat-users-list');
   list.innerHTML = '';
-
   snap.docs.forEach(d => {
     const u = d.data();
     if (u.uid === currentUser.uid) return;
-    const initial = (u.displayName || '?')[0].toUpperCase();
+    const initial = (u.displayName||'?')[0].toUpperCase();
     const div = document.createElement('div');
-    div.className = 'chat-user-item';
-    div.dataset.uid = u.uid;
+    div.className = 'chat-user-item'; div.dataset.uid = u.uid;
     div.innerHTML = `
-      <div class="chat-avatar">
-        ${u.photoURL ? `<img src="${u.photoURL}">` : `<div class="chat-avatar-placeholder">${initial}</div>`}
-      </div>
+      <div class="chat-avatar">${u.photoURL?`<img src="${u.photoURL}">`:`<div class="chat-avatar-placeholder">${initial}</div>`}</div>
       <div class="chat-user-row">
-        <div>
-          <div class="chat-user-name">${escapeHtml(u.displayName || 'Пользователь')}</div>
-          <div class="chat-user-last">${escapeHtml(u.email || '')}</div>
-        </div>
+        <div><div class="chat-user-name">${escapeHtml(u.displayName||'Пользователь')}</div><div class="chat-user-last">${escapeHtml(u.email||'')}</div></div>
         <span class="unread-badge" id="unread-${u.uid}" style="display:none"></span>
       </div>`;
     div.onclick = () => openChat(u.uid, u.displayName, u.photoURL);
     list.appendChild(div);
 
-    // Live unread counter — listen to all msgs in chat, filter client-side
+    // Unread listener — no compound index, filter client-side
     const chatId = [currentUser.uid, u.uid].sort().join('_');
-    const unsub = onSnapshot(
-      query(collection(db, 'chats', chatId, 'messages'), orderBy('createdAt')),
-      msgSnap => {
-        let unread = 0;
-        let lastSenderUid = null;
-        let lastSenderName = null;
-        let lastText = null;
-        let lastMsgId = null;
-        msgSnap.docs.forEach(md => {
-          const data = md.data();
-          if (data.senderId === u.uid) {
-            if (!(data.readBy || []).includes(currentUser.uid) && !data.deleted && !data.deletedFor?.[currentUser.uid]) {
-              unread++;
-              lastSenderUid = u.uid;
-              lastSenderName = u.displayName;
-              lastText = data.text;
-              lastMsgId = md.id;
-            }
-          }
-        });
-        const badge = document.getElementById(`unread-${u.uid}`);
-        if (!badge) return;
-        if (unread > 0) {
-          badge.textContent = unread;
-          badge.style.display = 'flex';
-          // Notify if new messages and not in this chat
-          if (currentChatPartner?.uid !== u.uid && lastMsgId !== lastNotifMsgId) {
-            lastNotifMsgId = lastMsgId;
-            showNotifToast(lastSenderName, lastText, u.uid, u.photoURL);
-          }
-        } else {
-          badge.style.display = 'none';
+    const unsub = onSnapshot(collection(db,'chats',chatId,'messages'), msgSnap => {
+      let unread = 0, lastId = null, lastText = '';
+      msgSnap.docs.forEach(md => {
+        const data = md.data();
+        if (data.senderId === u.uid && !(data.readBy||[]).includes(currentUser.uid) && !data.deleted && !data.deletedFor?.[currentUser.uid]) {
+          unread++; lastId = md.id; lastText = data.text;
         }
-        updateNavUnread();
-      }
-    );
+      });
+      const badge = document.getElementById(`unread-${u.uid}`);
+      if (!badge) return;
+      if (unread > 0) {
+        badge.textContent = unread; badge.style.display = 'flex';
+        if (currentChatPartner?.uid !== u.uid && lastId !== lastNotifId) {
+          lastNotifId = lastId;
+          showNotifToast(u.displayName, lastText, u.uid, u.photoURL);
+        }
+      } else { badge.style.display = 'none'; }
+      updateNavUnread();
+    });
     chatUserUnsubs.push(unsub);
   });
-
   if (!list.children.length) list.innerHTML = '<div style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text-dim)">// НЕТ ПОЛЬЗОВАТЕЛЕЙ</div>';
 }
 
 function updateNavUnread() {
-  const total = [...document.querySelectorAll('.unread-badge')]
-    .filter(el => el.style.display !== 'none')
-    .reduce((sum, el) => sum + (parseInt(el.textContent) || 0), 0);
-  let navBadge = document.getElementById('nav-chat-unread');
-  if (!navBadge) {
+  const total = [...document.querySelectorAll('.unread-badge')].filter(el=>el.style.display!=='none').reduce((s,el)=>s+(parseInt(el.textContent)||0),0);
+  let nb = document.getElementById('nav-chat-unread');
+  if (!nb) {
     const chatBtn = document.querySelector('[onclick*="chat-view"]');
-    navBadge = document.createElement('span');
-    navBadge.id = 'nav-chat-unread';
-    navBadge.className = 'nav-unread';
-    chatBtn.appendChild(navBadge);
+    nb = document.createElement('span'); nb.id='nav-chat-unread'; nb.className='nav-unread';
+    chatBtn.appendChild(nb);
   }
-  if (total > 0) {
-    navBadge.textContent = total;
-    navBadge.style.display = 'inline-flex';
-  } else {
-    navBadge.style.display = 'none';
-  }
+  nb.textContent = total; nb.style.display = total > 0 ? 'inline-flex' : 'none';
 }
 
 // Cached DOM refs — queried once
