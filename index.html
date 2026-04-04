@@ -394,7 +394,7 @@
   /* Main content */
   .main { flex: 1; overflow-y: auto; background: var(--bg); position: relative; }
 
-  .main-inner { padding: 24px; max-width: 900px; margin-left: auto; margin-right: 0; }
+  .main-inner { padding: 24px; }
 
   /* Section header */
   .sec-header {
@@ -566,14 +566,14 @@
     background: rgba(255,59,59,0.03);
   }
 
-  .admin-label { font-family: var(--mono); font-size: 11px; color: var(--red); letter-spacing: 2px; margin-right: 8px; }
+  .admin-label { font-family: var(--mono); font-size: 12px; color: var(--red); letter-spacing: 2px; margin-right: 8px; }
 
   .admin-btn {
     background: transparent;
     border: 1px solid var(--border);
     color: var(--text-dim);
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 1px;
     padding: 4px 10px;
     cursor: pointer;
@@ -747,13 +747,13 @@
     padding: 16px;
     border-bottom: 1px solid var(--border);
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 3px;
     color: var(--text-dim);
   }
 
   .chat-user-item {
-    padding: 12px 16px;
+    padding: 14px 16px;
     border-bottom: 1px solid rgba(42,42,66,0.5);
     cursor: pointer;
     transition: background 0.15s;
@@ -868,7 +868,7 @@
     border: 1px solid var(--border);
     color: var(--text);
     font-family: var(--sans);
-    font-size: 14px;
+    font-size: 15px;
     padding: 10px 14px;
     outline: none;
     transition: border-color 0.2s;
@@ -881,7 +881,7 @@
     border: none;
     color: #000;
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 13px;
     letter-spacing: 2px;
     padding: 10px 20px;
     cursor: pointer;
@@ -956,7 +956,75 @@
     cursor: pointer;
   }
 
-  .select-status:focus { border-color: var(--amber); }
+  /* ========== DASHBOARD BANNER ========== */
+  .dash-banner {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 2fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .dash-cell {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dash-cell::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--border);
+  }
+
+  .dash-cell:nth-child(2)::before { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+  .dash-cell:nth-child(3)::before { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+  .dash-cell:nth-child(4)::before { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .dash-cell:nth-child(5)::before { background: var(--text-dim); }
+
+  .dash-cell-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .dash-cell-value {
+    font-family: var(--cond);
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .dash-cell-value.cyan { color: var(--cyan); text-shadow: 0 0 20px rgba(0,212,255,0.4); }
+  .dash-cell-value.amber { color: var(--amber); text-shadow: 0 0 20px rgba(245,166,35,0.4); }
+  .dash-cell-value.green { color: var(--green); text-shadow: 0 0 20px rgba(0,255,157,0.4); }
+
+  .dash-cell-bar {
+    height: 3px;
+    background: var(--border);
+    overflow: hidden;
+  }
+
+  .dash-bar-fill {
+    height: 100%;
+    transition: width 0.6s ease;
+  }
+
+  .dash-cell-wide { display: flex; flex-direction: column; }
+
+  .dash-sparkline {
+    flex: 1;
+    margin-top: 4px;
+  }
+
+  .dash-sparkline svg { display: block; }
 </style>
 </head>
 <body>
@@ -1048,6 +1116,34 @@
           <div class="sec-header">
             <div class="sec-title">ЛЕНТА <span>ЗАЯВОК</span></div>
             <button class="btn-create" onclick="openModal()">+ НОВАЯ ЗАЯВКА</button>
+          </div>
+          <div class="dash-banner">
+            <div class="dash-cell">
+              <div class="dash-cell-label">// ВСЕГО</div>
+              <div class="dash-cell-value" id="dash-total">0</div>
+              <div class="dash-cell-bar"><div class="dash-bar-fill" id="dash-bar-total" style="width:100%;background:var(--text-dim)"></div></div>
+            </div>
+            <div class="dash-cell">
+              <div class="dash-cell-label">// НОВЫЕ</div>
+              <div class="dash-cell-value cyan" id="dash-new">0</div>
+              <div class="dash-cell-bar"><div class="dash-bar-fill" id="dash-bar-new" style="width:0%;background:var(--cyan)"></div></div>
+            </div>
+            <div class="dash-cell">
+              <div class="dash-cell-label">// В РАБОТЕ</div>
+              <div class="dash-cell-value amber" id="dash-active">0</div>
+              <div class="dash-cell-bar"><div class="dash-bar-fill" id="dash-bar-active" style="width:0%;background:var(--amber)"></div></div>
+            </div>
+            <div class="dash-cell">
+              <div class="dash-cell-label">// ВЫПОЛНЕНО</div>
+              <div class="dash-cell-value green" id="dash-done">0</div>
+              <div class="dash-bar-fill-wrap"><div class="dash-cell-bar"><div class="dash-bar-fill" id="dash-bar-done" style="width:0%;background:var(--green)"></div></div></div>
+            </div>
+            <div class="dash-cell dash-cell-wide">
+              <div class="dash-cell-label">// АКТИВНОСТЬ</div>
+              <div class="dash-sparkline" id="dash-sparkline">
+                <svg width="100%" height="40" id="sparkline-svg" viewBox="0 0 200 40" preserveAspectRatio="none"></svg>
+              </div>
+            </div>
           </div>
           <div id="tickets-container">
             <div class="empty-state">
@@ -1328,12 +1424,57 @@ function renderTickets() {
     return true;
   });
 
+  const cntNew = allTickets.filter(t=>t.status==='new').length;
+  const cntActive = allTickets.filter(t=>t.status==='active').length;
+  const cntDone = allTickets.filter(t=>t.status==='done').length;
+  const total = allTickets.length;
+
   // Update badges
-  document.getElementById('cnt-all').textContent = allTickets.length;
-  document.getElementById('cnt-new').textContent = allTickets.filter(t=>t.status==='new').length;
-  document.getElementById('cnt-active').textContent = allTickets.filter(t=>t.status==='active').length;
-  document.getElementById('cnt-done').textContent = allTickets.filter(t=>t.status==='done').length;
-  document.getElementById('stat-total').textContent = allTickets.length;
+  document.getElementById('cnt-all').textContent = total;
+  document.getElementById('cnt-new').textContent = cntNew;
+  document.getElementById('cnt-active').textContent = cntActive;
+  document.getElementById('cnt-done').textContent = cntDone;
+  document.getElementById('stat-total').textContent = total;
+
+  // Update dashboard banner
+  document.getElementById('dash-total').textContent = total;
+  document.getElementById('dash-new').textContent = cntNew;
+  document.getElementById('dash-active').textContent = cntActive;
+  document.getElementById('dash-done').textContent = cntDone;
+  const pct = v => total ? Math.round(v / total * 100) + '%' : '0%';
+  document.getElementById('dash-bar-new').style.width = pct(cntNew);
+  document.getElementById('dash-bar-active').style.width = pct(cntActive);
+  document.getElementById('dash-bar-done').style.width = pct(cntDone);
+
+  // Sparkline — по дням последних 7 записей
+  const svg = document.getElementById('sparkline-svg');
+  if (svg && total > 0) {
+    const days = {};
+    allTickets.forEach(t => {
+      const d = t.createdAt?.toDate?.();
+      if (!d) return;
+      const key = d.toISOString().slice(0,10);
+      days[key] = (days[key]||0) + 1;
+    });
+    const keys = Object.keys(days).sort().slice(-7);
+    const vals = keys.map(k => days[k]);
+    const max = Math.max(...vals, 1);
+    const w = 200, h = 40, pad = 4;
+    const pts = vals.map((v,i) => {
+      const x = keys.length === 1 ? w/2 : pad + i * (w - pad*2) / (keys.length - 1);
+      const y = h - pad - (v / max) * (h - pad*2);
+      return `${x},${y}`;
+    });
+    svg.innerHTML = `
+      <polyline points="${pts.join(' ')}" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      ${vals.map((v,i) => {
+        const [x,y] = pts[i].split(',');
+        return `<circle cx="${x}" cy="${y}" r="3" fill="var(--amber)" opacity="0.8"/>`;
+      }).join('')}
+    `;
+  } else if (svg) {
+    svg.innerHTML = `<line x1="0" y1="20" x2="200" y2="20" stroke="var(--border)" stroke-width="1" stroke-dasharray="4,4"/>`;
+  }
 
   if (!filtered.length) {
     container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⊡</div><div class="empty-state-text">ЗАЯВКИ ОТСУТСТВУЮТ</div></div>`;
