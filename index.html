@@ -464,17 +464,31 @@
     align-items: flex-start;
   }
 
-  #tickets-container { flex: 0 0 50%; min-width: 0; }
+  #tickets-container { flex: 1; min-width: 0; }
 
   /* Right panel */
   .right-panel {
-    flex: 1;
+    flex: 0 0 280px;
     min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 12px;
     position: sticky;
     top: 0;
+  }
+
+  @media (max-width: 900px) {
+    .feed-split { flex-direction: column; }
+    .right-panel { flex: none; width: 100%; position: static; }
+    #tickets-container { flex: none; width: 100%; }
+    .sidebar { width: 180px; }
+    .dash-banner { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 640px) {
+    .sidebar { display: none; }
+    .dash-banner { grid-template-columns: 1fr 1fr; }
+    .hdr-search { display: none; }
   }
 
   .rp-block {
@@ -782,6 +796,7 @@
     padding: 8px 16px 10px 20px;
     border-top: 1px solid var(--border);
     background: rgba(255,59,59,0.03);
+    flex-wrap: wrap;
   }
 
   .admin-label { font-family: var(--mono); font-size: 12px; color: var(--red); letter-spacing: 2px; margin-right: 8px; }
@@ -791,11 +806,15 @@
     border: 1px solid var(--border);
     color: var(--text-dim);
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 11px;
     letter-spacing: 1px;
     padding: 4px 10px;
     cursor: pointer;
     transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
   }
 
   .admin-btn:hover { border-color: var(--red); color: var(--red); }
@@ -2072,8 +2091,9 @@ window.openChat = async (uid, name, photo) => {
     snap.docs.forEach(d => {
       const msg = d.data(), msgId = d.id;
       if (msg.deletedFor?.[currentUser.uid]) return;
+      if (msg.deleted) return; // hide completely for all
       const isMine = msg.senderId === currentUser.uid;
-      const isDeleted = msg.deleted;
+      const isDeleted = false; // handled above via early return
       const time = msg.createdAt?.toDate?.()?.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}) || '';
       const isRead = (msg.readBy||[]).some(u => u !== msg.senderId);
       const tick = isMine ? `<span class="msg-tick${isRead?' read':''}">✓✓</span>` : '';
@@ -2082,8 +2102,8 @@ window.openChat = async (uid, name, photo) => {
       if (msg.replyTo) replyHtml = `<div class="msg-reply-quote"><div class="msg-reply-quote-name">${escapeHtml(msg.replyTo.senderName)}</div>${escapeHtml(msg.replyTo.text)}</div>`;
 
       const div = document.createElement('div');
-      div.className = `msg ${isMine?'mine':'theirs'}${isDeleted?' msg-deleted':''}`;
-      div.innerHTML = `<div class="msg-bubble">${replyHtml}${escapeHtml(isDeleted?'🚫 Сообщение удалено':msg.text)}${edited}</div><div class="msg-time">${time}${tick}</div>`;
+      div.className = `msg ${isMine?'mine':'theirs'}`;
+      div.innerHTML = `<div class="msg-bubble">${replyHtml}${escapeHtml(msg.text)}${edited}</div><div class="msg-time">${time}${tick}</div>`;
       div.addEventListener('contextmenu', e => showCtxMenu(e, msgId, msg, chatId));
       let pressTimer;
       div.addEventListener('touchstart', e => { pressTimer = setTimeout(() => showCtxMenu(e.touches[0], msgId, msg, chatId), 600); });
@@ -2298,10 +2318,18 @@ function renderTickets() {
         </div>
         ${isAdmin ? `<div class="admin-controls">
           <span class="admin-label">ADMIN</span>
-          <button class="admin-btn status-new" onclick="changeStatus('${t.id}','new')">НОВАЯ</button>
-          <button class="admin-btn status-active" onclick="changeStatus('${t.id}','active')">В РАБОТЕ</button>
-          <button class="admin-btn status-done" onclick="changeStatus('${t.id}','done')">ВЫПОЛНЕНО</button>
-          <button class="admin-btn" onclick="deleteTicket('${t.id}')" style="margin-left:auto">✕ УДАЛИТЬ</button>
+          <button class="admin-btn status-new" onclick="changeStatus('${t.id}','new')">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/></svg> НОВАЯ
+          </button>
+          <button class="admin-btn status-active" onclick="changeStatus('${t.id}','active')">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg> В РАБОТЕ
+          </button>
+          <button class="admin-btn status-done" onclick="changeStatus('${t.id}','done')">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> ВЫПОЛНЕНО
+          </button>
+          <button class="admin-btn" onclick="deleteTicket('${t.id}')" style="margin-left:auto;color:var(--red);border-color:var(--red)">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M8 6V4h8v2"/></svg> УДАЛИТЬ
+          </button>
         </div>` : ''}
       </div>
     </div>`;
