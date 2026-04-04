@@ -227,7 +227,7 @@
   .btn-login:hover { box-shadow: 0 0 30px rgba(245,166,35,0.3); }
 
   /* ========== MAIN LAYOUT ========== */
-  #app { display: block; min-height: 100vh; } /* AUTH_REMOVED: was display:none */
+  #app { display: none; min-height: 100vh; }
 
   /* Header */
   .hdr {
@@ -1816,19 +1816,30 @@ function showToast(msg) {
   setTimeout(() => t.remove(), 3000);
 }
 
-/* AUTH_REMOVED_START — restore onAuthStateChanged block here later
-onAuthStateChanged(auth, async user => { ... });
-AUTH_REMOVED_END */
+onAuthStateChanged(auth, async user => {
+  currentUser = user;
+  if (user) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    getDOM('hdr-name').textContent = user.displayName || user.email;
+    document.getElementById('hdr-photo').src = user.photoURL || '';
 
-// Temporary: bypass auth
-document.getElementById('login-screen').style.display = 'none';
-currentUser = { uid: 'temp-user', displayName: 'Temp User', email: 'temp@temp.com', photoURL: '' };
-document.getElementById('hdr-name').textContent = currentUser.displayName;
+    await setDoc(doc(db, 'users', user.uid), {
+      uid: user.uid,
+      displayName: user.displayName,
+      email: user.email,
+      photoURL: user.photoURL
+    }, { merge: true });
 
-const q = query(collection(db, 'tickets'), orderBy('createdAt', 'desc'));
-onSnapshot(q, snap => {
-  allTickets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  renderTickets();
+    const q = query(collection(db, 'tickets'), orderBy('createdAt', 'desc'));
+    onSnapshot(q, snap => {
+      allTickets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderTickets();
+    });
+  } else {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
 });
 </script>
 
