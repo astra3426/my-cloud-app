@@ -1463,7 +1463,8 @@ async function markMessagesRead(chatId) {
 }
 
 // ── FIX 1: Notification toast — works from any view ──
-let lastNotifId = null;
+// Per-user last seen message ID map — null means "first load, don't notify yet"
+const lastSeenMsgId = {}; // { uid: msgId | 'init' }
 
 function showNotifToast(name, text, uid, photo) {
   // Remove existing toasts from same sender
@@ -1627,8 +1628,13 @@ function subscribeToAllChats() {
 }
 
 function subscribeToChat(uid, name, photo, chatId) {
+  // isFirstLoad = true means the initial snapshot on page load —
+  // we record existing message IDs without showing notifications.
+  let isFirstLoad = true;
+
   const unsub = onSnapshot(collection(db,'chats',chatId,'messages'), msgSnap => {
-    let unread = 0, lastId = null, lastText = '', lastData = null;
+    let unread = 0, newestUnreadId = null, newestUnreadText = '';
+
     msgSnap.docs.forEach(md => {
       const data = md.data();
       if (
@@ -1638,30 +1644,40 @@ function subscribeToChat(uid, name, photo, chatId) {
         !data.deletedFor?.[currentUser.uid]
       ) {
         unread++;
-        lastId = md.id;
-        lastText = data.text;
-        lastData = data;
+        newestUnreadId = md.id;
+        newestUnreadText = data.text;
       }
     });
 
-    // Update badge in chat list (if chat view is open)
+    // Update badge in chat list
     const badge = document.getElementById(`unread-${uid}`);
     if (badge) {
       if (unread > 0) { badge.textContent = unread; badge.style.display = 'flex'; }
       else { badge.style.display = 'none'; }
     }
 
-    // ── FIX 1: Show notification toast even when on feed view ──
-    // Only notify if: there are unread messages, chat with this person is NOT open, and it's a new message
-    if (unread > 0 && lastId && lastId !== lastNotifId && currentChatPartner?.uid !== uid) {
-      lastNotifId = lastId;
-      showNotifToast(name, lastText, uid, photo);
+    if (isFirstLoad) {
+      // First snapshot on login: silently record the latest unread ID, never notify
+      lastSeenMsgId[uid] = newestUnreadId || '__none__';
+      isFirstLoad = false;
+    } else {
+      // New snapshot after first load: only notify if:
+      // 1. There is a new unread message we haven't seen before
+      // 2. The chat with this person is NOT currently open
+      if (
+        unread > 0 &&
+        newestUnreadId &&
+        newestUnreadId !== lastSeenMsgId[uid] &&
+        currentChatPartner?.uid !== uid
+      ) {
+        lastSeenMsgId[uid] = newestUnreadId;
+        showNotifToast(name, newestUnreadText, uid, photo);
+      }
     }
 
-    // If this chat is currently open, mark as read immediately
-    if (currentChatPartner?.uid === uid) {
-      markMessagesRead(chatId);
-    }
+    // IMPORTANT: markMessagesRead is NOT called here.
+    // It is only called when the user explicitly opens the chat.
+    // This prevents double-ticks appearing without the chat being read.
 
     updateNavUnread();
   });
