@@ -888,6 +888,7 @@
   .chat-input { flex: 1; background: var(--bg3); border: 1px solid var(--border); color: var(--text); font-family: var(--sans); font-size: 15px; padding: 10px 14px; outline: none; transition: border-color 0.2s; }
   .chat-input:focus { border-color: var(--amber); }
 
+  /* ── Chat photo attachment ── */
   .chat-attach-btn {
     display: flex; align-items: center; justify-content: center;
     width: 42px; height: 42px; background: transparent;
@@ -896,36 +897,67 @@
     clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
   }
   .chat-attach-btn:hover { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 12px rgba(0,212,255,0.2); }
-
   .chat-photo-bar {
     display: flex; align-items: center; gap: 12px;
     padding: 8px 16px; background: var(--bg3);
-    border-top: 1px solid var(--border);
-    border-left: 3px solid var(--cyan);
+    border-top: 1px solid var(--border); border-left: 3px solid var(--cyan);
   }
-  .chat-photo-thumb { width: 48px; height: 48px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; }
+  .chat-photo-thumb { width: 48px; height: 48px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; cursor: pointer; }
   .chat-photo-bar-info { flex: 1; font-family: var(--mono); font-size: 10px; color: var(--cyan); letter-spacing: 1px; }
   .chat-photo-bar-size { color: var(--text-dim); font-size: 9px; margin-top: 2px; }
   .chat-photo-cancel { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 18px; line-height: 1; padding: 0 4px; }
   .chat-photo-cancel:hover { color: var(--red); }
-
   .msg-img {
     display: block; width: 100%; max-width: 260px; max-height: 220px;
-    object-fit: cover; cursor: zoom-in; transition: opacity 0.15s;
-    margin-bottom: 2px;
+    object-fit: cover; cursor: zoom-in; transition: opacity 0.15s; margin-bottom: 2px;
   }
-  .msg-img:hover { opacity: 0.9; }
-  .msg.mine .msg-bubble.has-photo { padding: 0; overflow: hidden; }
-  .msg.theirs .msg-bubble.has-photo { padding: 0; overflow: hidden; }
-  .msg-bubble.has-photo .msg-caption { padding: 6px 12px 4px; font-size: 14px; }
-  .msg-bubble.has-photo .msg-edited { display: inline; }
+  .msg-img:hover { opacity: 0.88; }
+  .msg-bubble.has-photo { padding: 0; overflow: hidden; }
+  .msg-caption { padding: 6px 12px 4px; font-size: 14px; }
 
-  .img-lightbox {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.92);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 10000; cursor: zoom-out; animation: toastIn 0.15s ease-out;
+  /* ── Full photo viewer ── */
+  #photo-viewer {
+    position: fixed; inset: 0; background: #000;
+    z-index: 10000; display: none; flex-direction: column;
+    animation: pvIn 0.15s ease-out;
   }
-  .img-lightbox img { max-width: 92vw; max-height: 90vh; object-fit: contain; box-shadow: 0 0 60px rgba(0,0,0,0.8); }
+  #photo-viewer.open { display: flex; }
+  @keyframes pvIn { from { opacity:0; } to { opacity:1; } }
+  .pv-top {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; background: rgba(10,10,16,0.95);
+    border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0;
+  }
+  .pv-sender { flex: 1; font-family: var(--mono); font-size: 11px; color: var(--text-dim); letter-spacing: 1px; }
+  .pv-btn {
+    background: transparent; border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.65); width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0; border-radius: 4px;
+  }
+  .pv-btn svg { display: block; }
+  .pv-btn:hover { border-color: var(--amber); color: var(--amber); background: rgba(245,166,35,0.1); }
+  .pv-btn.close-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255,59,59,0.1); }
+  .pv-main {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+  }
+  #pv-main-img { max-width: 94vw; max-height: calc(100vh - 172px); object-fit: contain; user-select: none; }
+  .pv-strip {
+    flex-shrink: 0; display: flex; align-items: center; gap: 6px;
+    padding: 10px 14px; background: rgba(10,10,16,0.95);
+    border-top: 1px solid rgba(255,255,255,0.07);
+    overflow-x: auto; min-height: 92px;
+  }
+  .pv-strip::-webkit-scrollbar { height: 3px; }
+  .pv-strip::-webkit-scrollbar-thumb { background: var(--border); }
+  .pv-thumb {
+    width: 66px; height: 66px; flex-shrink: 0; object-fit: cover;
+    cursor: pointer; opacity: 0.45; border: 2px solid transparent;
+    transition: all 0.15s; border-radius: 2px;
+  }
+  .pv-thumb:hover { opacity: 0.75; }
+  .pv-thumb.active { opacity: 1; border-color: var(--amber); box-shadow: 0 0 10px rgba(245,166,35,0.4); }
 
   .btn-send { background: var(--amber); border: none; color: #000; font-family: var(--mono); font-size: 13px; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; font-weight: 700; transition: all 0.15s; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
   .btn-send:hover { background: #fff; }
@@ -1026,7 +1058,7 @@
     </nav>
     <div class="hdr-search">
       <span class="hdr-search-icon">⌕</span>
-      <input type="text" id="search-input" placeholder="ПОИСК ЗАЯВОК..." oninput="debouncedFilter()">
+      <input type="text" id="search-input" placeholder="ПОИСК ЗАЯВОК..." oninput="filterTickets()">
     </div>
     <div class="hdr-user">
       <div class="hdr-avatar"><img id="hdr-photo" src="" alt=""></div>
@@ -1168,7 +1200,7 @@
             <button class="reply-cancel" onclick="cancelEdit()">✕</button>
           </div>
           <div id="chat-photo-bar" style="display:none" class="chat-photo-bar">
-            <img class="chat-photo-thumb" id="chat-photo-thumb" src="">
+            <img class="chat-photo-thumb" id="chat-photo-thumb" src="" onclick="viewChatImg(this.src)">
             <div class="chat-photo-bar-info">
               ФОТО ПРИКРЕПЛЕНО
               <div class="chat-photo-bar-size" id="chat-photo-size"></div>
@@ -1187,6 +1219,26 @@
       </div>
     </div>
   </div>
+</div>
+
+<!-- PHOTO VIEWER -->
+<div id="photo-viewer">
+  <div class="pv-top">
+    <div class="pv-sender" id="pv-sender"></div>
+    <button class="pv-btn" id="pv-goto-btn" title="Перейти к сообщению" onclick="pvGoToMsg()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </button>
+    <button class="pv-btn" title="Скачать фото" onclick="pvDownload()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </button>
+    <button class="pv-btn close-btn" title="Закрыть" onclick="pvClose()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="pv-main">
+    <img id="pv-main-img" src="">
+  </div>
+  <div class="pv-strip" id="pv-strip"></div>
 </div>
 
 <!-- CREATE MODAL -->
@@ -1249,11 +1301,11 @@ let currentFilter = 'all';
 let currentChatPartner = null;
 let chatUnsub = null;
 let photoB64 = null;
-let cachedUsers = [];
-let usersUnsub = null;
-let isAdminCached = false;
-let _filterTimer;
 let chatPhotoB64 = null;
+// Photo viewer state
+let pvPhotos = []; // [{src, senderName, time, msgId}]
+let pvIndex = 0;
+let pvCurrentMsgId = null;
 
 window.signIn = async () => {
   try { await signInWithPopup(auth, provider); } catch(e) { showToast('ОШИБКА ВХОДА'); }
@@ -1276,7 +1328,7 @@ window.previewChatPhoto = (input) => {
   reader.onload = e => {
     const img = new Image();
     img.onload = () => {
-      const MAX = 1024;
+      const MAX = 1200;
       let w = img.width, h = img.height;
       if (w > MAX || h > MAX) {
         if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
@@ -1285,7 +1337,7 @@ window.previewChatPhoto = (input) => {
       const canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      chatPhotoB64 = canvas.toDataURL('image/jpeg', 0.78);
+      chatPhotoB64 = canvas.toDataURL('image/jpeg', 0.82);
       const kb = Math.round(chatPhotoB64.length * 0.75 / 1024);
       document.getElementById('chat-photo-thumb').src = chatPhotoB64;
       document.getElementById('chat-photo-size').textContent = kb + ' KB';
@@ -1305,13 +1357,77 @@ window.cancelChatPhoto = () => {
   document.getElementById('chat-msg-input').placeholder = 'СООБЩЕНИЕ ИЛИ ПОДПИСЬ К ФОТО...';
 };
 
-window.viewChatImg = (src) => {
-  const lb = document.createElement('div');
-  lb.className = 'img-lightbox';
-  lb.innerHTML = `<img src="${src}">`;
-  lb.onclick = () => lb.remove();
-  document.body.appendChild(lb);
+// ── Photo Viewer ──────────────────────────────────────────────
+window.viewChatImg = (src, msgId) => {
+  // Build photo list from current chat messages
+  pvPhotos = [];
+  pvIndex = 0;
+  const container = document.getElementById('chat-messages');
+  container.querySelectorAll('.msg-img').forEach((img, i) => {
+    const msgEl = img.closest('.msg');
+    const timeEl = msgEl?.querySelector('.msg-time');
+    const mid = msgEl?.dataset.msgid || '';
+    pvPhotos.push({ src: img.src, senderName: msgEl?.dataset.sender || '', time: timeEl?.textContent?.trim() || '', msgId: mid });
+    if (img.src === src || mid === msgId) pvIndex = i;
+  });
+  if (!pvPhotos.length) { pvPhotos = [{ src, senderName: '', time: '', msgId: msgId || '' }]; pvIndex = 0; }
+  pvRender();
+  document.getElementById('photo-viewer').classList.add('open');
+  document.addEventListener('keydown', pvKeyHandler);
 };
+
+function pvRender() {
+  const p = pvPhotos[pvIndex];
+  document.getElementById('pv-main-img').src = p.src;
+  document.getElementById('pv-sender').textContent = (p.senderName ? p.senderName + '  ·  ' : '') + (p.time || '');
+  pvCurrentMsgId = p.msgId;
+
+  // Strip thumbnails
+  const strip = document.getElementById('pv-strip');
+  strip.innerHTML = '';
+  pvPhotos.forEach((ph, i) => {
+    const img = document.createElement('img');
+    img.src = ph.src; img.className = 'pv-thumb' + (i === pvIndex ? ' active' : '');
+    img.onclick = () => { pvIndex = i; pvRender(); };
+    strip.appendChild(img);
+  });
+  // Scroll active thumb into view
+  const active = strip.querySelector('.pv-thumb.active');
+  if (active) active.scrollIntoView({ inline: 'center', behavior: 'smooth' });
+}
+
+window.pvClose = () => {
+  document.getElementById('photo-viewer').classList.remove('open');
+  document.removeEventListener('keydown', pvKeyHandler);
+};
+
+window.pvDownload = () => {
+  const src = pvPhotos[pvIndex]?.src;
+  if (!src) return;
+  const a = document.createElement('a');
+  a.href = src;
+  a.download = 'photo_' + Date.now() + '.jpg';
+  a.click();
+};
+
+window.pvGoToMsg = () => {
+  pvClose();
+  if (!pvCurrentMsgId) return;
+  const msgEl = document.querySelector(`[data-msgid="${pvCurrentMsgId}"]`);
+  if (msgEl) {
+    msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    msgEl.style.outline = '2px solid var(--amber)';
+    setTimeout(() => { msgEl.style.outline = ''; }, 1800);
+  }
+};
+
+function pvKeyHandler(e) {
+  if (e.key === 'Escape') pvClose();
+  if (e.key === 'ArrowRight' && pvIndex < pvPhotos.length - 1) { pvIndex++; pvRender(); }
+  if (e.key === 'ArrowLeft'  && pvIndex > 0) { pvIndex--; pvRender(); }
+}
+
+window.viewChatImg = viewChatImg;
 
 window.showView = (id, btn) => {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1329,7 +1445,6 @@ window.setFilter = (f, btn) => {
 };
 
 window.filterTickets = renderTickets;
-window.debouncedFilter = () => { clearTimeout(_filterTimer); _filterTimer = setTimeout(renderTickets, 120); };
 window.openModal = () => document.getElementById('create-modal').classList.add('open');
 window.closeModal = () => {
   document.getElementById('create-modal').classList.remove('open');
@@ -1498,29 +1613,32 @@ function openForward() {
   overlay.className = 'msg-info-overlay';
   overlay.innerHTML = `<div class="msg-info-box">
     <div class="msg-info-head">// ПЕРЕСЛАТЬ<button class="msg-info-close" onclick="this.closest('.msg-info-overlay').remove()">×</button></div>
-    <div class="forward-list" id="fwd-list"></div>
+    <div class="forward-list" id="fwd-list"><div style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text-dim)">Загрузка...</div></div>
   </div>`;
   overlay.addEventListener('click', e => { if (e.target===overlay) overlay.remove(); });
   document.body.appendChild(overlay);
-  const fwdList = document.getElementById('fwd-list');
-  fwdList.innerHTML = '';
-  cachedUsers.forEach(u => {
-    if (u.uid === currentUser.uid) return;
-    const initial = (u.displayName||'?')[0].toUpperCase();
-    const row = document.createElement('div');
-    row.className = 'forward-user';
-    row.innerHTML = `<div class="chat-avatar" style="width:32px;height:32px">${u.photoURL?`<img src="${u.photoURL}">`:`<div class="chat-avatar-placeholder" style="font-size:13px">${initial}</div>`}</div><div class="forward-user-name">${escapeHtml(u.displayName||'Пользователь')}</div>`;
-    row.onclick = async () => {
-      overlay.remove();
-      const fid = [currentUser.uid, u.uid].sort().join('_');
-      await addDoc(collection(db,'chats',fid,'messages'), {
-        text: '↪ ' + msgText, senderId: currentUser.uid,
-        senderName: currentUser.displayName,
-        createdAt: serverTimestamp(), readBy: [currentUser.uid]
-      });
-      showToast('ПЕРЕСЛАНО');
-    };
-    fwdList.appendChild(row);
+  getDocs(collection(db, 'users')).then(snap => {
+    const list = document.getElementById('fwd-list');
+    list.innerHTML = '';
+    snap.docs.forEach(d => {
+      const u = d.data();
+      if (u.uid === currentUser.uid) return;
+      const initial = (u.displayName||'?')[0].toUpperCase();
+      const row = document.createElement('div');
+      row.className = 'forward-user';
+      row.innerHTML = `<div class="chat-avatar" style="width:32px;height:32px">${u.photoURL?`<img src="${u.photoURL}">`:`<div class="chat-avatar-placeholder" style="font-size:13px">${initial}</div>`}</div><div class="forward-user-name">${escapeHtml(u.displayName||'Пользователь')}</div>`;
+      row.onclick = async () => {
+        overlay.remove();
+        const fid = [currentUser.uid, u.uid].sort().join('_');
+        await addDoc(collection(db,'chats',fid,'messages'), {
+          text: '↪ ' + msgText, senderId: currentUser.uid,
+          senderName: currentUser.displayName,
+          createdAt: serverTimestamp(), readBy: [currentUser.uid]
+        });
+        showToast('ПЕРЕСЛАНО');
+      };
+      list.appendChild(row);
+    });
   });
 }
 
@@ -1642,18 +1760,22 @@ window.openChat = async (uid, name, photo) => {
       if (msg.replyTo) replyHtml = `<div class="msg-reply-quote"><div class="msg-reply-quote-name">${escapeHtml(msg.replyTo.senderName)}</div>${escapeHtml(msg.replyTo.text)}</div>`;
 
       const hasPhoto = !!msg.photoURL;
-      const imgHtml = hasPhoto ? `<img class="msg-img" src="${msg.photoURL}" loading="lazy" onclick="viewChatImg(this.src)">` : '';
+      const imgHtml = hasPhoto
+        ? `<img class="msg-img" src="${msg.photoURL}" loading="lazy" onclick="viewChatImg(this.src,'${msgId}')">`
+        : '';
       const captionHtml = hasPhoto
         ? (msg.text ? `<div class="msg-caption">${escapeHtml(msg.text)}${edited}</div>` : (edited ? `<div class="msg-caption">${edited}</div>` : ''))
         : `${escapeHtml(msg.text)}${edited}`;
 
       const div = document.createElement('div');
       div.className = `msg ${isMine?'mine':'theirs'}`;
+      div.dataset.msgid = msgId;
+      div.dataset.sender = msg.senderName || '';
       div.innerHTML = `<div class="msg-bubble${hasPhoto?' has-photo':''}">${replyHtml}${imgHtml}${captionHtml}</div><div class="msg-time">${time}${tick}</div>`;
       div.addEventListener('contextmenu', e => showCtxMenu(e, msgId, msg, chatId));
       let pressTimer;
-      div.addEventListener('touchstart', e => { pressTimer = setTimeout(() => showCtxMenu(e.touches[0], msgId, msg, chatId), 600); }, { passive: true });
-      div.addEventListener('touchend', () => clearTimeout(pressTimer), { passive: true });
+      div.addEventListener('touchstart', e => { pressTimer = setTimeout(() => showCtxMenu(e.touches[0], msgId, msg, chatId), 600); });
+      div.addEventListener('touchend', () => clearTimeout(pressTimer));
       container.appendChild(div);
     });
     container.scrollTop = container.scrollHeight;
@@ -1665,7 +1787,8 @@ window.openChat = async (uid, name, photo) => {
 window.sendMsg = async () => {
   const input = document.getElementById('chat-msg-input');
   const text = input.value.trim();
-  if (!text && !chatPhotoB64 || !currentChatPartner) return;
+  if (!text && !chatPhotoB64) return;
+  if (!currentChatPartner) return;
   const chatId = [currentUser.uid, currentChatPartner.uid].sort().join('_');
   if (editMsgId) {
     input.value = '';
@@ -1692,37 +1815,33 @@ window.sendMsg = async () => {
 
 let chatUserUnsubs = [];
 
-function renderChatList() {
+async function loadChatUsers() {
+  chatUserUnsubs.forEach(fn => fn()); chatUserUnsubs = [];
+  const snap = await getDocs(collection(db, 'users'));
   const list = document.getElementById('chat-users-list');
-  if (!list) return;
-  const frag = document.createDocumentFragment();
-  let count = 0;
-  cachedUsers.forEach(u => {
+  list.innerHTML = '';
+  snap.docs.forEach(d => {
+    const u = d.data();
     if (u.uid === currentUser.uid) return;
-    count++;
     const initial = (u.displayName||'?')[0].toUpperCase();
     const div = document.createElement('div');
     div.className = 'chat-user-item'; div.dataset.uid = u.uid;
     div.innerHTML = `
-      <div class="chat-avatar">${u.photoURL?`<img src="${u.photoURL}" loading="lazy">`:`<div class="chat-avatar-placeholder">${initial}</div>`}</div>
+      <div class="chat-avatar">${u.photoURL?`<img src="${u.photoURL}">`:`<div class="chat-avatar-placeholder">${initial}</div>`}</div>
       <div class="chat-user-row">
-        <div><div class="chat-user-name">${escapeHtml(u.displayName||'Пользователь')}</div></div>
+        <div><div class="chat-user-name">${escapeHtml(u.displayName||'Пользователь')}</div><div class="chat-user-last">${escapeHtml(u.email||'')}</div></div>
         <span class="unread-badge" id="unread-${u.uid}" style="display:none"></span>
       </div>`;
     div.onclick = () => openChat(u.uid, u.displayName, u.photoURL);
-    frag.appendChild(div);
-  });
-  list.innerHTML = '';
-  if (count === 0) {
-    list.innerHTML = '<div style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text-dim)">// НЕТ ПОЛЬЗОВАТЕЛЕЙ</div>';
-  } else {
-    list.appendChild(frag);
-    updateNavUnread();
-  }
-}
+    list.appendChild(div);
 
-async function loadChatUsers() {
-  renderChatList();
+    const chatId = [currentUser.uid, u.uid].sort().join('_');
+    // ── FIX 1: Subscribe globally (not just in chat view) for notifications ──
+    subscribeToChat(u.uid, u.displayName, u.photoURL, chatId);
+  });
+  if (!list.children.length) {
+    list.innerHTML = '<div style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text-dim)">// НЕТ ПОЛЬЗОВАТЕЛЕЙ</div>';
+  }
 }
 
 // ── FIX 1: Global chat subscription — started on login, not just when chat view opens ──
@@ -1730,19 +1849,13 @@ let globalChatUnsubs = [];
 
 function subscribeToAllChats() {
   globalChatUnsubs.forEach(fn => fn()); globalChatUnsubs = [];
-  cachedUsers.forEach(u => {
-    if (u.uid === currentUser.uid) return;
-    const chatId = [currentUser.uid, u.uid].sort().join('_');
-    subscribeToChat(u.uid, u.displayName, u.photoURL, chatId);
-  });
-}
-
-function initUsersCache() {
-  if (usersUnsub) usersUnsub();
-  usersUnsub = onSnapshot(collection(db, 'users'), snap => {
-    cachedUsers = snap.docs.map(d => d.data());
-    subscribeToAllChats();
-    if (document.getElementById('chat-view').classList.contains('active')) renderChatList();
+  getDocs(collection(db, 'users')).then(snap => {
+    snap.docs.forEach(d => {
+      const u = d.data();
+      if (u.uid === currentUser.uid) return;
+      const chatId = [currentUser.uid, u.uid].sort().join('_');
+      subscribeToChat(u.uid, u.displayName, u.photoURL, chatId);
+    });
   });
 }
 
@@ -1827,7 +1940,7 @@ const STATUS_CLASS = { new: 'log-new', active: 'log-active', done: 'log-done' };
 function renderTickets() {
   const container = getDOM('tickets-container');
   const search = getDOM('search-input').value.toLowerCase();
-  const isAdmin = isAdminCached;
+  const isAdmin = currentUser?.email === ADMIN_EMAIL;
 
   let cntNew = 0, cntActive = 0, cntDone = 0;
   // ── FIX 2: Activity counters ──
@@ -1974,9 +2087,6 @@ onAuthStateChanged(auth, async user => {
       photoURL: user.photoURL
     }, { merge: true });
 
-    isAdminCached = user.email === ADMIN_EMAIL;
-    if (isAdminCached) document.getElementById('admin-stat')?.style && (document.getElementById('admin-stat').style.display = '');
-
     const q = query(collection(db, 'tickets'), orderBy('createdAt', 'desc'));
     onSnapshot(q, snap => {
       allTickets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -1984,7 +2094,7 @@ onAuthStateChanged(auth, async user => {
     });
 
     // ── FIX 1: Start global chat subscriptions immediately after login ──
-    initUsersCache();
+    subscribeToAllChats();
 
   } else {
     document.getElementById('login-screen').style.display = 'flex';
@@ -2077,20 +2187,14 @@ onAuthStateChanged(auth, async user => {
     ctx.globalAlpha = 1;
   }
 
-  let rafId;
   function loop() {
     ctx.clearRect(0, 0, W, H);
     ctx.drawImage(gridCanvas, 0, 0);
     drawConnections();
     particles.forEach(p => p.update());
     drawParticles();
-    rafId = requestAnimationFrame(loop);
+    requestAnimationFrame(loop);
   }
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) { cancelAnimationFrame(rafId); rafId = null; }
-    else if (!rafId) { rafId = requestAnimationFrame(loop); }
-  });
 
   let resizeTimer;
   window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(resize, 150); });
