@@ -117,7 +117,7 @@
   #login-screen {
     position: fixed;
     inset: 0;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     background: var(--bg);
@@ -888,10 +888,34 @@
   .chat-input { flex: 1; background: var(--bg3); border: 1px solid var(--border); color: var(--text); font-family: var(--sans); font-size: 15px; padding: 10px 14px; outline: none; transition: border-color 0.2s; }
   .chat-input:focus { border-color: var(--amber); }
 
+  /* ── Emoji reactions ── */
+  .ctx-reactions {
+    display: flex; flex-wrap: wrap; gap: 3px;
+    padding: 10px 12px; border-bottom: 1px solid rgba(42,42,66,0.6);
+    background: rgba(0,0,0,0.4);
+  }
+  .ctx-reaction-btn {
+    font-size: 22px; background: none; border: none; cursor: pointer;
+    padding: 4px 6px; border-radius: 8px; transition: background 0.1s, transform 0.12s;
+    line-height: 1;
+  }
+  .ctx-reaction-btn:hover { background: rgba(255,255,255,0.12); transform: scale(1.3); }
+
+  /* Reaction chips on messages */
+  .msg-reactions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .msg-reaction-chip {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 12px; padding: 2px 8px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 4px;
+    transition: all 0.15s; font-size: 14px; color: var(--text-dim);
+  }
+  .msg-reaction-chip:hover { background: rgba(245,166,35,0.12); border-color: var(--amber); }
+  .msg-reaction-chip.mine { background: rgba(245,166,35,0.15); border-color: rgba(245,166,35,0.45); color: var(--amber); }
+
   /* ── Chat photo attachment ── */
   .chat-attach-btn {
     display: flex; align-items: center; justify-content: center;
-    width: 42px; height: 42px; background: transparent;
+    width: 44px; height: 44px; background: transparent;
     border: 1px solid var(--border); color: var(--text-dim);
     cursor: pointer; transition: all 0.15s; flex-shrink: 0;
     clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
@@ -917,37 +941,35 @@
 
   /* ── Full photo viewer ── */
   #photo-viewer {
-    position: fixed; inset: 0; background: #000;
+    position: fixed; inset: 0; background: #080810;
     z-index: 10000; display: none; flex-direction: column;
-    animation: pvIn 0.15s ease-out;
   }
   #photo-viewer.open { display: flex; }
-  @keyframes pvIn { from { opacity:0; } to { opacity:1; } }
   .pv-top {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 16px; background: rgba(10,10,16,0.95);
-    border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0;
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 20px; background: rgba(4,4,10,0.99);
+    border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;
   }
-  .pv-sender { flex: 1; font-family: var(--mono); font-size: 11px; color: var(--text-dim); letter-spacing: 1px; }
+  .pv-sender { flex: 1; font-family: var(--mono); font-size: 12px; color: var(--text-mid); letter-spacing: 1px; }
   .pv-btn {
-    background: transparent; border: 1px solid rgba(255,255,255,0.12);
-    color: rgba(255,255,255,0.65); width: 36px; height: 36px;
+    background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.22);
+    color: rgba(255,255,255,0.88); width: 48px; height: 48px;
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: all 0.15s; flex-shrink: 0; border-radius: 4px;
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0; border-radius: 6px;
   }
-  .pv-btn svg { display: block; }
-  .pv-btn:hover { border-color: var(--amber); color: var(--amber); background: rgba(245,166,35,0.1); }
-  .pv-btn.close-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255,59,59,0.1); }
+  .pv-btn svg { display: block; width: 22px; height: 22px; }
+  .pv-btn:hover { border-color: var(--amber); color: var(--amber); background: rgba(245,166,35,0.15); }
+  .pv-btn.close-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255,59,59,0.15); }
   .pv-main {
     flex: 1; display: flex; align-items: center; justify-content: center;
-    overflow: hidden; position: relative;
+    overflow: hidden; background: #000; min-height: 0;
   }
-  #pv-main-img { max-width: 94vw; max-height: calc(100vh - 172px); object-fit: contain; user-select: none; }
+  #pv-main-img { max-width: 96vw; max-height: 100%; object-fit: contain; user-select: none; display: block; }
   .pv-strip {
     flex-shrink: 0; display: flex; align-items: center; gap: 6px;
-    padding: 10px 14px; background: rgba(10,10,16,0.95);
+    padding: 10px 14px; background: rgba(4,4,10,0.99);
     border-top: 1px solid rgba(255,255,255,0.07);
-    overflow-x: auto; min-height: 92px;
+    overflow-x: auto; height: 92px;
   }
   .pv-strip::-webkit-scrollbar { height: 3px; }
   .pv-strip::-webkit-scrollbar-thumb { background: var(--border); }
@@ -1201,16 +1223,13 @@
           </div>
           <div id="chat-photo-bar" style="display:none" class="chat-photo-bar">
             <img class="chat-photo-thumb" id="chat-photo-thumb" src="" onclick="viewChatImg(this.src)">
-            <div class="chat-photo-bar-info">
-              ФОТО ПРИКРЕПЛЕНО
-              <div class="chat-photo-bar-size" id="chat-photo-size"></div>
-            </div>
+            <div class="chat-photo-bar-info">ФОТО ПРИКРЕПЛЕНО<div class="chat-photo-bar-size" id="chat-photo-size"></div></div>
             <button class="chat-photo-cancel" onclick="cancelChatPhoto()">✕</button>
           </div>
           <div class="chat-input-row">
             <label class="chat-attach-btn" title="Прикрепить фото">
               <input type="file" id="chat-photo-input" accept="image/*" style="display:none" onchange="previewChatPhoto(this)">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
             </label>
             <input class="chat-input" id="chat-msg-input" placeholder="СООБЩЕНИЕ ИЛИ ПОДПИСЬ К ФОТО..." onkeydown="if(event.key==='Enter')sendMsg()">
             <button class="btn-send" onclick="sendMsg()">ОТПРАВИТЬ</button>
@@ -1225,19 +1244,17 @@
 <div id="photo-viewer">
   <div class="pv-top">
     <div class="pv-sender" id="pv-sender"></div>
-    <button class="pv-btn" id="pv-goto-btn" title="Перейти к сообщению" onclick="pvGoToMsg()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <button class="pv-btn" title="Перейти к сообщению" onclick="pvGoToMsg()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     </button>
-    <button class="pv-btn" title="Скачать фото" onclick="pvDownload()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <button class="pv-btn" title="Скачать" onclick="pvDownload()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     </button>
     <button class="pv-btn close-btn" title="Закрыть" onclick="pvClose()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </div>
-  <div class="pv-main">
-    <img id="pv-main-img" src="">
-  </div>
+  <div class="pv-main"><img id="pv-main-img" src=""></div>
   <div class="pv-strip" id="pv-strip"></div>
 </div>
 
@@ -1302,10 +1319,7 @@ let currentChatPartner = null;
 let chatUnsub = null;
 let photoB64 = null;
 let chatPhotoB64 = null;
-// Photo viewer state
-let pvPhotos = []; // [{src, senderName, time, msgId}]
-let pvIndex = 0;
-let pvCurrentMsgId = null;
+let pvPhotos = [], pvIndex = 0, pvCurrentMsgId = null;
 
 window.signIn = async () => {
   try { await signInWithPopup(auth, provider); } catch(e) { showToast('ОШИБКА ВХОДА'); }
@@ -1319,115 +1333,6 @@ window.signOut = async () => {
 
 window.cancelReply = () => { replyTo = null; document.getElementById('reply-bar').style.display = 'none'; };
 window.cancelEdit  = () => { editMsgId = null; document.getElementById('edit-bar').style.display = 'none'; document.getElementById('chat-msg-input').value = ''; };
-
-window.previewChatPhoto = (input) => {
-  const file = input.files[0];
-  if (!file) return;
-  if (file.size > 10 * 1024 * 1024) { showToast('ФАЙЛ БОЛЬШЕ 10МБ'); input.value = ''; return; }
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      const MAX = 1200;
-      let w = img.width, h = img.height;
-      if (w > MAX || h > MAX) {
-        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
-        else { w = Math.round(w * MAX / h); h = MAX; }
-      }
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      chatPhotoB64 = canvas.toDataURL('image/jpeg', 0.82);
-      const kb = Math.round(chatPhotoB64.length * 0.75 / 1024);
-      document.getElementById('chat-photo-thumb').src = chatPhotoB64;
-      document.getElementById('chat-photo-size').textContent = kb + ' KB';
-      document.getElementById('chat-photo-bar').style.display = 'flex';
-      document.getElementById('chat-msg-input').placeholder = 'ПОДПИСЬ К ФОТО (НЕОБЯЗАТЕЛЬНО)...';
-      document.getElementById('chat-msg-input').focus();
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-};
-
-window.cancelChatPhoto = () => {
-  chatPhotoB64 = null;
-  document.getElementById('chat-photo-input').value = '';
-  document.getElementById('chat-photo-bar').style.display = 'none';
-  document.getElementById('chat-msg-input').placeholder = 'СООБЩЕНИЕ ИЛИ ПОДПИСЬ К ФОТО...';
-};
-
-// ── Photo Viewer ──────────────────────────────────────────────
-window.viewChatImg = (src, msgId) => {
-  // Build photo list from current chat messages
-  pvPhotos = [];
-  pvIndex = 0;
-  const container = document.getElementById('chat-messages');
-  container.querySelectorAll('.msg-img').forEach((img, i) => {
-    const msgEl = img.closest('.msg');
-    const timeEl = msgEl?.querySelector('.msg-time');
-    const mid = msgEl?.dataset.msgid || '';
-    pvPhotos.push({ src: img.src, senderName: msgEl?.dataset.sender || '', time: timeEl?.textContent?.trim() || '', msgId: mid });
-    if (img.src === src || mid === msgId) pvIndex = i;
-  });
-  if (!pvPhotos.length) { pvPhotos = [{ src, senderName: '', time: '', msgId: msgId || '' }]; pvIndex = 0; }
-  pvRender();
-  document.getElementById('photo-viewer').classList.add('open');
-  document.addEventListener('keydown', pvKeyHandler);
-};
-
-function pvRender() {
-  const p = pvPhotos[pvIndex];
-  document.getElementById('pv-main-img').src = p.src;
-  document.getElementById('pv-sender').textContent = (p.senderName ? p.senderName + '  ·  ' : '') + (p.time || '');
-  pvCurrentMsgId = p.msgId;
-
-  // Strip thumbnails
-  const strip = document.getElementById('pv-strip');
-  strip.innerHTML = '';
-  pvPhotos.forEach((ph, i) => {
-    const img = document.createElement('img');
-    img.src = ph.src; img.className = 'pv-thumb' + (i === pvIndex ? ' active' : '');
-    img.onclick = () => { pvIndex = i; pvRender(); };
-    strip.appendChild(img);
-  });
-  // Scroll active thumb into view
-  const active = strip.querySelector('.pv-thumb.active');
-  if (active) active.scrollIntoView({ inline: 'center', behavior: 'smooth' });
-}
-
-window.pvClose = () => {
-  document.getElementById('photo-viewer').classList.remove('open');
-  document.removeEventListener('keydown', pvKeyHandler);
-};
-
-window.pvDownload = () => {
-  const src = pvPhotos[pvIndex]?.src;
-  if (!src) return;
-  const a = document.createElement('a');
-  a.href = src;
-  a.download = 'photo_' + Date.now() + '.jpg';
-  a.click();
-};
-
-window.pvGoToMsg = () => {
-  pvClose();
-  if (!pvCurrentMsgId) return;
-  const msgEl = document.querySelector(`[data-msgid="${pvCurrentMsgId}"]`);
-  if (msgEl) {
-    msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    msgEl.style.outline = '2px solid var(--amber)';
-    setTimeout(() => { msgEl.style.outline = ''; }, 1800);
-  }
-};
-
-function pvKeyHandler(e) {
-  if (e.key === 'Escape') pvClose();
-  if (e.key === 'ArrowRight' && pvIndex < pvPhotos.length - 1) { pvIndex++; pvRender(); }
-  if (e.key === 'ArrowLeft'  && pvIndex > 0) { pvIndex--; pvRender(); }
-}
-
-window.viewChatImg = viewChatImg;
 
 window.showView = (id, btn) => {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1555,6 +1460,7 @@ function showCtxMenu(e, msgId, msgData, chatId) {
   const menu = document.createElement('div');
   menu.id = 'ctx-menu'; menu.className = 'ctx-menu';
   menu.innerHTML =
+    `<div class="ctx-reactions"><button class="ctx-reaction-btn" onclick="addReaction('👍')">👍</button><button class="ctx-reaction-btn" onclick="addReaction('❤️')">❤️</button><button class="ctx-reaction-btn" onclick="addReaction('😂')">😂</button><button class="ctx-reaction-btn" onclick="addReaction('😮')">😮</button><button class="ctx-reaction-btn" onclick="addReaction('😢')">😢</button><button class="ctx-reaction-btn" onclick="addReaction('🙏')">🙏</button><button class="ctx-reaction-btn" onclick="addReaction('🔥')">🔥</button><button class="ctx-reaction-btn" onclick="addReaction('👎')">👎</button><button class="ctx-reaction-btn" onclick="addReaction('😍')">😍</button><button class="ctx-reaction-btn" onclick="addReaction('🤣')">🤣</button><button class="ctx-reaction-btn" onclick="addReaction('😊')">😊</button><button class="ctx-reaction-btn" onclick="addReaction('😎')">😎</button><button class="ctx-reaction-btn" onclick="addReaction('🤔')">🤔</button><button class="ctx-reaction-btn" onclick="addReaction('😅')">😅</button><button class="ctx-reaction-btn" onclick="addReaction('🥳')">🥳</button><button class="ctx-reaction-btn" onclick="addReaction('🎉')">🎉</button><button class="ctx-reaction-btn" onclick="addReaction('👏')">👏</button><button class="ctx-reaction-btn" onclick="addReaction('💯')">💯</button><button class="ctx-reaction-btn" onclick="addReaction('✅')">✅</button><button class="ctx-reaction-btn" onclick="addReaction('🚀')">🚀</button><button class="ctx-reaction-btn" onclick="addReaction('💪')">💪</button><button class="ctx-reaction-btn" onclick="addReaction('😤')">😤</button><button class="ctx-reaction-btn" onclick="addReaction('🥺')">🥺</button><button class="ctx-reaction-btn" onclick="addReaction('😭')">😭</button><button class="ctx-reaction-btn" onclick="addReaction('🤯')">🤯</button><button class="ctx-reaction-btn" onclick="addReaction('👀')">👀</button><button class="ctx-reaction-btn" onclick="addReaction('💀')">💀</button><button class="ctx-reaction-btn" onclick="addReaction('🫡')">🫡</button><button class="ctx-reaction-btn" onclick="addReaction('🤝')">🤝</button><button class="ctx-reaction-btn" onclick="addReaction('⚡')">⚡</button><button class="ctx-reaction-btn" onclick="addReaction('😆')">😆</button><button class="ctx-reaction-btn" onclick="addReaction('🤩')">🤩</button><button class="ctx-reaction-btn" onclick="addReaction('😜')">😜</button><button class="ctx-reaction-btn" onclick="addReaction('🥰')">🥰</button><button class="ctx-reaction-btn" onclick="addReaction('😇')">😇</button><button class="ctx-reaction-btn" onclick="addReaction('🤗')">🤗</button><button class="ctx-reaction-btn" onclick="addReaction('🙄')">🙄</button><button class="ctx-reaction-btn" onclick="addReaction('😏')">😏</button><button class="ctx-reaction-btn" onclick="addReaction('😡')">😡</button><button class="ctx-reaction-btn" onclick="addReaction('🤬')">🤬</button><button class="ctx-reaction-btn" onclick="addReaction('😱')">😱</button><button class="ctx-reaction-btn" onclick="addReaction('🤫')">🤫</button><button class="ctx-reaction-btn" onclick="addReaction('🤭')">🤭</button><button class="ctx-reaction-btn" onclick="addReaction('😴')">😴</button><button class="ctx-reaction-btn" onclick="addReaction('🤢')">🤢</button><button class="ctx-reaction-btn" onclick="addReaction('🤮')">🤮</button><button class="ctx-reaction-btn" onclick="addReaction('🥵')">🥵</button><button class="ctx-reaction-btn" onclick="addReaction('🥶')">🥶</button><button class="ctx-reaction-btn" onclick="addReaction('😰')">😰</button><button class="ctx-reaction-btn" onclick="addReaction('😨')">😨</button><button class="ctx-reaction-btn" onclick="addReaction('😦')">😦</button></div>` +
     `<div class="ctx-header"><span class="ctx-header-dot"></span><span class="ctx-header-text">${escapeHtml(preview)}</span></div>` +
     items.map((it, i) =>
       `${it.sep ? '<div class="ctx-sep"></div>' : ''}<div class="ctx-item${it.danger ? ' danger' : ''}" data-i="${i}">${it.icon}${it.label}</div>`
@@ -1760,18 +1666,21 @@ window.openChat = async (uid, name, photo) => {
       if (msg.replyTo) replyHtml = `<div class="msg-reply-quote"><div class="msg-reply-quote-name">${escapeHtml(msg.replyTo.senderName)}</div>${escapeHtml(msg.replyTo.text)}</div>`;
 
       const hasPhoto = !!msg.photoURL;
-      const imgHtml = hasPhoto
-        ? `<img class="msg-img" src="${msg.photoURL}" loading="lazy" onclick="viewChatImg(this.src,'${msgId}')">`
-        : '';
+      const imgHtml = hasPhoto ? `<img class="msg-img" src="${msg.photoURL}" loading="lazy" onclick="viewChatImg(this.src,'${msgId}')">` : '';
       const captionHtml = hasPhoto
-        ? (msg.text ? `<div class="msg-caption">${escapeHtml(msg.text)}${edited}</div>` : (edited ? `<div class="msg-caption">${edited}</div>` : ''))
+        ? (msg.text ? `<div class="msg-caption">${escapeHtml(msg.text)}${edited}</div>` : (edited?`<div class="msg-caption">${edited}</div>`:''))
         : `${escapeHtml(msg.text)}${edited}`;
+      const reactions = msg.reactions || {};
+      const reactHtml = Object.entries(reactions).filter(([,u])=>u&&u.length).map(([emoji,users])=>{
+        const isMineR=users.includes(currentUser.uid);
+        return `<span class="msg-reaction-chip${isMineR?' mine':''}">${emoji} ${users.length}</span>`;
+      }).join('');
 
       const div = document.createElement('div');
       div.className = `msg ${isMine?'mine':'theirs'}`;
       div.dataset.msgid = msgId;
       div.dataset.sender = msg.senderName || '';
-      div.innerHTML = `<div class="msg-bubble${hasPhoto?' has-photo':''}">${replyHtml}${imgHtml}${captionHtml}</div><div class="msg-time">${time}${tick}</div>`;
+      div.innerHTML = `<div class="msg-bubble${hasPhoto?' has-photo':''}">${replyHtml}${imgHtml}${captionHtml}</div><div class="msg-time">${time}${tick}</div>${reactHtml?`<div class="msg-reactions">${reactHtml}</div>`:''}`;
       div.addEventListener('contextmenu', e => showCtxMenu(e, msgId, msg, chatId));
       let pressTimer;
       div.addEventListener('touchstart', e => { pressTimer = setTimeout(() => showCtxMenu(e.touches[0], msgId, msg, chatId), 600); });
@@ -1797,8 +1706,7 @@ window.sendMsg = async () => {
     document.getElementById('edit-bar').style.display = 'none';
   } else {
     const payload = {
-      text: text || '',
-      photoURL: chatPhotoB64 || null,
+      text: text||'', photoURL: chatPhotoB64||null,
       senderId: currentUser.uid, senderName: currentUser.displayName,
       createdAt: serverTimestamp(), readBy: [currentUser.uid]
     };
@@ -1915,6 +1823,93 @@ function subscribeToChat(uid, name, photo, chatId) {
   });
 
   globalChatUnsubs.push(unsub);
+}
+
+
+window.previewChatPhoto = (input) => {
+  const file = input.files[0]; if (!file) return;
+  if (file.size > 10*1024*1024) { showToast('ФАЙЛ БОЛЬШЕ 10МБ'); input.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX=1200; let w=img.width, h=img.height;
+      if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      chatPhotoB64=c.toDataURL('image/jpeg',0.82);
+      const kb=Math.round(chatPhotoB64.length*0.75/1024);
+      document.getElementById('chat-photo-thumb').src=chatPhotoB64;
+      document.getElementById('chat-photo-size').textContent=kb+' KB';
+      document.getElementById('chat-photo-bar').style.display='flex';
+      document.getElementById('chat-msg-input').placeholder='ПОДПИСЬ К ФОТО (НЕОБЯЗАТЕЛЬНО)...';
+      document.getElementById('chat-msg-input').focus();
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+window.cancelChatPhoto = () => {
+  chatPhotoB64=null;
+  document.getElementById('chat-photo-input').value='';
+  document.getElementById('chat-photo-bar').style.display='none';
+  document.getElementById('chat-msg-input').placeholder='СООБЩЕНИЕ ИЛИ ПОДПИСЬ К ФОТО...';
+};
+
+function viewChatImg(src, msgId) {
+  pvPhotos=[]; pvIndex=0;
+  document.getElementById('chat-messages').querySelectorAll('.msg-img').forEach((img,i)=>{
+    const m=img.closest('.msg'), t=m?.querySelector('.msg-time'), mid=m?.dataset.msgid||'';
+    pvPhotos.push({src:img.src,senderName:m?.dataset.sender||'',time:t?.textContent?.trim()||'',msgId:mid});
+    if(img.src===src||mid===msgId) pvIndex=i;
+  });
+  if(!pvPhotos.length) pvPhotos=[{src,senderName:'',time:'',msgId:msgId||''}];
+  pvRender();
+  document.getElementById('photo-viewer').classList.add('open');
+  document.addEventListener('keydown',pvKeyHandler);
+}
+window.viewChatImg=viewChatImg;
+
+function pvRender(){
+  const p=pvPhotos[pvIndex];
+  document.getElementById('pv-main-img').src=p.src;
+  document.getElementById('pv-sender').textContent=(p.senderName?p.senderName+'  ·  ':'')+(p.time||'');
+  pvCurrentMsgId=p.msgId;
+  const strip=document.getElementById('pv-strip'); strip.innerHTML='';
+  pvPhotos.forEach((ph,i)=>{
+    const img=document.createElement('img');
+    img.src=ph.src; img.className='pv-thumb'+(i===pvIndex?' active':'');
+    img.onclick=()=>{pvIndex=i;pvRender();};
+    strip.appendChild(img);
+  });
+  strip.querySelector('.pv-thumb.active')?.scrollIntoView({inline:'center',behavior:'smooth'});
+}
+window.pvClose=()=>{document.getElementById('photo-viewer').classList.remove('open');document.removeEventListener('keydown',pvKeyHandler);};
+window.pvDownload=()=>{
+  const src=pvPhotos[pvIndex]?.src; if(!src)return;
+  const a=document.createElement('a'); a.href=src; a.download='photo_'+Date.now()+'.jpg'; a.click();
+};
+window.pvGoToMsg=()=>{
+  pvClose(); if(!pvCurrentMsgId)return;
+  const el=document.querySelector('[data-msgid="'+pvCurrentMsgId+'"]');
+  if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='2px solid var(--amber)';setTimeout(()=>el.style.outline='',1800);}
+};
+function pvKeyHandler(e){
+  if(e.key==='Escape')pvClose();
+  if(e.key==='ArrowRight'&&pvIndex<pvPhotos.length-1){pvIndex++;pvRender();}
+  if(e.key==='ArrowLeft'&&pvIndex>0){pvIndex--;pvRender();}
+}
+
+async function addReaction(emoji) {
+  closeCtxMenu();
+  if (!ctxMsgId||!ctxChatId) return;
+  const msgRef=doc(db,'chats',ctxChatId,'messages',ctxMsgId);
+  const existing=ctxMsgData.reactions||{};
+  const users=existing[emoji]||[];
+  const uid=currentUser.uid;
+  const newUsers=users.includes(uid)?users.filter(u=>u!==uid):[...users,uid];
+  const upd={}; upd['reactions.'+emoji]=newUsers;
+  await updateDoc(msgRef,upd);
 }
 
 function updateNavUnread() {
