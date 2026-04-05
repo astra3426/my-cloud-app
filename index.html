@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600;700;900&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
+<!-- Twemoji for WhatsApp-style emojis -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" crossorigin="anonymous"></script>
 
 <style>
   :root {
@@ -29,6 +31,12 @@
     --sans: 'Barlow', sans-serif;
     --cond: 'Barlow Condensed', sans-serif;
   }
+
+  /* Twemoji images */
+  img.emoji { width: 1.2em; height: 1.2em; vertical-align: -0.2em; display: inline-block; }
+  .ctx-reaction-btn img.emoji { width: 28px; height: 28px; vertical-align: middle; }
+  .emoji-grid-item img.emoji { width: 22px; height: 22px; vertical-align: middle; }
+  .msg-reaction-chip img.emoji { width: 16px; height: 16px; vertical-align: middle; }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -230,7 +238,6 @@
   }
   @media (max-width: 640px) {
     .sidebar { display: none; }
-    .dash-banner { grid-template-columns: 1fr 1fr; }
     .hdr-search { display: none; }
   }
 
@@ -382,38 +389,39 @@
   }
   @keyframes ctxIn { from { opacity:0; transform:scale(0.94) translateY(-6px); } to { opacity:1; transform:scale(1) translateY(0); } }
 
-  /* ── Quick reactions bar (WhatsApp style) ── */
+  /* Quick reactions bar */
   .ctx-reactions {
     display: flex; align-items: center; gap: 2px;
-    padding: 10px 12px 8px;
+    padding: 8px 10px 6px;
     border-bottom: 1px solid rgba(42,42,66,0.6);
-    background: rgba(0,0,0,0.35);
+    background: rgba(0,0,0,0.3);
   }
   .ctx-reaction-btn {
-    font-size: 26px; background: none; border: none; cursor: pointer;
-    padding: 4px 5px; border-radius: 50%; transition: background 0.1s, transform 0.12s;
-    line-height: 1; flex-shrink: 0;
+    font-size: 0; background: none; border: none; cursor: pointer;
+    padding: 3px 4px; border-radius: 50%; transition: background 0.1s, transform 0.12s;
+    line-height: 1; flex-shrink: 0; width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
   }
-  .ctx-reaction-btn:hover { background: rgba(255,255,255,0.12); transform: scale(1.35); }
+  .ctx-reaction-btn:hover { background: rgba(255,255,255,0.1); transform: scale(1.3); }
   .ctx-reaction-more {
     margin-left: auto; background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.15); border-radius: 50%;
-    width: 38px; height: 38px; cursor: pointer; color: var(--text-mid);
-    font-size: 18px; display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s; flex-shrink: 0; font-family: var(--sans);
+    border: 1px solid rgba(255,255,255,0.13); border-radius: 50%;
+    width: 36px; height: 36px; cursor: pointer; color: var(--text-mid);
+    font-size: 16px; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; flex-shrink: 0;
   }
   .ctx-reaction-more:hover { background: rgba(245,166,35,0.15); border-color: var(--amber); color: var(--amber); }
 
-  /* ── Emoji picker panel ── */
+  /* Emoji picker */
   .emoji-picker {
     border-bottom: 1px solid rgba(42,42,66,0.6);
     background: rgba(4,4,10,0.98);
-    display: none;
+    display: none; width: 320px;
   }
   .emoji-picker.open { display: block; }
   .emoji-picker-search-row {
     display: flex; align-items: center;
-    padding: 8px 10px; border-bottom: 1px solid rgba(42,42,66,0.4);
+    padding: 7px 10px; border-bottom: 1px solid rgba(42,42,66,0.4);
   }
   .emoji-picker-search-row input {
     flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
@@ -422,41 +430,46 @@
   }
   .emoji-picker-search-row input:focus { border-color: var(--amber); }
   .emoji-picker-cats {
-    display: flex; gap: 2px; padding: 5px 8px;
+    display: flex; gap: 0; padding: 4px 8px;
     border-bottom: 1px solid rgba(42,42,66,0.3); overflow-x: auto;
   }
   .emoji-picker-cats::-webkit-scrollbar { display: none; }
   .emoji-cat-btn {
-    background: none; border: none; cursor: pointer; font-size: 17px;
-    padding: 3px 6px; border-radius: 4px; opacity: 0.55; transition: all 0.12s; flex-shrink: 0;
+    background: none; border: none; cursor: pointer;
+    padding: 4px 6px; border-radius: 4px; transition: all 0.12s; flex-shrink: 0;
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    opacity: 0.5; font-size: 0;
   }
+  .emoji-cat-btn img.emoji { width: 18px; height: 18px; }
   .emoji-cat-btn:hover, .emoji-cat-btn.active { opacity: 1; background: rgba(245,166,35,0.12); }
   .emoji-picker-grid {
     display: flex; flex-wrap: wrap; gap: 1px;
-    padding: 6px 8px; max-height: 170px; overflow-y: auto;
+    padding: 6px 8px; max-height: 200px; overflow-y: auto;
   }
   .emoji-picker-grid::-webkit-scrollbar { width: 3px; }
   .emoji-picker-grid::-webkit-scrollbar-thumb { background: var(--border); }
   .emoji-grid-item {
-    font-size: 22px; background: none; border: none; cursor: pointer;
-    padding: 3px 4px; border-radius: 6px; transition: background 0.1s, transform 0.1s; line-height: 1;
+    background: none; border: none; cursor: pointer;
+    padding: 3px 4px; border-radius: 6px; transition: background 0.1s, transform 0.1s;
+    width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 0;
   }
   .emoji-grid-item:hover { background: rgba(255,255,255,0.1); transform: scale(1.2); }
 
-  /* Reaction chips on messages */
+  /* Reaction chips */
   .msg-reactions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
   .msg-reaction-chip {
     background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.13);
     border-radius: 12px; padding: 2px 8px; cursor: pointer;
     display: inline-flex; align-items: center; gap: 4px;
-    transition: all 0.15s; font-size: 14px; color: var(--text-dim);
+    transition: all 0.15s; font-size: 13px; color: var(--text-dim);
+    font-family: var(--mono);
   }
   .msg-reaction-chip:hover { background: rgba(245,166,35,0.12); border-color: var(--amber); }
   .msg-reaction-chip.mine { background: rgba(245,166,35,0.15); border-color: rgba(245,166,35,0.45); color: var(--amber); }
 
-  .ctx-header { padding: 10px 14px; border-bottom: 1px solid rgba(42,42,66,0.7); font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: var(--amber); display: flex; align-items: center; gap: 8px; background: rgba(245,166,35,0.05); }
+  .ctx-header { padding: 9px 14px; border-bottom: 1px solid rgba(42,42,66,0.7); font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: var(--amber); display: flex; align-items: center; gap: 8px; background: rgba(245,166,35,0.04); }
   .ctx-header-dot { width: 5px; height: 5px; background: var(--amber); border-radius: 50%; box-shadow: 0 0 6px var(--amber); flex-shrink: 0; }
-  .ctx-header-text { color: var(--text-dim); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+  .ctx-header-text { color: var(--text-dim); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px; }
 
   .ctx-item { display: flex; align-items: center; gap: 12px; padding: 9px 14px; font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px; color: var(--text-mid); cursor: pointer; transition: background 0.08s, color 0.08s; border-bottom: 1px solid rgba(42,42,66,0.2); position: relative; }
   .ctx-item:last-child { border-bottom: none; }
@@ -529,7 +542,7 @@
   .msg-bubble.has-photo { padding: 0; overflow: hidden; }
   .msg-caption { padding: 6px 12px 4px; font-size: 14px; }
 
-  /* ── Photo viewer - FIXED ── */
+  /* Photo viewer */
   #photo-viewer {
     position: fixed; inset: 0; background: #050508;
     z-index: 10000; display: none; flex-direction: column;
@@ -537,44 +550,43 @@
   #photo-viewer.open { display: flex; }
 
   .pv-top {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 16px; background: rgba(4,4,10,0.99);
-    border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0; height: 72px;
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; background: rgba(4,4,10,0.99);
+    border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0; height: 56px;
   }
   .pv-sender { flex: 1; font-family: var(--mono); font-size: 12px; color: var(--text-mid); letter-spacing: 1px; }
 
-  /* BIGGER buttons - 60px */
+  /* Smaller buttons — 38px */
   .pv-btn {
-    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
-    color: rgba(255,255,255,0.85); width: 60px; height: 60px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.8); width: 38px; height: 38px;
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: all 0.15s; flex-shrink: 0; border-radius: 8px;
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0; border-radius: 6px;
   }
-  .pv-btn svg { display: block; width: 28px; height: 28px; }
-  .pv-btn:hover { border-color: var(--amber); color: var(--amber); background: rgba(245,166,35,0.15); box-shadow: 0 0 16px rgba(245,166,35,0.2); }
-  .pv-btn.close-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255,59,59,0.15); box-shadow: 0 0 16px rgba(255,59,59,0.2); }
+  .pv-btn svg { display: block; width: 18px; height: 18px; }
+  .pv-btn:hover { border-color: var(--amber); color: var(--amber); background: rgba(245,166,35,0.12); }
+  .pv-btn.close-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255,59,59,0.12); }
 
-  /* FIXED: image fills available space properly */
   .pv-main {
     flex: 1; display: flex; align-items: center; justify-content: center;
     overflow: hidden; background: #000; position: relative; min-height: 0;
   }
   #pv-main-img {
     max-width: 96vw;
-    max-height: calc(100vh - 72px - 92px);
+    max-height: calc(100vh - 56px - 88px);
     width: auto; height: auto;
     object-fit: contain; user-select: none; display: block;
   }
 
   .pv-strip {
     flex-shrink: 0; display: flex; align-items: center; gap: 6px;
-    padding: 10px 14px; background: rgba(4,4,10,0.99);
+    padding: 8px 12px; background: rgba(4,4,10,0.99);
     border-top: 1px solid rgba(255,255,255,0.07);
-    overflow-x: auto; height: 92px;
+    overflow-x: auto; height: 88px;
   }
   .pv-strip::-webkit-scrollbar { height: 3px; }
   .pv-strip::-webkit-scrollbar-thumb { background: var(--border); }
-  .pv-thumb { width: 66px; height: 66px; flex-shrink: 0; object-fit: cover; cursor: pointer; opacity: 0.4; border: 2px solid transparent; transition: all 0.15s; border-radius: 2px; }
+  .pv-thumb { width: 64px; height: 64px; flex-shrink: 0; object-fit: cover; cursor: pointer; opacity: 0.4; border: 2px solid transparent; transition: all 0.15s; border-radius: 2px; }
   .pv-thumb:hover { opacity: 0.75; }
   .pv-thumb.active { opacity: 1; border-color: var(--amber); box-shadow: 0 0 10px rgba(245,166,35,0.4); }
 
@@ -802,7 +814,7 @@
               <input type="file" id="chat-photo-input" accept="image/*" style="display:none" onchange="previewChatPhoto(this)">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
             </label>
-            <input class="chat-input" id="chat-msg-input" placeholder="СООБЩЕНИЕ ИЛИ ПОДПИСЬ К ФОТО..." onkeydown="if(event.key==='Enter')sendMsg()">
+            <input class="chat-input" id="chat-msg-input" placeholder="СООБЩЕНИЕ..." onkeydown="if(event.key==='Enter')sendMsg()">
             <button class="btn-send" onclick="sendMsg()">ОТПРАВИТЬ</button>
           </div>
         </div>
@@ -837,14 +849,8 @@
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="field">
-        <label>// ЗАГОЛОВОК</label>
-        <input type="text" id="ticket-title" placeholder="Опишите проблему кратко">
-      </div>
-      <div class="field">
-        <label>// ОПИСАНИЕ</label>
-        <textarea id="ticket-desc" rows="4" placeholder="Подробное описание..."></textarea>
-      </div>
+      <div class="field"><label>// ЗАГОЛОВОК</label><input type="text" id="ticket-title" placeholder="Опишите проблему кратко"></div>
+      <div class="field"><label>// ОПИСАНИЕ</label><textarea id="ticket-desc" rows="4" placeholder="Подробное описание..."></textarea></div>
       <div class="field">
         <label>// ФОТО (ОПЦИОНАЛЬНО)</label>
         <div class="file-drop">
@@ -882,251 +888,234 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 provider.setCustomParameters({ prompt: 'select_account' });
 
-let currentUser = null;
-let allTickets = [];
-let currentFilter = 'all';
-let currentChatPartner = null;
-let chatUnsub = null;
-let photoB64 = null;
-let chatPhotoB64 = null;
-let cachedUsers = [];
-let usersUnsub = null;
-let isAdminCached = false;
+let currentUser=null, allTickets=[], currentFilter='all';
+let currentChatPartner=null, chatUnsub=null;
+let photoB64=null, chatPhotoB64=null;
+let cachedUsers=[], usersUnsub=null, isAdminCached=false;
 let _filterTimer;
-let pvPhotos = [], pvIndex = 0, pvCurrentMsgId = null;
+let pvPhotos=[], pvIndex=0, pvCurrentMsgId=null;
 
-// ── Emoji data for picker ──
+// Helper: parse emoji to twemoji img tag
+function twemoji(emoji) {
+  const div = document.createElement('div');
+  div.textContent = emoji;
+  window.twemoji.parse(div, { folder: 'svg', ext: '.svg' });
+  return div.innerHTML;
+}
+
+// ── Emoji categories ──
 const EMOJI_CATS = [
-  { icon: '😀', label: 'Смайлы', emojis: ['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','😇','🥰','😍','🤩','😘','😗','😚','😙','🥲','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😔','😪','🤤','😴','😷','🤒','🤕','🤧','🥵','🥶','🥴','😵','💫','🤯','🤠','🥳','🥸','😎','🤓','🧐','😕','🙁','☹️','😮','😯','😲','😳','🥺','😦','😧','😨','😰','😥','😢','😭','😱','😖','😣','😞','😓','😩','😫','🥱','😤','😡','😠','🤬','😈','👿','💀','☠️','💩','🤡','👹','👺','👻','👽','👾','🤖'] },
-  { icon: '👋', label: 'Жесты', emojis: ['👋','🤚','🖐','✋','🖖','🤙','👌','🤌','🤏','✌️','🤞','🤟','🤘','👆','👇','👈','👉','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','🤲','👐','🤝','🙏','✍️','💪','🦾','🦿','🦵','🦶','👂','🦻','👃','👀','👁','👅','👄','🫀','🫁','🧠','🦷','🦴'] },
-  { icon: '🐶', label: 'Животные', emojis: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🙈','🙉','🙊','🐒','🐔','🐧','🐦','🦅','🦆','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐜','🪲','🦟','🦗','🦂','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🦭','🐊','🐅','🐆','🦓','🦍','🦧','🦣','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🦬','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐈','🐓','🦃','🦤','🦚','🦜','🦢','🕊','🐇','🦝','🦨','🦡','🦫','🦦','🦥','🐿','🦔'] },
-  { icon: '🍕', label: 'Еда', emojis: ['🍕','🍔','🍟','🌭','🌮','🌯','🥙','🥪','🥗','🍝','🍜','🍲','🍛','🍣','🍱','🍤','🍙','🍚','🍘','🍥','🥮','🍢','🧆','🥚','🍳','🥘','🥫','🧂','🥞','🧇','🥓','🥩','🍗','🍖','🌽','🥦','🥬','🥒','🥕','🧅','🧄','🥔','🍠','🍅','🫑','🫒','🥝','🍓','🫐','🍒','🍑','🥭','🍍','🥥','🍈','🍌','🍋','🍊','🍎','🍏','🍐','🍇','🍉','🍓','🍰','🎂','🧁','🍮','🍭','🍬','🍫','🍿','🍩','🍪','🌰','🥜','🍯','🧃','🥤','🧋','☕','🍵','🍶','🍺','🍻','🥂','🍷','🥃','🍸','🍹','🧉'] },
-  { icon: '⚽', label: 'Спорт', emojis: ['⚽','🏀','🏈','⚾','🥎','🏐','🏉','🎾','🥏','🎱','🪀','🏓','🏸','🏒','🥊','🥋','🎯','⛳','🎣','🤿','🎽','🎿','🛷','🥌','🪁','🏹','🛹','🛼','🩴','🩺','🏋','🤼','🤸','🤺','🏇','⛷','🏂','🪂','🏌','🏄','🚣','🧗','🚵','🚴','🏊','🤽','🧘','🏃','🚶','🧍','🧎','🤾','🏌','🏇','🏅','🥇','🥈','🥉','🏆','🎖'] },
-  { icon: '🚗', label: 'Транспорт', emojis: ['🚗','🚕','🚙','🚌','🚎','🏎','🚓','🚑','🚒','🚐','🛻','🚚','🚛','🚜','🏍','🛵','🚲','🛴','🛺','🚁','✈️','🛫','🛬','🪂','🚀','🛸','🚂','🚃','🚄','🚅','🚆','🚇','🚈','🚉','🚊','🚞','🚝','🚋','🛳','⛴','🚢','⛵','🚤','🛥','🛩','🛰','🚡','🚠','🚟','🚃','⛽','🚧','🛑','⚓','🗺','🧭'] },
-  { icon: '💡', label: 'Объекты', emojis: ['💡','🔦','🕯','🪔','💰','💴','💵','💶','💷','💸','💳','🧾','💹','💱','✉️','📧','📨','📩','📪','📫','📬','📭','📮','🗳','✏️','✒️','🖊','🖋','📝','📁','📂','🗂','📅','📆','🗒','🗓','📇','📈','📉','📊','📋','📌','📍','🗺','📎','🖇','📏','📐','✂️','🗃','🗄','🗑','🔒','🔓','🔑','🗝','🔨','🪓','⛏','🪛','🔧','🔩','🪤','🧲','🔫','💣','🧨','🪃','🛡','🪚','🗡','⚔','🛠','🔬','🔭','🩺','🩻','💊','🩹','🧬','🌡','🧪','🧫','🧲','🔋','💡','🔌','💻','🖥','🖨','⌨️','🖱','💾','💿','📀','📱','☎️','📞','📟','📠','📺','📻','🎙','🎚','🎛','⏱','⏲','⏰','🕰','⌛','⏳','📡','🔋'] },
-  { icon: '🎵', label: 'Символы', emojis: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','💟','☮️','✝️','☪️','🕉','☸️','✡️','🔯','🕎','🏳️','🏴','🚩','🎌','🏁','♻️','✅','❎','🆗','🆙','🆕','🆓','🆒','🆖','📵','🔞','❌','⭕','🛑','⛔','🚫','🚳','🚭','🚯','🚱','🚷','📵','❗','❕','❓','❔','‼️','⁉️','🔅','🔆','📶','🔱','⚜️','🔰','♻️','✅','🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪','🟤','🔶','🔷','🔸','🔹','🔺','🔻','💠','🔘','🔲','🔳','▪️','▫️','◾','◽','◼️','◻️','⬛','⬜','🟥','🟧','🟨','🟩','🟦','🟪','🟫'] }
+  { icon:'😊', label:'Смайлы', emojis:['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','😉','😊','😇','🥰','😍','🤩','😘','😋','😛','😜','🤪','😝','🤑','🤗','🤔','🤐','😐','😑','😶','😏','😒','🙄','😬','😔','😪','😴','😷','🤒','🤕','🥵','🥶','😵','🤯','😎','🤓','😕','☹️','😮','😲','😳','🥺','😦','😨','😰','😥','😢','😭','😱','😖','😣','😞','😩','😫','😤','😡','😠','🤬','😈','👿','💀','💩','🤡','👻','👽','🤖'] },
+  { icon:'👋', label:'Жесты', emojis:['👋','🤚','✋','🖖','🤙','👌','✌️','🤞','🤟','🤘','👍','👎','✊','👊','🤛','🤜','👏','🙌','🤝','🙏','💪','👀','👅','👄'] },
+  { icon:'🐶', label:'Животные', emojis:['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🙈','🙉','🙊','🐔','🐧','🐦','🦅','🦉','🐺','🐴','🦄','🦋','🐛','🐌','🐞','🐜','🐢','🐍','🦎','🐙','🐠','🐟','🐬','🐳','🦈','🐊','🐅','🦒','🐘','🦏','🐪','🐫','🦘','🐕','🐩','🐈','🐓','🦜','🕊','🐇','🦝','🦦','🦥','🐿','🦔'] },
+  { icon:'🍕', label:'Еда', emojis:['🍕','🍔','🍟','🌭','🌮','🌯','🥗','🍝','🍜','🍲','🍛','🍣','🍱','🍤','🍙','🍚','🥚','🍳','🥞','🧇','🥓','🥩','🍗','🍖','🌽','🥦','🥕','🧄','🥔','🍅','🍓','🫐','🍒','🍑','🥭','🍍','🥥','🍌','🍋','🍊','🍎','🍏','🍇','🍉','🍰','🎂','🧁','🍮','🍭','🍬','🍫','🍿','🍩','🍪','☕','🍵','🧃','🥤','🍺','🍻','🥂','🍷','🥃','🍸','🍹'] },
+  { icon:'⚽', label:'Спорт', emojis:['⚽','🏀','🏈','⚾','🥎','🏐','🏉','🎾','🎱','🏓','🏸','🥊','🥋','🎯','⛳','🎣','🏋','🤸','⛷','🏂','🏄','🚣','🚵','🚴','🏊','🏃','🚶','🏅','🥇','🥈','🥉','🏆'] },
+  { icon:'🚗', label:'Транспорт', emojis:['🚗','🚕','🚙','🚌','🏎','🚓','🚑','🚒','🚐','🛻','🚚','🚛','🚜','🏍','🛵','🚲','🛴','🚁','✈️','🛫','🛬','🚀','🛸','🚂','🚃','🚄','🚅','🚇','🛳','⛴','🚢','⛵','🚤','⚓','🗺','🧭'] },
+  { icon:'💡', label:'Объекты', emojis:['💡','🔦','🕯','💰','💳','✉️','📧','📝','📁','📅','📊','📌','📍','📎','✂️','🔒','🔓','🔑','🔨','🪛','🔧','🔩','🧲','💊','🩺','💻','🖥','⌨️','🖱','📱','☎️','📺','📻','🎙','⏱','⏰','🔋','💡'] },
+  { icon:'❤️', label:'Символы', emojis:['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','☮️','✝️','☪️','✡️','♻️','✅','❎','❌','⭕','🛑','⛔','🚫','❗','❓','‼️','⁉️','🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪','🔶','🔷','🔸','🔹','🔺','🔻','💠','▪️','▫️','⬛','⬜'] }
 ];
 
-window.signIn = async () => {
-  try { await signInWithPopup(auth, provider); } catch(e) { showToast('ОШИБКА ВХОДА'); }
-};
-window.signOut = async () => {
-  await fbSignOut(auth);
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
-};
-
-window.cancelReply = () => { replyTo = null; document.getElementById('reply-bar').style.display = 'none'; };
-window.cancelEdit  = () => { editMsgId = null; document.getElementById('edit-bar').style.display = 'none'; document.getElementById('chat-msg-input').value = ''; };
+window.signIn = async () => { try { await signInWithPopup(auth, provider); } catch(e) { showToast('ОШИБКА ВХОДА'); } };
+window.signOut = async () => { await fbSignOut(auth); document.getElementById('login-screen').style.display='flex'; document.getElementById('app').style.display='none'; };
+window.cancelReply = () => { replyTo=null; document.getElementById('reply-bar').style.display='none'; };
+window.cancelEdit  = () => { editMsgId=null; document.getElementById('edit-bar').style.display='none'; document.getElementById('chat-msg-input').value=''; };
 
 window.showView = (id, btn) => {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  if (id === 'chat-view') loadChatUsers();
+  if (id==='chat-view') loadChatUsers();
+};
+window.setFilter=(f,btn)=>{currentFilter=f;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTickets();};
+window.filterTickets=renderTickets;
+window.debouncedFilter=()=>{clearTimeout(_filterTimer);_filterTimer=setTimeout(renderTickets,120);};
+window.openModal=()=>document.getElementById('create-modal').classList.add('open');
+window.closeModal=()=>{document.getElementById('create-modal').classList.remove('open');document.getElementById('ticket-title').value='';document.getElementById('ticket-desc').value='';document.getElementById('ticket-photo').value='';document.getElementById('photo-preview').style.display='none';photoB64=null;};
+
+window.previewPhoto=(input)=>{const file=input.files[0];if(!file)return;if(file.size>2*1024*1024){showToast('ФАЙЛ БОЛЬШЕ 2МБ');input.value='';return;}const reader=new FileReader();reader.onload=e=>{photoB64=e.target.result;document.getElementById('photo-preview-img').src=photoB64;document.getElementById('photo-preview').style.display='block';};reader.readAsDataURL(file);};
+
+window.createTicket=async()=>{
+  const title=document.getElementById('ticket-title').value.trim();
+  const desc=document.getElementById('ticket-desc').value.trim();
+  if(!title){showToast('ВВЕДИТЕ ЗАГОЛОВОК');return;}
+  const btn=document.querySelector('.modal-foot .btn-create');
+  btn.textContent='ЗАГРУЗКА...';btn.disabled=true;
+  try{await addDoc(collection(db,'tickets'),{title,desc,photoURL:photoB64||null,status:'new',authorId:currentUser.uid,authorName:currentUser.displayName||currentUser.email,authorPhoto:currentUser.photoURL||null,likes:[],createdAt:serverTimestamp()});closeModal();showToast('ЗАЯВКА СОЗДАНА');}
+  catch(e){showToast('ОШИБКА: '+(e.code||e.message));}
+  finally{btn.textContent='СОЗДАТЬ ЗАЯВКУ';btn.disabled=false;}
 };
 
-window.setFilter = (f, btn) => {
-  currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderTickets();
-};
+window.toggleLike=async(id,likes)=>{const uid=currentUser.uid;const newLikes=likes.includes(uid)?likes.filter(l=>l!==uid):[...likes,uid];await updateDoc(doc(db,'tickets',id),{likes:newLikes});};
+window.deleteTicket=async(id)=>{if(!confirm('Удалить заявку?'))return;await deleteDoc(doc(db,'tickets',id));showToast('ЗАЯВКА УДАЛЕНА');};
+window.changeStatus=async(id,status)=>{await updateDoc(doc(db,'tickets',id),{status});showToast('СТАТУС ОБНОВЛЕН');};
 
-window.filterTickets = renderTickets;
-window.debouncedFilter = () => { clearTimeout(_filterTimer); _filterTimer = setTimeout(renderTickets, 120); };
-window.openModal = () => document.getElementById('create-modal').classList.add('open');
-window.closeModal = () => {
-  document.getElementById('create-modal').classList.remove('open');
-  document.getElementById('ticket-title').value = '';
-  document.getElementById('ticket-desc').value = '';
-  document.getElementById('ticket-photo').value = '';
-  document.getElementById('photo-preview').style.display = 'none';
-  photoB64 = null;
-};
+// ─── Context menu ────────────────────────────────────────────────────────────
+let ctxMsgId=null,ctxMsgData=null,ctxChatId=null;
+let replyTo=null,editMsgId=null;
 
-window.previewPhoto = (input) => {
-  const file = input.files[0]; if (!file) return;
-  if (file.size > 2*1024*1024) { showToast('ФАЙЛ БОЛЬШЕ 2МБ'); input.value=''; return; }
-  const reader = new FileReader();
-  reader.onload = e => { photoB64=e.target.result; document.getElementById('photo-preview-img').src=photoB64; document.getElementById('photo-preview').style.display='block'; };
-  reader.readAsDataURL(file);
-};
+function closeCtxMenu(){document.getElementById('ctx-menu')?.remove();}
 
-window.createTicket = async () => {
-  const title = document.getElementById('ticket-title').value.trim();
-  const desc = document.getElementById('ticket-desc').value.trim();
-  if (!title) { showToast('ВВЕДИТЕ ЗАГОЛОВОК'); return; }
-  const btn = document.querySelector('.modal-foot .btn-create');
-  btn.textContent = 'ЗАГРУЗКА...'; btn.disabled = true;
-  try {
-    await addDoc(collection(db, 'tickets'), {
-      title, desc, photoURL: photoB64||null, status: 'new',
-      authorId: currentUser.uid, authorName: currentUser.displayName||currentUser.email,
-      authorPhoto: currentUser.photoURL||null, likes: [], createdAt: serverTimestamp()
-    });
-    closeModal(); showToast('ЗАЯВКА СОЗДАНА');
-  } catch(e) { showToast('ОШИБКА: '+(e.code||e.message)); }
-  finally { btn.textContent='СОЗДАТЬ ЗАЯВКУ'; btn.disabled=false; }
-};
-
-window.toggleLike = async (id, likes) => {
-  const uid = currentUser.uid;
-  const newLikes = likes.includes(uid) ? likes.filter(l=>l!==uid) : [...likes, uid];
-  await updateDoc(doc(db,'tickets',id), { likes: newLikes });
-};
-window.deleteTicket = async (id) => {
-  if (!confirm('Удалить заявку?')) return;
-  await deleteDoc(doc(db,'tickets',id)); showToast('ЗАЯВКА УДАЛЕНА');
-};
-window.changeStatus = async (id, status) => {
-  await updateDoc(doc(db,'tickets',id), { status }); showToast('СТАТУС ОБНОВЛЕН');
-};
-
-// ─── Context menu ───────────────────────────────────────────────────────────
-let ctxMsgId=null, ctxMsgData=null, ctxChatId=null;
-let replyTo=null, editMsgId=null;
-
-function closeCtxMenu() { document.getElementById('ctx-menu')?.remove(); }
-
-function showCtxMenu(e, msgId, msgData, chatId) {
+function showCtxMenu(e,msgId,msgData,chatId){
   e.preventDefault();
   closeCtxMenu();
-  ctxMsgId=msgId; ctxMsgData=msgData; ctxChatId=chatId;
-  const isMine = msgData.senderId === currentUser.uid;
-  const isDeleted = msgData.deleted;
+  ctxMsgId=msgId;ctxMsgData=msgData;ctxChatId=chatId;
+  const isMine=msgData.senderId===currentUser.uid;
+  const isDeleted=msgData.deleted;
 
-  const icons = {
-    info:    `<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
-    reply:   `<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>`,
-    copy:    `<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="1"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`,
-    forward: `<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><polyline points="15 17 20 12 15 7"/><path d="M4 18v-2a4 4 0 0 1 4-4h12"/></svg>`,
-    edit:    `<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
-    delme:   `<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`,
-    delall:  `<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/><line x1="9" y1="10" x2="15" y2="16"/><line x1="15" y1="10" x2="9" y2="16"/></svg>`
+  const ic=(d)=>`<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><path d="${d}"/></svg>`;
+  const icons={
+    info:   `<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+    reply:  `<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>`,
+    copy:   `<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="1"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`,
+    fwd:    `<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><polyline points="15 17 20 12 15 7"/><path d="M4 18v-2a4 4 0 0 1 4-4h12"/></svg>`,
+    edit:   `<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+    delme:  `<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`,
+    delall: `<svg class="ctx-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/><line x1="9" y1="10" x2="15" y2="16"/><line x1="15" y1="10" x2="9" y2="16"/></svg>`
   };
 
-  const items = [];
-  if (!isDeleted) {
-    items.push({ icon: icons.info,    label: 'ИНФО',       fn: showMsgInfo });
-    items.push({ icon: icons.reply,   label: 'ОТВЕТИТЬ',   fn: startReply });
-    items.push({ icon: icons.copy,    label: 'КОПИРОВАТЬ', fn: copyMsgText });
-    items.push({ icon: icons.forward, label: 'ПЕРЕСЛАТЬ',  fn: openForward, sep: true });
-    if (isMine) items.push({ icon: icons.edit, label: 'ИЗМЕНИТЬ', fn: startEdit, sep: true });
+  const items=[];
+  if(!isDeleted){
+    items.push({icon:icons.info,  label:'ИНФО',       fn:showMsgInfo});
+    items.push({icon:icons.reply, label:'ОТВЕТИТЬ',   fn:startReply});
+    items.push({icon:icons.copy,  label:'КОПИРОВАТЬ', fn:copyMsgText});
+    items.push({icon:icons.fwd,   label:'ПЕРЕСЛАТЬ',  fn:openForward,sep:true});
+    if(isMine) items.push({icon:icons.edit,label:'ИЗМЕНИТЬ',fn:startEdit,sep:true});
   }
-  if (isMine) {
-    items.push({ icon: icons.delme,  label: 'УДАЛИТЬ У МЕНЯ', fn: deleteForMe, danger: true });
-    items.push({ icon: icons.delall, label: 'УДАЛИТЬ У ВСЕХ', fn: deleteForAll, danger: true });
+  if(isMine){
+    items.push({icon:icons.delme, label:'УДАЛИТЬ У МЕНЯ',fn:deleteForMe,danger:true});
+    items.push({icon:icons.delall,label:'УДАЛИТЬ У ВСЕХ',fn:deleteForAll,danger:true});
   } else {
-    items.push({ icon: icons.delme, label: 'УДАЛИТЬ У МЕНЯ', fn: deleteForMe, danger: true });
+    items.push({icon:icons.delme,label:'УДАЛИТЬ У МЕНЯ',fn:deleteForMe,danger:true});
   }
 
-  const preview = (msgData.text||'').slice(0,26)+((msgData.text||'').length>26?'...':'');
+  const preview=(msgData.text||'').slice(0,26)+((msgData.text||'').length>26?'...':'');
+  const quickEmojis=['👍','❤️','😂','😮','😢','🙏'];
 
-  // Quick reactions (6 + expand button)
-  const quickEmojis = ['👍','❤️','😂','😮','😢','🙏'];
-  const quickBtns = quickEmojis.map(e => `<button class="ctx-reaction-btn" onclick="addReactionFromMenu('${e}')">${e}</button>`).join('');
+  const menu=document.createElement('div');
+  menu.id='ctx-menu';menu.className='ctx-menu';
 
-  // Emoji picker panel with categories
-  const catBtns = EMOJI_CATS.map((c,i) => `<button class="emoji-cat-btn${i===0?' active':''}" onclick="switchEmojiCat(${i},this)">${c.icon}</button>`).join('');
-  const firstCatGrid = EMOJI_CATS[0].emojis.map(e => `<button class="emoji-grid-item" onclick="addReactionFromMenu('${e}')">${e}</button>`).join('');
+  // Quick reactions row
+  const reactRow=document.createElement('div');
+  reactRow.className='ctx-reactions';
+  quickEmojis.forEach(em=>{
+    const btn=document.createElement('button');
+    btn.className='ctx-reaction-btn';
+    btn.innerHTML=twemoji(em);
+    btn.addEventListener('click',()=>{closeCtxMenu();ctxMsgId=msgId;ctxMsgData=msgData;ctxChatId=chatId;addReaction(em);});
+    reactRow.appendChild(btn);
+  });
+  const moreBtn=document.createElement('button');
+  moreBtn.className='ctx-reaction-more';
+  moreBtn.title='Ещё';
+  moreBtn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>`;
+  moreBtn.addEventListener('click',e=>{e.stopPropagation();document.getElementById('ctx-emoji-picker').classList.toggle('open');});
+  reactRow.appendChild(moreBtn);
 
-  const menu = document.createElement('div');
-  menu.id = 'ctx-menu'; menu.className = 'ctx-menu';
-  menu.innerHTML =
-    `<div class="ctx-reactions">
-      ${quickBtns}
-      <button class="ctx-reaction-more" onclick="toggleEmojiPicker(event)" title="Ещё">+</button>
-    </div>
-    <div class="emoji-picker" id="ctx-emoji-picker">
-      <div class="emoji-picker-search-row">
-        <input placeholder="Поиск..." oninput="searchEmoji(this.value)" autocomplete="off">
-      </div>
-      <div class="emoji-picker-cats">${catBtns}</div>
-      <div class="emoji-picker-grid" id="emoji-picker-grid">${firstCatGrid}</div>
-    </div>
-    <div class="ctx-header"><span class="ctx-header-dot"></span><span class="ctx-header-text">${escapeHtml(preview)}</span></div>`+
-    items.map((it,i) =>
-      `${it.sep?'<div class="ctx-sep"></div>':''}<div class="ctx-item${it.danger?' danger':''}" data-i="${i}">${it.icon}${it.label}</div>`
-    ).join('');
+  // Emoji picker
+  const picker=document.createElement('div');
+  picker.className='emoji-picker';picker.id='ctx-emoji-picker';
+  const searchRow=document.createElement('div');searchRow.className='emoji-picker-search-row';
+  const searchInput=document.createElement('input');searchInput.placeholder='Поиск...';searchInput.autocomplete='off';
+  searchInput.addEventListener('input',e=>{
+    const q=e.target.value.toLowerCase();
+    const grid=document.getElementById('emoji-picker-grid');
+    if(!q){renderEmojiCat(0,grid);return;}
+    const all=EMOJI_CATS.flatMap(c=>c.emojis);
+    grid.innerHTML='';
+    all.forEach(em=>{const btn=makeEmojiBtn(em,msgId,msgData,chatId);grid.appendChild(btn);});
+  });
+  searchRow.appendChild(searchInput);
+  picker.appendChild(searchRow);
+
+  const catsRow=document.createElement('div');catsRow.className='emoji-picker-cats';
+  EMOJI_CATS.forEach((cat,i)=>{
+    const catBtn=document.createElement('button');catBtn.className='emoji-cat-btn'+(i===0?' active':'');
+    catBtn.innerHTML=twemoji(cat.icon);catBtn.title=cat.label;
+    catBtn.addEventListener('click',e=>{
+      e.stopPropagation();
+      document.querySelectorAll('.emoji-cat-btn').forEach(b=>b.classList.remove('active'));
+      catBtn.classList.add('active');
+      renderEmojiCat(i,document.getElementById('emoji-picker-grid'));
+    });
+    catsRow.appendChild(catBtn);
+  });
+  picker.appendChild(catsRow);
+
+  const grid=document.createElement('div');grid.className='emoji-picker-grid';grid.id='emoji-picker-grid';
+  renderEmojiCat(0,grid,msgId,msgData,chatId);
+  picker.appendChild(grid);
+
+  // Header + items
+  const header=document.createElement('div');header.className='ctx-header';
+  header.innerHTML=`<span class="ctx-header-dot"></span><span class="ctx-header-text">${escapeHtml(preview)}</span>`;
+
+  menu.appendChild(reactRow);
+  menu.appendChild(picker);
+  menu.appendChild(header);
+  items.forEach((it,i)=>{
+    if(it.sep){const sep=document.createElement('div');sep.className='ctx-sep';menu.appendChild(sep);}
+    const el=document.createElement('div');
+    el.className='ctx-item'+(it.danger?' danger':'');
+    el.innerHTML=it.icon+it.label;
+    el.addEventListener('click',()=>{closeCtxMenu();it.fn();});
+    menu.appendChild(el);
+  });
 
   document.body.appendChild(menu);
-  let x = e.clientX??e.pageX, y = e.clientY??e.pageY;
-  menu.style.cssText = `left:${x}px;top:${y}px`;
-  const r = menu.getBoundingClientRect();
-  if (r.right>window.innerWidth)  menu.style.left=(x-r.width)+'px';
-  if (r.bottom>window.innerHeight) menu.style.top=(y-r.height)+'px';
-  menu.querySelectorAll('.ctx-item').forEach((el,i) => {
-    el.addEventListener('click', () => { closeCtxMenu(); items[i].fn(); });
+  let x=e.clientX??e.pageX,y=e.clientY??e.pageY;
+  menu.style.cssText=`left:${x}px;top:${y}px`;
+  const r=menu.getBoundingClientRect();
+  if(r.right>window.innerWidth) menu.style.left=(x-r.width)+'px';
+  if(r.bottom>window.innerHeight) menu.style.top=(y-r.height)+'px';
+  setTimeout(()=>document.addEventListener('click',closeCtxMenu,{once:true}),0);
+}
+
+function makeEmojiBtn(em,mId,mData,cId){
+  const btn=document.createElement('button');
+  btn.className='emoji-grid-item';
+  btn.innerHTML=twemoji(em);
+  btn.title=em;
+  btn.addEventListener('click',()=>{
+    closeCtxMenu();
+    // restore ctx
+    ctxMsgId=mId||ctxMsgId;ctxMsgData=mData||ctxMsgData;ctxChatId=cId||ctxChatId;
+    addReaction(em);
   });
-  setTimeout(() => document.addEventListener('click', closeCtxMenu, {once:true}), 0);
+  return btn;
 }
 
-window.toggleEmojiPicker = (e) => {
-  e.stopPropagation();
-  const picker = document.getElementById('ctx-emoji-picker');
-  picker.classList.toggle('open');
-};
-
-window.switchEmojiCat = (idx, btn) => {
-  document.querySelectorAll('.emoji-cat-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  const grid = document.getElementById('emoji-picker-grid');
-  grid.innerHTML = EMOJI_CATS[idx].emojis.map(e=>`<button class="emoji-grid-item" onclick="addReactionFromMenu('${e}')">${e}</button>`).join('');
-};
-
-window.searchEmoji = (query) => {
-  const grid = document.getElementById('emoji-picker-grid');
-  if (!query.trim()) {
-    grid.innerHTML = EMOJI_CATS[0].emojis.map(e=>`<button class="emoji-grid-item" onclick="addReactionFromMenu('${e}')">${e}</button>`).join('');
-    return;
-  }
-  // simple search - show all emojis from all cats
-  const all = EMOJI_CATS.flatMap(c=>c.emojis);
-  grid.innerHTML = all.map(e=>`<button class="emoji-grid-item" onclick="addReactionFromMenu('${e}')">${e}</button>`).join('');
-};
-
-window.addReactionFromMenu = (emoji) => {
-  closeCtxMenu();
-  addReaction(emoji);
-};
-
-async function addReaction(emoji) {
-  if (!ctxMsgId||!ctxChatId) return;
-  const msgRef = doc(db,'chats',ctxChatId,'messages',ctxMsgId);
-  const existing = ctxMsgData.reactions||{};
-  const users = existing[emoji]||[];
-  const uid = currentUser.uid;
-  const newUsers = users.includes(uid)?users.filter(u=>u!==uid):[...users,uid];
-  const upd = {}; upd['reactions.'+emoji] = newUsers;
-  await updateDoc(msgRef, upd);
+function renderEmojiCat(idx,grid,mId,mData,cId){
+  grid.innerHTML='';
+  EMOJI_CATS[idx].emojis.forEach(em=>{
+    grid.appendChild(makeEmojiBtn(em,mId,mData,cId));
+  });
 }
 
-function showMsgInfo() {
-  const d = ctxMsgData;
-  const time = d.createdAt?.toDate?.()?.toLocaleString('ru')||'-';
-  const editedTime = d.editedAt?.toDate?.()?.toLocaleString('ru')||null;
-  const readStatus = (d.readBy||[]).some(u=>u!==d.senderId)?'Прочитано':'Доставлено';
-  const overlay = document.createElement('div');
-  overlay.className = 'msg-info-overlay';
-  overlay.innerHTML = `<div class="msg-info-box">
-    <div class="msg-info-head">// ДАННЫЕ СООБЩЕНИЯ<button class="msg-info-close" onclick="this.closest('.msg-info-overlay').remove()">x</button></div>
-    <div class="msg-info-body">
-      <div class="msg-info-bubble">${escapeHtml(d.deleted?'[Удалено]':d.text)}</div>
-      <div class="msg-info-row"><span class="msg-info-key">ОТПРАВИТЕЛЬ</span><span class="msg-info-val">${escapeHtml(d.senderName||'-')}</span></div>
-      <div class="msg-info-row"><span class="msg-info-key">ВРЕМЯ</span><span class="msg-info-val">${time}</span></div>
-      ${editedTime?`<div class="msg-info-row"><span class="msg-info-key">ИЗМЕНЕНО</span><span class="msg-info-val">${editedTime}</span></div>`:''}
-      <div class="msg-info-row"><span class="msg-info-key">СТАТУС</span><span class="msg-info-val">${readStatus}</span></div>
-    </div>
-  </div>`;
-  overlay.addEventListener('click', e=>{if(e.target===overlay)overlay.remove();});
+async function addReaction(emoji){
+  if(!ctxMsgId||!ctxChatId)return;
+  const msgRef=doc(db,'chats',ctxChatId,'messages',ctxMsgId);
+  const existing=ctxMsgData?.reactions||{};
+  const users=existing[emoji]||[];
+  const uid=currentUser.uid;
+  const newUsers=users.includes(uid)?users.filter(u=>u!==uid):[...users,uid];
+  const upd={};upd['reactions.'+emoji]=newUsers;
+  await updateDoc(msgRef,upd);
+}
+
+function showMsgInfo(){
+  const d=ctxMsgData;
+  const time=d.createdAt?.toDate?.()?.toLocaleString('ru')||'-';
+  const editedTime=d.editedAt?.toDate?.()?.toLocaleString('ru')||null;
+  const readStatus=(d.readBy||[]).some(u=>u!==d.senderId)?'Прочитано ✓✓':'Доставлено ✓';
+  const overlay=document.createElement('div');overlay.className='msg-info-overlay';
+  overlay.innerHTML=`<div class="msg-info-box"><div class="msg-info-head">// ДАННЫЕ СООБЩЕНИЯ<button class="msg-info-close" onclick="this.closest('.msg-info-overlay').remove()">✕</button></div><div class="msg-info-body"><div class="msg-info-bubble">${escapeHtml(d.deleted?'[Удалено]':d.text)}</div><div class="msg-info-row"><span class="msg-info-key">ОТПРАВИТЕЛЬ</span><span class="msg-info-val">${escapeHtml(d.senderName||'-')}</span></div><div class="msg-info-row"><span class="msg-info-key">ВРЕМЯ</span><span class="msg-info-val">${time}</span></div>${editedTime?`<div class="msg-info-row"><span class="msg-info-key">ИЗМЕНЕНО</span><span class="msg-info-val">${editedTime}</span></div>`:''}<div class="msg-info-row"><span class="msg-info-key">СТАТУС</span><span class="msg-info-val">${readStatus}</span></div></div></div>`;
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
   document.body.appendChild(overlay);
 }
 
-function startReply() {
-  replyTo={id:ctxMsgId,text:ctxMsgData.text,senderName:ctxMsgData.senderName};
-  editMsgId=null;
+function startReply(){
+  replyTo={id:ctxMsgId,text:ctxMsgData.text,senderName:ctxMsgData.senderName};editMsgId=null;
   document.getElementById('edit-bar').style.display='none';
   document.getElementById('reply-bar').style.display='flex';
   document.getElementById('reply-bar-name').textContent=ctxMsgData.senderName;
@@ -1134,90 +1123,58 @@ function startReply() {
   document.getElementById('chat-msg-input').focus();
 }
 
-function copyMsgText() {
-  navigator.clipboard.writeText(ctxMsgData.text).then(()=>showToast('СКОПИРОВАНО'));
-}
+function copyMsgText(){navigator.clipboard.writeText(ctxMsgData.text).then(()=>showToast('СКОПИРОВАНО'));}
 
-function openForward() {
-  const msgText = ctxMsgData.text;
-  const overlay = document.createElement('div');
-  overlay.className = 'msg-info-overlay';
-  overlay.innerHTML = `<div class="msg-info-box">
-    <div class="msg-info-head">// ПЕРЕСЛАТЬ<button class="msg-info-close" onclick="this.closest('.msg-info-overlay').remove()">x</button></div>
-    <div class="forward-list" id="fwd-list"></div>
-  </div>`;
-  overlay.addEventListener('click', e=>{if(e.target===overlay)overlay.remove();});
+function openForward(){
+  const msgText=ctxMsgData.text;
+  const overlay=document.createElement('div');overlay.className='msg-info-overlay';
+  overlay.innerHTML=`<div class="msg-info-box"><div class="msg-info-head">// ПЕРЕСЛАТЬ<button class="msg-info-close" onclick="this.closest('.msg-info-overlay').remove()">✕</button></div><div class="forward-list" id="fwd-list"></div></div>`;
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
   document.body.appendChild(overlay);
-  const fwdList = document.getElementById('fwd-list');
-  cachedUsers.forEach(u => {
-    if (u.uid===currentUser.uid) return;
+  const fwdList=document.getElementById('fwd-list');
+  cachedUsers.forEach(u=>{
+    if(u.uid===currentUser.uid)return;
     const initial=(u.displayName||'?')[0].toUpperCase();
-    const row=document.createElement('div');
-    row.className='forward-user';
+    const row=document.createElement('div');row.className='forward-user';
     row.innerHTML=`<div class="chat-avatar" style="width:32px;height:32px">${u.photoURL?`<img src="${u.photoURL}">`:`<div class="chat-avatar-placeholder" style="font-size:13px">${initial}</div>`}</div><div class="forward-user-name">${escapeHtml(u.displayName||'Пользователь')}</div>`;
-    row.onclick=async()=>{
-      overlay.remove();
-      const fid=[currentUser.uid,u.uid].sort().join('_');
-      await addDoc(collection(db,'chats',fid,'messages'),{text:'> '+msgText,senderId:currentUser.uid,senderName:currentUser.displayName,createdAt:serverTimestamp(),readBy:[currentUser.uid]});
-      showToast('ПЕРЕСЛАНО');
-    };
+    row.onclick=async()=>{overlay.remove();const fid=[currentUser.uid,u.uid].sort().join('_');await addDoc(collection(db,'chats',fid,'messages'),{text:'> '+msgText,senderId:currentUser.uid,senderName:currentUser.displayName,createdAt:serverTimestamp(),readBy:[currentUser.uid]});showToast('ПЕРЕСЛАНО');};
     fwdList.appendChild(row);
   });
 }
 
-function startEdit() {
-  editMsgId=ctxMsgId; replyTo=null;
+function startEdit(){
+  editMsgId=ctxMsgId;replyTo=null;
   document.getElementById('reply-bar').style.display='none';
   document.getElementById('edit-bar').style.display='flex';
   document.getElementById('edit-bar-text').textContent=ctxMsgData.text;
-  const input=document.getElementById('chat-msg-input');
-  input.value=ctxMsgData.text; input.focus();
+  const input=document.getElementById('chat-msg-input');input.value=ctxMsgData.text;input.focus();
 }
 
-async function deleteForMe() {
-  if (!confirm('Удалить у себя?')) return;
-  await updateDoc(doc(db,'chats',ctxChatId,'messages',ctxMsgId),{[`deletedFor.${currentUser.uid}`]:true});
-  showToast('УДАЛЕНО У ВАС');
-}
-async function deleteForAll() {
-  if (!confirm('Удалить у всех?')) return;
-  await updateDoc(doc(db,'chats',ctxChatId,'messages',ctxMsgId),{deleted:true,text:'Сообщение удалено'});
-  showToast('УДАЛЕНО У ВСЕХ');
-}
+async function deleteForMe(){if(!confirm('Удалить у себя?'))return;await updateDoc(doc(db,'chats',ctxChatId,'messages',ctxMsgId),{[`deletedFor.${currentUser.uid}`]:true});showToast('УДАЛЕНО У ВАС');}
+async function deleteForAll(){if(!confirm('Удалить у всех?'))return;await updateDoc(doc(db,'chats',ctxChatId,'messages',ctxMsgId),{deleted:true,text:'Сообщение удалено'});showToast('УДАЛЕНО У ВСЕХ');}
 
-async function markMessagesRead(chatId) {
-  try {
-    const snap=await getDocs(collection(db,'chats',chatId,'messages'));
-    const batch=writeBatch(db); let n=0;
-    snap.docs.forEach(d=>{
-      const data=d.data();
-      if(data.senderId!==currentUser.uid&&!(data.readBy||[]).includes(currentUser.uid)){
-        batch.update(d.ref,{readBy:arrayUnion(currentUser.uid)}); n++;
-      }
-    });
-    if(n>0) await batch.commit();
-  } catch(e) {}
+async function markMessagesRead(chatId){
+  try{const snap=await getDocs(collection(db,'chats',chatId,'messages'));const batch=writeBatch(db);let n=0;snap.docs.forEach(d=>{const data=d.data();if(data.senderId!==currentUser.uid&&!(data.readBy||[]).includes(currentUser.uid)){batch.update(d.ref,{readBy:arrayUnion(currentUser.uid)});n++;}});if(n>0)await batch.commit();}catch(e){}
 }
 
 const lastSeenMsgId={};
 
-function showNotifToast(name,text,uid,photo) {
+function showNotifToast(name,text,uid,photo){
   document.querySelectorAll('.notif-toast').forEach(el=>el.remove());
   const now=new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
-  const toast=document.createElement('div');
-  toast.className='notif-toast';
+  const toast=document.createElement('div');toast.className='notif-toast';
   toast.innerHTML=`<div class="notif-toast-header"><span class="notif-toast-icon">💬</span><span class="notif-toast-name">${escapeHtml(name)}</span><span class="notif-toast-time">${now}</span></div><div class="notif-toast-text">${escapeHtml(text||'📷 Фото')}</div><div class="notif-toast-hint">// НАЖМИТЕ ЧТОБЫ ОТКРЫТЬ ЧАТ</div>`;
   toast.onclick=()=>{toast.remove();const btn=document.querySelector('[onclick*="chat-view"]');showView('chat-view',btn);openChat(uid,name,photo);};
   document.body.appendChild(toast);
   setTimeout(()=>{toast.style.opacity='0';toast.style.transform='translateX(20px)';setTimeout(()=>toast.remove(),300);},5000);
 }
 
-function makeTick(isRead) {
+function makeTick(isRead){
   const col=isRead?'var(--cyan)':'var(--text-dim)';
   return `<span class="msg-tick"><svg width="18" height="11" viewBox="0 0 18 11" fill="none"><polyline points="1,5 4,8 9,2" stroke="${col}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="${isRead?'1':'0.5'}"/><polyline points="6,5 9,8 14,2" stroke="${col}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
 }
 
-window.openChat = async (uid, name, photo) => {
+window.openChat=async(uid,name,photo)=>{
   currentChatPartner={uid,name,photo};
   document.getElementById('chat-empty').style.display='none';
   document.getElementById('chat-header').style.display='flex';
@@ -1228,9 +1185,8 @@ window.openChat = async (uid, name, photo) => {
   document.querySelector(`[data-uid="${uid}"]`)?.classList.add('active');
   document.getElementById('reply-bar').style.display='none';
   document.getElementById('edit-bar').style.display='none';
-  replyTo=null; editMsgId=null;
-
-  if (chatUnsub) chatUnsub();
+  replyTo=null;editMsgId=null;
+  if(chatUnsub)chatUnsub();
   const chatId=[currentUser.uid,uid].sort().join('_');
   markMessagesRead(chatId);
 
@@ -1238,33 +1194,28 @@ window.openChat = async (uid, name, photo) => {
     const container=document.getElementById('chat-messages');
     container.innerHTML='';
     snap.docs.forEach(d=>{
-      const msg=d.data(), msgId=d.id;
-      if(msg.deletedFor?.[currentUser.uid]) return;
-      if(msg.deleted||msg.text==='Сообщение удалено'||msg.text?.startsWith('🚫')) return;
+      const msg=d.data(),msgId=d.id;
+      if(msg.deletedFor?.[currentUser.uid])return;
+      if(msg.deleted||msg.text==='Сообщение удалено'||msg.text?.startsWith('🚫'))return;
       const isMine=msg.senderId===currentUser.uid;
       const time=msg.createdAt?.toDate?.()?.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})||'';
       const isRead=(msg.readBy||[]).some(u=>u!==msg.senderId);
       const tick=isMine?makeTick(isRead):'';
       const edited=msg.editedAt?`<span class="msg-edited">(изменено)</span>`:'';
       let replyHtml='';
-      if(msg.replyTo) replyHtml=`<div class="msg-reply-quote"><div class="msg-reply-quote-name">${escapeHtml(msg.replyTo.senderName)}</div>${escapeHtml(msg.replyTo.text)}</div>`;
-
+      if(msg.replyTo)replyHtml=`<div class="msg-reply-quote"><div class="msg-reply-quote-name">${escapeHtml(msg.replyTo.senderName)}</div>${escapeHtml(msg.replyTo.text)}</div>`;
       const hasPhoto=!!msg.photoURL;
       const imgHtml=hasPhoto?`<img class="msg-img" src="${msg.photoURL}" loading="lazy" onclick="viewChatImg(this.src,'${msgId}')">`:'' ;
-      const captionHtml=hasPhoto
-        ?(msg.text?`<div class="msg-caption">${escapeHtml(msg.text)}${edited}</div>`:(edited?`<div class="msg-caption">${edited}</div>`:''))
-        :`${escapeHtml(msg.text)}${edited}`;
-
+      const captionHtml=hasPhoto?(msg.text?`<div class="msg-caption">${escapeHtml(msg.text)}${edited}</div>`:(edited?`<div class="msg-caption">${edited}</div>`:'')):(`${escapeHtml(msg.text)}${edited}`);
       const reactions=msg.reactions||{};
       const reactHtml=Object.entries(reactions).filter(([,u])=>u&&u.length).map(([emoji,users])=>{
         const isMineR=users.includes(currentUser.uid);
-        return `<span class="msg-reaction-chip${isMineR?' mine':''}">${emoji} ${users.length}</span>`;
+        return `<span class="msg-reaction-chip${isMineR?' mine':''}">${twemoji(emoji)} ${users.length}</span>`;
       }).join('');
 
       const div=document.createElement('div');
       div.className=`msg ${isMine?'mine':'theirs'}`;
-      div.dataset.msgid=msgId;
-      div.dataset.sender=msg.senderName||'';
+      div.dataset.msgid=msgId;div.dataset.sender=msg.senderName||'';
       div.innerHTML=`<div class="msg-bubble${hasPhoto?' has-photo':''}">${replyHtml}${imgHtml}${captionHtml}</div><div class="msg-time">${time}${tick}</div>${reactHtml?`<div class="msg-reactions">${reactHtml}</div>`:''}`;
       div.addEventListener('contextmenu',e=>showCtxMenu(e,msgId,msg,chatId));
       let pressTimer;
@@ -1277,102 +1228,88 @@ window.openChat = async (uid, name, photo) => {
   });
 };
 
-window.sendMsg = async () => {
+window.sendMsg=async()=>{
   const input=document.getElementById('chat-msg-input');
   const text=input.value.trim();
-  if(!text&&!chatPhotoB64||!currentChatPartner) return;
+  if(!text&&!chatPhotoB64||!currentChatPartner)return;
   const chatId=[currentUser.uid,currentChatPartner.uid].sort().join('_');
-  if(editMsgId){
-    input.value='';
-    await updateDoc(doc(db,'chats',chatId,'messages',editMsgId),{text,editedAt:serverTimestamp()});
-    editMsgId=null; document.getElementById('edit-bar').style.display='none';
-  } else {
+  if(editMsgId){input.value='';await updateDoc(doc(db,'chats',chatId,'messages',editMsgId),{text,editedAt:serverTimestamp()});editMsgId=null;document.getElementById('edit-bar').style.display='none';}
+  else{
     const payload={text:text||'',photoURL:chatPhotoB64||null,senderId:currentUser.uid,senderName:currentUser.displayName,createdAt:serverTimestamp(),readBy:[currentUser.uid]};
     if(replyTo){payload.replyTo={id:replyTo.id,text:replyTo.text,senderName:replyTo.senderName};replyTo=null;document.getElementById('reply-bar').style.display='none';}
-    input.value='';
-    if(chatPhotoB64) cancelChatPhoto();
+    input.value='';if(chatPhotoB64)cancelChatPhoto();
     await addDoc(collection(db,'chats',chatId,'messages'),payload);
   }
 };
 
-function renderChatList() {
-  const list=document.getElementById('chat-users-list'); if(!list) return;
-  const frag=document.createDocumentFragment(); let count=0;
+function renderChatList(){
+  const list=document.getElementById('chat-users-list');if(!list)return;
+  const frag=document.createDocumentFragment();let count=0;
   cachedUsers.forEach(u=>{
-    if(u.uid===currentUser.uid) return; count++;
+    if(u.uid===currentUser.uid)return;count++;
     const initial=(u.displayName||'?')[0].toUpperCase();
-    const div=document.createElement('div');
-    div.className='chat-user-item'; div.dataset.uid=u.uid;
+    const div=document.createElement('div');div.className='chat-user-item';div.dataset.uid=u.uid;
     div.innerHTML=`<div class="chat-avatar">${u.photoURL?`<img src="${u.photoURL}" loading="lazy">`:`<div class="chat-avatar-placeholder">${initial}</div>`}</div><div class="chat-user-row"><div><div class="chat-user-name">${escapeHtml(u.displayName||'Пользователь')}</div></div><span class="unread-badge" id="unread-${u.uid}" style="display:none"></span></div>`;
     div.onclick=()=>openChat(u.uid,u.displayName,u.photoURL);
     frag.appendChild(div);
   });
   list.innerHTML='';
-  if(!count) list.innerHTML='<div style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text-dim)">// НЕТ ПОЛЬЗОВАТЕЛЕЙ</div>';
-  else { list.appendChild(frag); updateNavUnread(); }
+  if(!count)list.innerHTML='<div style="padding:16px;font-family:var(--mono);font-size:11px;color:var(--text-dim)">// НЕТ ПОЛЬЗОВАТЕЛЕЙ</div>';
+  else{list.appendChild(frag);updateNavUnread();}
 }
 
-async function loadChatUsers() { renderChatList(); }
+async function loadChatUsers(){renderChatList();}
 
 let globalChatUnsubs=[];
+function subscribeToAllChats(){globalChatUnsubs.forEach(fn=>fn());globalChatUnsubs=[];cachedUsers.forEach(u=>{if(u.uid===currentUser.uid)return;const chatId=[currentUser.uid,u.uid].sort().join('_');subscribeToChat(u.uid,u.displayName,u.photoURL,chatId);});}
 
-function subscribeToAllChats() {
-  globalChatUnsubs.forEach(fn=>fn()); globalChatUnsubs=[];
-  cachedUsers.forEach(u=>{
-    if(u.uid===currentUser.uid) return;
-    const chatId=[currentUser.uid,u.uid].sort().join('_');
-    subscribeToChat(u.uid,u.displayName,u.photoURL,chatId);
-  });
-}
-
-function initUsersCache() {
-  if(usersUnsub) usersUnsub();
+function initUsersCache(){
+  if(usersUnsub)usersUnsub();
   usersUnsub=onSnapshot(collection(db,'users'),snap=>{
     cachedUsers=snap.docs.map(d=>d.data());
     subscribeToAllChats();
-    if(document.getElementById('chat-view').classList.contains('active')) renderChatList();
+    if(document.getElementById('chat-view').classList.contains('active'))renderChatList();
   });
 }
 
-function subscribeToChat(uid, name, photo, chatId) {
+function subscribeToChat(uid,name,photo,chatId){
   let isFirstLoad=true;
   const unsub=onSnapshot(collection(db,'chats',chatId,'messages'),msgSnap=>{
-    let unread=0, newestUnreadId=null, newestUnreadText='';
+    let unread=0,newestUnreadId=null,newestUnreadText='';
     msgSnap.docs.forEach(md=>{
       const data=md.data();
       if(data.senderId===uid&&!(data.readBy||[]).includes(currentUser.uid)&&!data.deleted&&!data.deletedFor?.[currentUser.uid]){
-        unread++; newestUnreadId=md.id; newestUnreadText=data.text||'';
+        unread++;newestUnreadId=md.id;newestUnreadText=data.text||'';
       }
     });
     const badge=document.getElementById(`unread-${uid}`);
     if(badge){if(unread>0){badge.textContent=unread;badge.style.display='flex';}else badge.style.display='none';}
     if(isFirstLoad){lastSeenMsgId[uid]=newestUnreadId||'__none__';isFirstLoad=false;}
     else if(unread>0&&newestUnreadId&&newestUnreadId!==lastSeenMsgId[uid]&&currentChatPartner?.uid!==uid){
-      lastSeenMsgId[uid]=newestUnreadId;
-      showNotifToast(name,newestUnreadText,uid,photo);
+      lastSeenMsgId[uid]=newestUnreadId;showNotifToast(name,newestUnreadText,uid,photo);
     }
     updateNavUnread();
   });
   globalChatUnsubs.push(unsub);
 }
 
-window.previewChatPhoto = (input) => {
-  const file=input.files[0]; if(!file) return;
+window.previewChatPhoto=(input)=>{
+  const file=input.files[0];if(!file)return;
   if(file.size>10*1024*1024){showToast('ФАЙЛ БОЛЬШЕ 10МБ');input.value='';return;}
   const reader=new FileReader();
   reader.onload=e=>{
     const img=new Image();
     img.onload=()=>{
-      const MAX=1200; let w=img.width, h=img.height;
+      const MAX=1200;let w=img.width,h=img.height;
       if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
-      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      const c=document.createElement('canvas');c.width=w;c.height=h;
       c.getContext('2d').drawImage(img,0,0,w,h);
       chatPhotoB64=c.toDataURL('image/jpeg',0.82);
       const kb=Math.round(chatPhotoB64.length*0.75/1024);
       document.getElementById('chat-photo-thumb').src=chatPhotoB64;
       document.getElementById('chat-photo-size').textContent=kb+' KB';
       document.getElementById('chat-photo-bar').style.display='flex';
-      document.getElementById('chat-msg-input').placeholder='ПОДПИСЬ К ФОТО (НЕОБЯЗАТЕЛЬНО)...';
+      document.getElementById('chat-msg-input').placeholder='ПОДПИСЬ К ФОТО...';
       document.getElementById('chat-msg-input').focus();
     };
     img.src=e.target.result;
@@ -1380,72 +1317,57 @@ window.previewChatPhoto = (input) => {
   reader.readAsDataURL(file);
 };
 
-window.cancelChatPhoto = () => {
-  chatPhotoB64=null;
-  document.getElementById('chat-photo-input').value='';
+window.cancelChatPhoto=()=>{
+  chatPhotoB64=null;document.getElementById('chat-photo-input').value='';
   document.getElementById('chat-photo-bar').style.display='none';
-  document.getElementById('chat-msg-input').placeholder='СООБЩЕНИЕ ИЛИ ПОДПИСЬ К ФОТО...';
+  document.getElementById('chat-msg-input').placeholder='СООБЩЕНИЕ...';
 };
 
-function viewChatImg(src, msgId) {
-  pvPhotos=[]; pvIndex=0;
+function viewChatImg(src,msgId){
+  pvPhotos=[];pvIndex=0;
   document.getElementById('chat-messages').querySelectorAll('.msg-img').forEach((img,i)=>{
-    const m=img.closest('.msg'), t=m?.querySelector('.msg-time'), mid=m?.dataset.msgid||'';
+    const m=img.closest('.msg'),t=m?.querySelector('.msg-time'),mid=m?.dataset.msgid||'';
     pvPhotos.push({src:img.src,senderName:m?.dataset.sender||'',time:t?.textContent?.trim()||'',msgId:mid});
-    if(img.src===src||mid===msgId) pvIndex=i;
+    if(img.src===src||mid===msgId)pvIndex=i;
   });
-  if(!pvPhotos.length) pvPhotos=[{src,senderName:'',time:'',msgId:msgId||''}];
+  if(!pvPhotos.length)pvPhotos=[{src,senderName:'',time:'',msgId:msgId||''}];
   pvRender();
   document.getElementById('photo-viewer').classList.add('open');
   document.addEventListener('keydown',pvKeyHandler);
 }
 window.viewChatImg=viewChatImg;
 
-function pvRender() {
+function pvRender(){
   const p=pvPhotos[pvIndex];
   document.getElementById('pv-main-img').src=p.src;
   document.getElementById('pv-sender').textContent=(p.senderName?p.senderName+'  ·  ':'')+(p.time||'');
   pvCurrentMsgId=p.msgId;
-  const strip=document.getElementById('pv-strip'); strip.innerHTML='';
+  const strip=document.getElementById('pv-strip');strip.innerHTML='';
   pvPhotos.forEach((ph,i)=>{
-    const img=document.createElement('img');
-    img.src=ph.src; img.className='pv-thumb'+(i===pvIndex?' active':'');
-    img.onclick=()=>{pvIndex=i;pvRender();};
-    strip.appendChild(img);
+    const img=document.createElement('img');img.src=ph.src;img.className='pv-thumb'+(i===pvIndex?' active':'');
+    img.onclick=()=>{pvIndex=i;pvRender();};strip.appendChild(img);
   });
   strip.querySelector('.pv-thumb.active')?.scrollIntoView({inline:'center',behavior:'smooth'});
 }
 
 window.pvClose=()=>{document.getElementById('photo-viewer').classList.remove('open');document.removeEventListener('keydown',pvKeyHandler);};
-window.pvDownload=()=>{
-  const src=pvPhotos[pvIndex]?.src; if(!src) return;
-  const a=document.createElement('a'); a.href=src; a.download='photo_'+Date.now()+'.jpg'; a.click();
-};
-window.pvGoToMsg=()=>{
-  pvClose(); if(!pvCurrentMsgId) return;
-  const el=document.querySelector('[data-msgid="'+pvCurrentMsgId+'"]');
-  if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='2px solid var(--amber)';setTimeout(()=>el.style.outline='',1800);}
-};
-function pvKeyHandler(e){
-  if(e.key==='Escape') pvClose();
-  if(e.key==='ArrowRight'&&pvIndex<pvPhotos.length-1){pvIndex++;pvRender();}
-  if(e.key==='ArrowLeft'&&pvIndex>0){pvIndex--;pvRender();}
-}
+window.pvDownload=()=>{const src=pvPhotos[pvIndex]?.src;if(!src)return;const a=document.createElement('a');a.href=src;a.download='photo_'+Date.now()+'.jpg';a.click();};
+window.pvGoToMsg=()=>{pvClose();if(!pvCurrentMsgId)return;const el=document.querySelector('[data-msgid="'+pvCurrentMsgId+'"]');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='2px solid var(--amber)';setTimeout(()=>el.style.outline='',1800);}};
+function pvKeyHandler(e){if(e.key==='Escape')pvClose();if(e.key==='ArrowRight'&&pvIndex<pvPhotos.length-1){pvIndex++;pvRender();}if(e.key==='ArrowLeft'&&pvIndex>0){pvIndex--;pvRender();}}
 
-function updateNavUnread() {
+function updateNavUnread(){
   const total=[...document.querySelectorAll('.unread-badge')].filter(el=>el.style.display!=='none').reduce((s,el)=>s+(parseInt(el.textContent)||0),0);
   let nb=document.getElementById('nav-chat-unread');
   if(!nb){const chatBtn=document.querySelector('[onclick*="chat-view"]');if(!chatBtn)return;nb=document.createElement('span');nb.id='nav-chat-unread';nb.className='nav-unread';chatBtn.appendChild(nb);}
-  nb.textContent=total; nb.style.display=total>0?'inline-flex':'none';
+  nb.textContent=total;nb.style.display=total>0?'inline-flex':'none';
 }
 
 const DOM={};
 function getDOM(id){return DOM[id]||(DOM[id]=document.getElementById(id));}
-
 const STATUS_LABEL={new:'НОВАЯ',active:'В РАБОТЕ',done:'ВЫПОЛНЕНО'};
 const STATUS_CLASS={new:'log-new',active:'log-active',done:'log-done'};
 
-function renderTickets() {
+function renderTickets(){
   const container=getDOM('tickets-container');
   const search=getDOM('search-input').value.toLowerCase();
   const isAdmin=isAdminCached;
@@ -1456,36 +1378,26 @@ function renderTickets() {
   let actToday=0,actWeek=0;
   const filtered=[];
   for(const t of allTickets){
-    if(t.status==='new') cntNew++;
-    else if(t.status==='active') cntActive++;
-    else if(t.status==='done') cntDone++;
+    if(t.status==='new')cntNew++;else if(t.status==='active')cntActive++;else if(t.status==='done')cntDone++;
     const ts=t.createdAt?.toDate?.()?.getTime?.()||0;
-    if(ts>=todayStart) actToday++;
-    if(ts>=weekStart) actWeek++;
-    if(currentFilter!=='all'&&t.status!==currentFilter) continue;
-    if(search&&!t.title?.toLowerCase().includes(search)&&!t.desc?.toLowerCase().includes(search)) continue;
+    if(ts>=todayStart)actToday++;if(ts>=weekStart)actWeek++;
+    if(currentFilter!=='all'&&t.status!==currentFilter)continue;
+    if(search&&!t.title?.toLowerCase().includes(search)&&!t.desc?.toLowerCase().includes(search))continue;
     filtered.push(t);
   }
   const total=allTickets.length;
-  getDOM('cnt-all').textContent=total; getDOM('cnt-new').textContent=cntNew;
-  getDOM('cnt-active').textContent=cntActive; getDOM('cnt-done').textContent=cntDone;
-  getDOM('stat-total').textContent=total; getDOM('rp-total').textContent=total;
-  getDOM('rp-active').textContent=cntActive; getDOM('rp-done').textContent=cntDone;
+  getDOM('cnt-all').textContent=total;getDOM('cnt-new').textContent=cntNew;getDOM('cnt-active').textContent=cntActive;getDOM('cnt-done').textContent=cntDone;
+  getDOM('stat-total').textContent=total;getDOM('rp-total').textContent=total;getDOM('rp-active').textContent=cntActive;getDOM('rp-done').textContent=cntDone;
   getDOM('rp-load').textContent=total?Math.round(cntActive/total*100)+'%':'0%';
-  const loadPct=total?Math.round(cntActive/total*100):0;
-  const donePct=total?Math.round(cntDone/total*100):0;
-  getDOM('act-today').textContent=actToday; getDOM('act-load').textContent=loadPct+'%';
-  getDOM('act-done-pct').textContent=donePct+'%'; getDOM('act-week').textContent=actWeek;
-  getDOM('act-bar-today').style.width=total?Math.min(actToday/total*100,100)+'%':'0%';
-  getDOM('act-bar-load').style.width=loadPct+'%'; getDOM('act-bar-done-pct').style.width=donePct+'%';
-  getDOM('act-bar-week').style.width=total?Math.min(actWeek/total*100,100)+'%':'0%';
+  const loadPct=total?Math.round(cntActive/total*100):0;const donePct=total?Math.round(cntDone/total*100):0;
+  getDOM('act-today').textContent=actToday;getDOM('act-load').textContent=loadPct+'%';getDOM('act-done-pct').textContent=donePct+'%';getDOM('act-week').textContent=actWeek;
+  getDOM('act-bar-today').style.width=total?Math.min(actToday/total*100,100)+'%':'0%';getDOM('act-bar-load').style.width=loadPct+'%';getDOM('act-bar-done-pct').style.width=donePct+'%';getDOM('act-bar-week').style.width=total?Math.min(actWeek/total*100,100)+'%':'0%';
   const rpLog=getDOM('rp-log');
   if(!allTickets.length){rpLog.innerHTML='<div class="rp-empty">// НЕТ ДАННЫХ</div>';}
-  else{rpLog.innerHTML=allTickets.slice(0,8).map(t=>{const time=t.createdAt?.toDate?.()?.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})||'--:--';return`<div class="log-entry"><span class="log-time">${time}</span><span class="log-text"><b>${escapeHtml(t.title)}</b> - <span class="${STATUS_CLASS[t.status]||''}">${STATUS_LABEL[t.status]||t.status}</span></span></div>`;}).join('');}
-  getDOM('dash-total').textContent=total; getDOM('dash-new').textContent=cntNew;
-  getDOM('dash-active').textContent=cntActive; getDOM('dash-done').textContent=cntDone;
+  else{rpLog.innerHTML=allTickets.slice(0,8).map(t=>{const time=t.createdAt?.toDate?.()?.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})||'--:--';return`<div class="log-entry"><span class="log-time">${time}</span><span class="log-text"><b>${escapeHtml(t.title)}</b> — <span class="${STATUS_CLASS[t.status]||''}">${STATUS_LABEL[t.status]||t.status}</span></span></div>`;}).join('');}
+  getDOM('dash-total').textContent=total;getDOM('dash-new').textContent=cntNew;getDOM('dash-active').textContent=cntActive;getDOM('dash-done').textContent=cntDone;
   const pct=v=>total?Math.round(v/total*100)+'%':'0%';
-  getDOM('dash-bar-new').style.width=pct(cntNew); getDOM('dash-bar-active').style.width=pct(cntActive); getDOM('dash-bar-done').style.width=pct(cntDone);
+  getDOM('dash-bar-new').style.width=pct(cntNew);getDOM('dash-bar-active').style.width=pct(cntActive);getDOM('dash-bar-done').style.width=pct(cntDone);
   if(!filtered.length){container.innerHTML=`<div class="empty-state"><div class="empty-state-icon">⊡</div><div class="empty-state-text">ЗАЯВКИ ОТСУТСТВУЮТ</div></div>`;return;}
   container.innerHTML=filtered.map(t=>{
     const liked=t.likes?.includes(currentUser?.uid);
@@ -1493,36 +1405,32 @@ function renderTickets() {
     const time=t.createdAt?.toDate?.()?.toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'numeric'})||'';
     const authorInitial=(t.authorName||'?')[0].toUpperCase();
     const svgHeart=`<svg width="14" height="14" viewBox="0 0 24 24" fill="${liked?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
-    return`<div class="ticket status-${t.status}">
-      <div class="ticket-accent"></div>
-      <div class="ticket-inner">
-        <div class="ticket-head"><div class="ticket-title">${escapeHtml(t.title)}</div><span class="status-tag ${t.status}">${statusLabel}</span></div>
-        ${t.desc?`<div class="ticket-desc-row"><div class="ticket-desc-text">${escapeHtml(t.desc)}</div></div>`:''}
-        ${t.photoURL?`<div class="ticket-img"><img src="${t.photoURL}" loading="lazy"></div>`:''}
-        <div class="ticket-meta">
-          <div class="ticket-author-avatar">${authorInitial}</div>
-          <span class="ticket-author">${escapeHtml(t.authorName||'')}</span>
-          <span class="ticket-sep">/</span>
-          <span class="ticket-time">${time}</span>
-          <div class="ticket-actions"><button class="icon-btn ${liked?'liked':''}" onclick="toggleLike('${t.id}',${JSON.stringify(t.likes||[])})">${svgHeart} ${t.likes?.length||0}</button></div>
-        </div>
-        ${isAdmin?`<div class="admin-controls">
-          <span class="admin-label">ADMIN</span>
-          <button class="admin-btn status-new" onclick="changeStatus('${t.id}','new')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>НОВАЯ</button>
-          <button class="admin-btn status-active" onclick="changeStatus('${t.id}','active')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>В РАБОТЕ</button>
-          <button class="admin-btn status-done" onclick="changeStatus('${t.id}','done')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>ВЫПОЛНЕНО</button>
-          <button class="admin-btn admin-btn-delete" onclick="deleteTicket('${t.id}')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>УДАЛИТЬ</button>
-        </div>`:''}
+    return`<div class="ticket status-${t.status}"><div class="ticket-accent"></div><div class="ticket-inner">
+      <div class="ticket-head"><div class="ticket-title">${escapeHtml(t.title)}</div><span class="status-tag ${t.status}">${statusLabel}</span></div>
+      ${t.desc?`<div class="ticket-desc-row"><div class="ticket-desc-text">${escapeHtml(t.desc)}</div></div>`:''}
+      ${t.photoURL?`<div class="ticket-img"><img src="${t.photoURL}" loading="lazy"></div>`:''}
+      <div class="ticket-meta">
+        <div class="ticket-author-avatar">${authorInitial}</div>
+        <span class="ticket-author">${escapeHtml(t.authorName||'')}</span>
+        <span class="ticket-sep">/</span>
+        <span class="ticket-time">${time}</span>
+        <div class="ticket-actions"><button class="icon-btn ${liked?'liked':''}" onclick="toggleLike('${t.id}',${JSON.stringify(t.likes||[])})">${svgHeart} ${t.likes?.length||0}</button></div>
       </div>
-    </div>`;
+      ${isAdmin?`<div class="admin-controls">
+        <span class="admin-label">ADMIN</span>
+        <button class="admin-btn status-new" onclick="changeStatus('${t.id}','new')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>НОВАЯ</button>
+        <button class="admin-btn status-active" onclick="changeStatus('${t.id}','active')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>В РАБОТЕ</button>
+        <button class="admin-btn status-done" onclick="changeStatus('${t.id}','done')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>ВЫПОЛНЕНО</button>
+        <button class="admin-btn admin-btn-delete" onclick="deleteTicket('${t.id}')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>УДАЛИТЬ</button>
+      </div>`:''}
+    </div></div>`;
   }).join('');
 }
 
 function escapeHtml(str){if(!str)return'';return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-
 function showToast(msg){const t=document.createElement('div');t.className='toast';t.textContent='// '+msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}
 
-onAuthStateChanged(auth, async user => {
+onAuthStateChanged(auth,async user=>{
   currentUser=user;
   if(user){
     document.getElementById('login-screen').style.display='none';
@@ -1535,7 +1443,7 @@ onAuthStateChanged(auth, async user => {
     const q=query(collection(db,'tickets'),orderBy('createdAt','desc'));
     onSnapshot(q,snap=>{allTickets=snap.docs.map(d=>({id:d.id,...d.data()}));renderTickets();});
     initUsersCache();
-  } else {
+  }else{
     document.getElementById('login-screen').style.display='flex';
     document.getElementById('app').style.display='none';
   }
@@ -1546,82 +1454,20 @@ onAuthStateChanged(auth, async user => {
 (function(){
   const canvas=document.getElementById('bg-canvas');
   const ctx=canvas.getContext('2d');
-  const AMBER='rgba(245,166,35,', CYAN='rgba(0,212,255,';
-  const COUNT=60, CONNECT_DIST=160, CONNECT_DIST_SQ=CONNECT_DIST*CONNECT_DIST;
+  const AMBER='rgba(245,166,35,',CYAN='rgba(0,212,255,';
+  const COUNT=60,CONNECT_DIST=160,CONNECT_DIST_SQ=CONNECT_DIST*CONNECT_DIST;
   let W,H,particles,gridCanvas,gridCtx,rafId;
-
-  function buildGrid(){
-    gridCanvas=document.createElement('canvas');
-    gridCanvas.width=W; gridCanvas.height=H;
-    gridCtx=gridCanvas.getContext('2d');
-    const step=80;
-    gridCtx.strokeStyle='rgba(80,80,140,0.8)'; gridCtx.lineWidth=0.5; gridCtx.beginPath();
-    for(let x=0;x<W;x+=step){gridCtx.moveTo(x,0);gridCtx.lineTo(x,H);}
-    for(let y=0;y<H;y+=step){gridCtx.moveTo(0,y);gridCtx.lineTo(W,y);}
-    gridCtx.stroke();
-  }
-
+  function buildGrid(){gridCanvas=document.createElement('canvas');gridCanvas.width=W;gridCanvas.height=H;gridCtx=gridCanvas.getContext('2d');const step=80;gridCtx.strokeStyle='rgba(80,80,140,0.8)';gridCtx.lineWidth=0.5;gridCtx.beginPath();for(let x=0;x<W;x+=step){gridCtx.moveTo(x,0);gridCtx.lineTo(x,H);}for(let y=0;y<H;y+=step){gridCtx.moveTo(0,y);gridCtx.lineTo(W,y);}gridCtx.stroke();}
   function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;buildGrid();}
-
-  function Particle(){
-    this.x=Math.random()*W; this.y=Math.random()*H;
-    this.vx=(Math.random()-0.5)*0.4; this.vy=(Math.random()-0.5)*0.4;
-    this.r=Math.random()*2.5+1; this.isCyan=Math.random()>0.7; this.pulse=Math.random()*Math.PI*2;
-  }
-  Particle.prototype.update=function(){
-    this.x+=this.vx; this.y+=this.vy; this.pulse+=0.02;
-    if(this.x<0||this.x>W) this.vx*=-1;
-    if(this.y<0||this.y>H) this.vy*=-1;
-  };
-
-  function drawConnections(){
-    const amberLines=[],cyanLines=[];
-    for(let i=0;i<particles.length;i++){
-      for(let j=i+1;j<particles.length;j++){
-        const a=particles[i],b=particles[j];
-        const dx=a.x-b.x,dy=a.y-b.y,dSq=dx*dx+dy*dy;
-        if(dSq<CONNECT_DIST_SQ){const alpha=(1-Math.sqrt(dSq)/CONNECT_DIST)*0.7;(a.isCyan?cyanLines:amberLines).push(a.x,a.y,b.x,b.y,alpha);}
-      }
-    }
-    ctx.lineWidth=0.8;
-    for(const[lines,col]of[[amberLines,AMBER],[cyanLines,CYAN]]){
-      ctx.beginPath();
-      for(let k=0;k<lines.length;k+=5){ctx.globalAlpha=lines[k+4];ctx.moveTo(lines[k],lines[k+1]);ctx.lineTo(lines[k+2],lines[k+3]);}
-      ctx.strokeStyle=col+'1)'; ctx.stroke();
-    }
-    ctx.globalAlpha=1;
-  }
-
-  function drawParticles(){
-    for(const[isCyan,col]of[[false,AMBER],[true,CYAN]]){
-      ctx.beginPath();
-      for(const p of particles){
-        if(p.isCyan!==isCyan) continue;
-        ctx.globalAlpha=0.7+0.3*Math.sin(p.pulse);
-        ctx.moveTo(p.x+p.r,p.y); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      }
-      ctx.fillStyle=col+'1)'; ctx.fill();
-    }
-    ctx.globalAlpha=1;
-  }
-
-  function loop(){
-    ctx.clearRect(0,0,W,H); ctx.drawImage(gridCanvas,0,0);
-    drawConnections(); particles.forEach(p=>p.update()); drawParticles();
-    rafId=requestAnimationFrame(loop);
-  }
-
-  document.addEventListener('visibilitychange',()=>{
-    if(document.hidden){cancelAnimationFrame(rafId);rafId=null;}
-    else if(!rafId){rafId=requestAnimationFrame(loop);}
-  });
-
-  let resizeTimer;
-  window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(resize,150);});
-  W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight;
-  buildGrid();
-  particles=Array.from({length:COUNT},()=>new Particle());
-  loop();
+  function Particle(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-0.5)*0.4;this.vy=(Math.random()-0.5)*0.4;this.r=Math.random()*2.5+1;this.isCyan=Math.random()>0.7;this.pulse=Math.random()*Math.PI*2;}
+  Particle.prototype.update=function(){this.x+=this.vx;this.y+=this.vy;this.pulse+=0.02;if(this.x<0||this.x>W)this.vx*=-1;if(this.y<0||this.y>H)this.vy*=-1;};
+  function drawConnections(){const amberLines=[],cyanLines=[];for(let i=0;i<particles.length;i++){for(let j=i+1;j<particles.length;j++){const a=particles[i],b=particles[j];const dx=a.x-b.x,dy=a.y-b.y,dSq=dx*dx+dy*dy;if(dSq<CONNECT_DIST_SQ){const alpha=(1-Math.sqrt(dSq)/CONNECT_DIST)*0.7;(a.isCyan?cyanLines:amberLines).push(a.x,a.y,b.x,b.y,alpha);}}}ctx.lineWidth=0.8;for(const[lines,col]of[[amberLines,AMBER],[cyanLines,CYAN]]){ctx.beginPath();for(let k=0;k<lines.length;k+=5){ctx.globalAlpha=lines[k+4];ctx.moveTo(lines[k],lines[k+1]);ctx.lineTo(lines[k+2],lines[k+3]);}ctx.strokeStyle=col+'1)';ctx.stroke();}ctx.globalAlpha=1;}
+  function drawParticles(){for(const[isCyan,col]of[[false,AMBER],[true,CYAN]]){ctx.beginPath();for(const p of particles){if(p.isCyan!==isCyan)continue;ctx.globalAlpha=0.7+0.3*Math.sin(p.pulse);ctx.moveTo(p.x+p.r,p.y);ctx.arc(p.x,p.y,p.r,0,Math.PI*2);}ctx.fillStyle=col+'1)';ctx.fill();}ctx.globalAlpha=1;}
+  function loop(){ctx.clearRect(0,0,W,H);ctx.drawImage(gridCanvas,0,0);drawConnections();particles.forEach(p=>p.update());drawParticles();rafId=requestAnimationFrame(loop);}
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(rafId);rafId=null;}else if(!rafId){rafId=requestAnimationFrame(loop);}});
+  let resizeTimer;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(resize,150);});
+  W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;buildGrid();
+  particles=Array.from({length:COUNT},()=>new Particle());loop();
 })();
 </script>
 </body>
