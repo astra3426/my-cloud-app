@@ -117,7 +117,7 @@
   #login-screen {
     position: fixed;
     inset: 0;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     background: var(--bg);
@@ -821,6 +821,74 @@
   .ctx-sep { height: 1px; background: rgba(42,42,66,0.5); }
   .ctx-icon { flex-shrink: 0; opacity: 0.4; stroke: var(--text-mid); transition: opacity 0.1s, stroke 0.1s; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
+  /* ── Emoji реакции WhatsApp-style ── */
+  .ctx-reactions {
+    display: flex; align-items: center; gap: 2px;
+    padding: 8px 10px 6px;
+    border-bottom: 1px solid rgba(42,42,66,0.5);
+    background: rgba(0,0,0,0.3);
+  }
+  .ctx-reaction-btn {
+    font-size: 26px; background: none; border: none; cursor: pointer;
+    padding: 4px 5px; border-radius: 50%;
+    transition: background 0.1s, transform 0.12s; line-height: 1; flex-shrink: 0;
+  }
+  .ctx-reaction-btn:hover { background: rgba(255,255,255,0.12); transform: scale(1.35); }
+  .ctx-reaction-more {
+    margin-left: auto; width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+    color: var(--text-mid); font-size: 18px; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+  }
+  .ctx-reaction-more:hover { background: rgba(245,166,35,0.15); border-color: var(--amber); color: var(--amber); }
+
+  .emoji-picker { display: none; border-bottom: 1px solid rgba(42,42,66,0.5); background: rgba(4,4,10,0.99); }
+  .emoji-picker.open { display: block; }
+  .emoji-picker-search {
+    display: flex; align-items: center;
+    padding: 7px 10px; border-bottom: 1px solid rgba(42,42,66,0.3);
+  }
+  .emoji-picker-search input {
+    flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text); font-family: var(--mono); font-size: 11px;
+    padding: 5px 10px; outline: none; letter-spacing: 1px; transition: border-color 0.2s;
+  }
+  .emoji-picker-search input:focus { border-color: var(--amber); }
+  .emoji-picker-cats {
+    display: flex; padding: 4px 6px;
+    border-bottom: 1px solid rgba(42,42,66,0.3); overflow-x: auto;
+  }
+  .emoji-picker-cats::-webkit-scrollbar { display: none; }
+  .ep-cat-btn {
+    background: none; border: none; cursor: pointer; font-size: 18px;
+    padding: 4px 7px; border-radius: 4px; opacity: 0.5; transition: all 0.12s; flex-shrink: 0;
+  }
+  .ep-cat-btn:hover { opacity: 1; background: rgba(255,255,255,0.07); }
+  .ep-cat-btn.active { opacity: 1; background: rgba(245,166,35,0.12); }
+  .emoji-picker-grid {
+    display: flex; flex-wrap: wrap;
+    padding: 4px 6px; max-height: 180px; overflow-y: auto;
+  }
+  .emoji-picker-grid::-webkit-scrollbar { width: 3px; }
+  .emoji-picker-grid::-webkit-scrollbar-thumb { background: var(--border); }
+  .ep-emoji {
+    font-size: 24px; background: none; border: none; cursor: pointer;
+    padding: 3px 4px; border-radius: 6px; line-height: 1;
+    transition: background 0.08s, transform 0.1s;
+  }
+  .ep-emoji:hover { background: rgba(255,255,255,0.1); transform: scale(1.2); }
+
+  /* Reaction chips */
+  .msg-reactions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .msg-reaction-chip {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 12px; padding: 2px 8px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 4px;
+    transition: all 0.15s; font-size: 14px; color: var(--text-dim);
+  }
+  .msg-reaction-chip:hover { background: rgba(245,166,35,0.12); border-color: var(--amber); }
+  .msg-reaction-chip.mine { background: rgba(245,166,35,0.15); border-color: rgba(245,166,35,0.45); color: var(--amber); }
+
   /* Reply bar */
   .reply-bar { display: flex; align-items: center; gap: 10px; padding: 8px 16px 8px 20px; background: var(--bg3); border-top: 1px solid var(--border); border-left: 3px solid var(--amber); }
   .reply-bar-text { flex: 1; font-family: var(--mono); font-size: 11px; color: var(--text-mid); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -887,99 +955,6 @@
 
   .chat-input { flex: 1; background: var(--bg3); border: 1px solid var(--border); color: var(--text); font-family: var(--sans); font-size: 15px; padding: 10px 14px; outline: none; transition: border-color 0.2s; }
   .chat-input:focus { border-color: var(--amber); }
-
-  /* ── Emoji reactions ── */
-  .ctx-reactions {
-    display: flex; flex-wrap: wrap; gap: 3px;
-    padding: 10px 12px; border-bottom: 1px solid rgba(42,42,66,0.6);
-    background: rgba(0,0,0,0.4);
-  }
-  .ctx-reaction-btn {
-    font-size: 22px; background: none; border: none; cursor: pointer;
-    padding: 4px 6px; border-radius: 8px; transition: background 0.1s, transform 0.12s;
-    line-height: 1;
-  }
-  .ctx-reaction-btn:hover { background: rgba(255,255,255,0.12); transform: scale(1.3); }
-
-  /* Reaction chips on messages */
-  .msg-reactions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
-  .msg-reaction-chip {
-    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.13);
-    border-radius: 12px; padding: 2px 8px; cursor: pointer;
-    display: inline-flex; align-items: center; gap: 4px;
-    transition: all 0.15s; font-size: 14px; color: var(--text-dim);
-  }
-  .msg-reaction-chip:hover { background: rgba(245,166,35,0.12); border-color: var(--amber); }
-  .msg-reaction-chip.mine { background: rgba(245,166,35,0.15); border-color: rgba(245,166,35,0.45); color: var(--amber); }
-
-  /* ── Chat photo attachment ── */
-  .chat-attach-btn {
-    display: flex; align-items: center; justify-content: center;
-    width: 44px; height: 44px; background: transparent;
-    border: 1px solid var(--border); color: var(--text-dim);
-    cursor: pointer; transition: all 0.15s; flex-shrink: 0;
-    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
-  }
-  .chat-attach-btn:hover { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 12px rgba(0,212,255,0.2); }
-  .chat-photo-bar {
-    display: flex; align-items: center; gap: 12px;
-    padding: 8px 16px; background: var(--bg3);
-    border-top: 1px solid var(--border); border-left: 3px solid var(--cyan);
-  }
-  .chat-photo-thumb { width: 48px; height: 48px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; cursor: pointer; }
-  .chat-photo-bar-info { flex: 1; font-family: var(--mono); font-size: 10px; color: var(--cyan); letter-spacing: 1px; }
-  .chat-photo-bar-size { color: var(--text-dim); font-size: 9px; margin-top: 2px; }
-  .chat-photo-cancel { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 18px; line-height: 1; padding: 0 4px; }
-  .chat-photo-cancel:hover { color: var(--red); }
-  .msg-img {
-    display: block; width: 100%; max-width: 260px; max-height: 220px;
-    object-fit: cover; cursor: zoom-in; transition: opacity 0.15s; margin-bottom: 2px;
-  }
-  .msg-img:hover { opacity: 0.88; }
-  .msg-bubble.has-photo { padding: 0; overflow: hidden; }
-  .msg-caption { padding: 6px 12px 4px; font-size: 14px; }
-
-  /* ── Full photo viewer ── */
-  #photo-viewer {
-    position: fixed; inset: 0; background: #080810;
-    z-index: 10000; display: none; flex-direction: column;
-  }
-  #photo-viewer.open { display: flex; }
-  .pv-top {
-    display: flex; align-items: center; gap: 14px;
-    padding: 14px 20px; background: rgba(4,4,10,0.99);
-    border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;
-  }
-  .pv-sender { flex: 1; font-family: var(--mono); font-size: 12px; color: var(--text-mid); letter-spacing: 1px; }
-  .pv-btn {
-    background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.22);
-    color: rgba(255,255,255,0.88); width: 48px; height: 48px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: all 0.15s; flex-shrink: 0; border-radius: 6px;
-  }
-  .pv-btn svg { display: block; width: 22px; height: 22px; }
-  .pv-btn:hover { border-color: var(--amber); color: var(--amber); background: rgba(245,166,35,0.15); }
-  .pv-btn.close-btn:hover { border-color: var(--red); color: var(--red); background: rgba(255,59,59,0.15); }
-  .pv-main {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-    overflow: hidden; background: #000; min-height: 0;
-  }
-  #pv-main-img { max-width: 96vw; max-height: 100%; object-fit: contain; user-select: none; display: block; }
-  .pv-strip {
-    flex-shrink: 0; display: flex; align-items: center; gap: 6px;
-    padding: 10px 14px; background: rgba(4,4,10,0.99);
-    border-top: 1px solid rgba(255,255,255,0.07);
-    overflow-x: auto; height: 92px;
-  }
-  .pv-strip::-webkit-scrollbar { height: 3px; }
-  .pv-strip::-webkit-scrollbar-thumb { background: var(--border); }
-  .pv-thumb {
-    width: 66px; height: 66px; flex-shrink: 0; object-fit: cover;
-    cursor: pointer; opacity: 0.45; border: 2px solid transparent;
-    transition: all 0.15s; border-radius: 2px;
-  }
-  .pv-thumb:hover { opacity: 0.75; }
-  .pv-thumb.active { opacity: 1; border-color: var(--amber); box-shadow: 0 0 10px rgba(245,166,35,0.4); }
 
   .btn-send { background: var(--amber); border: none; color: #000; font-family: var(--mono); font-size: 13px; letter-spacing: 2px; padding: 10px 20px; cursor: pointer; font-weight: 700; transition: all 0.15s; clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%); }
   .btn-send:hover { background: #fff; }
@@ -1221,41 +1196,14 @@
             <div class="reply-bar-text"><b style="color:var(--cyan)">РЕДАКТИРОВАНИЕ</b><span id="edit-bar-text"></span></div>
             <button class="reply-cancel" onclick="cancelEdit()">✕</button>
           </div>
-          <div id="chat-photo-bar" style="display:none" class="chat-photo-bar">
-            <img class="chat-photo-thumb" id="chat-photo-thumb" src="" onclick="viewChatImg(this.src)">
-            <div class="chat-photo-bar-info">ФОТО ПРИКРЕПЛЕНО<div class="chat-photo-bar-size" id="chat-photo-size"></div></div>
-            <button class="chat-photo-cancel" onclick="cancelChatPhoto()">✕</button>
-          </div>
           <div class="chat-input-row">
-            <label class="chat-attach-btn" title="Прикрепить фото">
-              <input type="file" id="chat-photo-input" accept="image/*" style="display:none" onchange="previewChatPhoto(this)">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            </label>
-            <input class="chat-input" id="chat-msg-input" placeholder="СООБЩЕНИЕ ИЛИ ПОДПИСЬ К ФОТО..." onkeydown="if(event.key==='Enter')sendMsg()">
+            <input class="chat-input" id="chat-msg-input" placeholder="СООБЩЕНИЕ..." onkeydown="if(event.key==='Enter')sendMsg()">
             <button class="btn-send" onclick="sendMsg()">ОТПРАВИТЬ</button>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-
-<!-- PHOTO VIEWER -->
-<div id="photo-viewer">
-  <div class="pv-top">
-    <div class="pv-sender" id="pv-sender"></div>
-    <button class="pv-btn" title="Перейти к сообщению" onclick="pvGoToMsg()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    </button>
-    <button class="pv-btn" title="Скачать" onclick="pvDownload()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    </button>
-    <button class="pv-btn close-btn" title="Закрыть" onclick="pvClose()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
-  <div class="pv-main"><img id="pv-main-img" src=""></div>
-  <div class="pv-strip" id="pv-strip"></div>
 </div>
 
 <!-- CREATE MODAL -->
@@ -1295,6 +1243,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as fbSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, getDocs, setDoc, writeBatch, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { EMOJI_CATS, QUICK_REACTIONS, addRecentEmoji, getRecentEmojis } from './emojis.js';
 
 const ADMIN_EMAIL = "markshelkonogov003@gmail.com";
 
@@ -1318,8 +1267,6 @@ let currentFilter = 'all';
 let currentChatPartner = null;
 let chatUnsub = null;
 let photoB64 = null;
-let chatPhotoB64 = null;
-let pvPhotos = [], pvIndex = 0, pvCurrentMsgId = null;
 
 window.signIn = async () => {
   try { await signInWithPopup(auth, provider); } catch(e) { showToast('ОШИБКА ВХОДА'); }
@@ -1424,6 +1371,18 @@ let replyTo = null, editMsgId = null;
 
 function closeCtxMenu() { document.getElementById('ctx-menu')?.remove(); }
 
+async function doReaction(emoji) {
+  if (!ctxMsgId || !ctxChatId) return;
+  addRecentEmoji(emoji);
+  const msgRef = doc(db, 'chats', ctxChatId, 'messages', ctxMsgId);
+  const existing = ctxMsgData.reactions || {};
+  const users = existing[emoji] || [];
+  const uid = currentUser.uid;
+  const newUsers = users.includes(uid) ? users.filter(u => u !== uid) : [...users, uid];
+  const upd = {}; upd['reactions.' + emoji] = newUsers;
+  await updateDoc(msgRef, upd);
+}
+
 function showCtxMenu(e, msgId, msgData, chatId) {
   e.preventDefault();
   closeCtxMenu();
@@ -1459,13 +1418,101 @@ function showCtxMenu(e, msgId, msgData, chatId) {
   const preview = (msgData.text || '').slice(0, 26) + ((msgData.text||'').length > 26 ? '…' : '');
   const menu = document.createElement('div');
   menu.id = 'ctx-menu'; menu.className = 'ctx-menu';
+
+  // Быстрые реакции
+  const quickBtns = QUICK_REACTIONS.map(e =>
+    `<button class="ctx-reaction-btn" data-emoji="${e}">${e}</button>`
+  ).join('');
+
+  // Категории пикера
+  const catBtns = EMOJI_CATS.map((c, i) =>
+    `<button class="ep-cat-btn${i === 0 ? ' active' : ''}" data-cat="${i}" title="${c.label}">${c.icon}</button>`
+  ).join('');
+
+  // Первая категория (недавние или смайлы)
+  const recent = getRecentEmojis();
+  const firstCat = recent.length > 0
+    ? EMOJI_CATS[0] // recent
+    : EMOJI_CATS[1]; // people
+  const startIdx = recent.length > 0 ? 0 : 1;
+  const initEmojis = startIdx === 0
+    ? recent
+    : EMOJI_CATS[1].emojis;
+  const firstGrid = initEmojis.map(e =>
+    `<button class="ep-emoji" data-emoji="${e}">${e}</button>`
+  ).join('');
+
   menu.innerHTML =
-    `<div class="ctx-reactions"><button class="ctx-reaction-btn" onclick="addReaction('👍')">👍</button><button class="ctx-reaction-btn" onclick="addReaction('❤️')">❤️</button><button class="ctx-reaction-btn" onclick="addReaction('😂')">😂</button><button class="ctx-reaction-btn" onclick="addReaction('😮')">😮</button><button class="ctx-reaction-btn" onclick="addReaction('😢')">😢</button><button class="ctx-reaction-btn" onclick="addReaction('🙏')">🙏</button><button class="ctx-reaction-btn" onclick="addReaction('🔥')">🔥</button><button class="ctx-reaction-btn" onclick="addReaction('👎')">👎</button><button class="ctx-reaction-btn" onclick="addReaction('😍')">😍</button><button class="ctx-reaction-btn" onclick="addReaction('🤣')">🤣</button><button class="ctx-reaction-btn" onclick="addReaction('😊')">😊</button><button class="ctx-reaction-btn" onclick="addReaction('😎')">😎</button><button class="ctx-reaction-btn" onclick="addReaction('🤔')">🤔</button><button class="ctx-reaction-btn" onclick="addReaction('😅')">😅</button><button class="ctx-reaction-btn" onclick="addReaction('🥳')">🥳</button><button class="ctx-reaction-btn" onclick="addReaction('🎉')">🎉</button><button class="ctx-reaction-btn" onclick="addReaction('👏')">👏</button><button class="ctx-reaction-btn" onclick="addReaction('💯')">💯</button><button class="ctx-reaction-btn" onclick="addReaction('✅')">✅</button><button class="ctx-reaction-btn" onclick="addReaction('🚀')">🚀</button><button class="ctx-reaction-btn" onclick="addReaction('💪')">💪</button><button class="ctx-reaction-btn" onclick="addReaction('😤')">😤</button><button class="ctx-reaction-btn" onclick="addReaction('🥺')">🥺</button><button class="ctx-reaction-btn" onclick="addReaction('😭')">😭</button><button class="ctx-reaction-btn" onclick="addReaction('🤯')">🤯</button><button class="ctx-reaction-btn" onclick="addReaction('👀')">👀</button><button class="ctx-reaction-btn" onclick="addReaction('💀')">💀</button><button class="ctx-reaction-btn" onclick="addReaction('🫡')">🫡</button><button class="ctx-reaction-btn" onclick="addReaction('🤝')">🤝</button><button class="ctx-reaction-btn" onclick="addReaction('⚡')">⚡</button><button class="ctx-reaction-btn" onclick="addReaction('😆')">😆</button><button class="ctx-reaction-btn" onclick="addReaction('🤩')">🤩</button><button class="ctx-reaction-btn" onclick="addReaction('😜')">😜</button><button class="ctx-reaction-btn" onclick="addReaction('🥰')">🥰</button><button class="ctx-reaction-btn" onclick="addReaction('😇')">😇</button><button class="ctx-reaction-btn" onclick="addReaction('🤗')">🤗</button><button class="ctx-reaction-btn" onclick="addReaction('🙄')">🙄</button><button class="ctx-reaction-btn" onclick="addReaction('😏')">😏</button><button class="ctx-reaction-btn" onclick="addReaction('😡')">😡</button><button class="ctx-reaction-btn" onclick="addReaction('🤬')">🤬</button><button class="ctx-reaction-btn" onclick="addReaction('😱')">😱</button><button class="ctx-reaction-btn" onclick="addReaction('🤫')">🤫</button><button class="ctx-reaction-btn" onclick="addReaction('🤭')">🤭</button><button class="ctx-reaction-btn" onclick="addReaction('😴')">😴</button><button class="ctx-reaction-btn" onclick="addReaction('🤢')">🤢</button><button class="ctx-reaction-btn" onclick="addReaction('🤮')">🤮</button><button class="ctx-reaction-btn" onclick="addReaction('🥵')">🥵</button><button class="ctx-reaction-btn" onclick="addReaction('🥶')">🥶</button><button class="ctx-reaction-btn" onclick="addReaction('😰')">😰</button><button class="ctx-reaction-btn" onclick="addReaction('😨')">😨</button><button class="ctx-reaction-btn" onclick="addReaction('😦')">😦</button></div>` +
-    `<div class="ctx-header"><span class="ctx-header-dot"></span><span class="ctx-header-text">${escapeHtml(preview)}</span></div>` +
+    `<div class="ctx-reactions">
+      ${quickBtns}
+      <button class="ctx-reaction-more" id="ep-toggle-btn" title="Все эмодзи">+</button>
+    </div>
+    <div class="emoji-picker" id="ctx-emoji-picker">
+      <div class="emoji-picker-search">
+        <input id="ep-search" placeholder="🔍 Поиск эмодзи..." autocomplete="off">
+      </div>
+      <div class="emoji-picker-cats">${catBtns}</div>
+      <div class="emoji-picker-grid" id="ep-grid">${firstGrid}</div>
+    </div>
+    <div class="ctx-header"><span class="ctx-header-dot"></span><span class="ctx-header-text">${escapeHtml(preview)}</span></div>` +
     items.map((it, i) =>
       `${it.sep ? '<div class="ctx-sep"></div>' : ''}<div class="ctx-item${it.danger ? ' danger' : ''}" data-i="${i}">${it.icon}${it.label}</div>`
     ).join('');
+
   document.body.appendChild(menu);
+
+  // Быстрые реакции
+  menu.querySelectorAll('.ctx-reaction-btn').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); closeCtxMenu(); doReaction(btn.dataset.emoji); });
+  });
+
+  // Кнопка открытия пикера
+  menu.querySelector('#ep-toggle-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    menu.querySelector('#ctx-emoji-picker').classList.toggle('open');
+  });
+
+  // Клик по эмодзи в гриде
+  menu.querySelector('#ep-grid').addEventListener('click', e => {
+    const btn = e.target.closest('.ep-emoji');
+    if (!btn) return;
+    closeCtxMenu();
+    doReaction(btn.dataset.emoji);
+  });
+
+  // Переключение категорий
+  menu.querySelector('.emoji-picker-cats').addEventListener('click', e => {
+    const btn = e.target.closest('.ep-cat-btn');
+    if (!btn) return;
+    e.stopPropagation();
+    menu.querySelectorAll('.ep-cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const catIdx = parseInt(btn.dataset.cat);
+    const grid = menu.querySelector('#ep-grid');
+    const emojis = catIdx === 0 ? getRecentEmojis() : EMOJI_CATS[catIdx].emojis;
+    grid.innerHTML = emojis.map(em => `<button class="ep-emoji" data-emoji="${em}">${em}</button>`).join('');
+    grid.scrollTop = 0;
+  });
+
+  // Поиск
+  menu.querySelector('#ep-search').addEventListener('input', e => {
+    e.stopPropagation();
+    const q = e.target.value.trim().toLowerCase();
+    const grid = menu.querySelector('#ep-grid');
+    if (!q) {
+      const recent2 = getRecentEmojis();
+      const emojis2 = recent2.length > 0 ? recent2 : EMOJI_CATS[1].emojis;
+      grid.innerHTML = emojis2.map(em => `<button class="ep-emoji" data-emoji="${em}">${em}</button>`).join('');
+      return;
+    }
+    // Поиск по всем категориям
+    const all = EMOJI_CATS.slice(1).flatMap(c => c.emojis);
+    const unique = [...new Set(all)];
+    // Простой поиск - показываем все (поиск по unicode описаний нет, просто показываем все)
+    grid.innerHTML = unique.map(em => `<button class="ep-emoji" data-emoji="${em}">${em}</button>`).join('');
+  });
+  menu.querySelector('#ep-search').addEventListener('click', e => e.stopPropagation());
+
   let x = e.clientX ?? e.pageX, y = e.clientY ?? e.pageY;
   menu.style.cssText = `left:${x}px;top:${y}px`;
   const r = menu.getBoundingClientRect();
@@ -1665,22 +1712,9 @@ window.openChat = async (uid, name, photo) => {
       let replyHtml = '';
       if (msg.replyTo) replyHtml = `<div class="msg-reply-quote"><div class="msg-reply-quote-name">${escapeHtml(msg.replyTo.senderName)}</div>${escapeHtml(msg.replyTo.text)}</div>`;
 
-      const hasPhoto = !!msg.photoURL;
-      const imgHtml = hasPhoto ? `<img class="msg-img" src="${msg.photoURL}" loading="lazy" onclick="viewChatImg(this.src,'${msgId}')">` : '';
-      const captionHtml = hasPhoto
-        ? (msg.text ? `<div class="msg-caption">${escapeHtml(msg.text)}${edited}</div>` : (edited?`<div class="msg-caption">${edited}</div>`:''))
-        : `${escapeHtml(msg.text)}${edited}`;
-      const reactions = msg.reactions || {};
-      const reactHtml = Object.entries(reactions).filter(([,u])=>u&&u.length).map(([emoji,users])=>{
-        const isMineR=users.includes(currentUser.uid);
-        return `<span class="msg-reaction-chip${isMineR?' mine':''}">${emoji} ${users.length}</span>`;
-      }).join('');
-
       const div = document.createElement('div');
       div.className = `msg ${isMine?'mine':'theirs'}`;
-      div.dataset.msgid = msgId;
-      div.dataset.sender = msg.senderName || '';
-      div.innerHTML = `<div class="msg-bubble${hasPhoto?' has-photo':''}">${replyHtml}${imgHtml}${captionHtml}</div><div class="msg-time">${time}${tick}</div>${reactHtml?`<div class="msg-reactions">${reactHtml}</div>`:''}`;
+      div.innerHTML = `<div class="msg-bubble">${replyHtml}${escapeHtml(msg.text)}${edited}</div><div class="msg-time">${time}${tick}</div>`;
       div.addEventListener('contextmenu', e => showCtxMenu(e, msgId, msg, chatId));
       let pressTimer;
       div.addEventListener('touchstart', e => { pressTimer = setTimeout(() => showCtxMenu(e.touches[0], msgId, msg, chatId), 600); });
@@ -1696,18 +1730,15 @@ window.openChat = async (uid, name, photo) => {
 window.sendMsg = async () => {
   const input = document.getElementById('chat-msg-input');
   const text = input.value.trim();
-  if (!text && !chatPhotoB64) return;
-  if (!currentChatPartner) return;
+  if (!text || !currentChatPartner) return;
   const chatId = [currentUser.uid, currentChatPartner.uid].sort().join('_');
   if (editMsgId) {
-    input.value = '';
     await updateDoc(doc(db,'chats',chatId,'messages',editMsgId), { text, editedAt: serverTimestamp() });
     editMsgId = null;
     document.getElementById('edit-bar').style.display = 'none';
   } else {
     const payload = {
-      text: text||'', photoURL: chatPhotoB64||null,
-      senderId: currentUser.uid, senderName: currentUser.displayName,
+      text, senderId: currentUser.uid, senderName: currentUser.displayName,
       createdAt: serverTimestamp(), readBy: [currentUser.uid]
     };
     if (replyTo) {
@@ -1715,10 +1746,9 @@ window.sendMsg = async () => {
       replyTo = null;
       document.getElementById('reply-bar').style.display = 'none';
     }
-    input.value = '';
-    if (chatPhotoB64) cancelChatPhoto();
     await addDoc(collection(db,'chats',chatId,'messages'), payload);
   }
+  input.value = '';
 };
 
 let chatUserUnsubs = [];
@@ -1823,93 +1853,6 @@ function subscribeToChat(uid, name, photo, chatId) {
   });
 
   globalChatUnsubs.push(unsub);
-}
-
-
-window.previewChatPhoto = (input) => {
-  const file = input.files[0]; if (!file) return;
-  if (file.size > 10*1024*1024) { showToast('ФАЙЛ БОЛЬШЕ 10МБ'); input.value=''; return; }
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = new Image();
-    img.onload = () => {
-      const MAX=1200; let w=img.width, h=img.height;
-      if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
-      const c=document.createElement('canvas'); c.width=w; c.height=h;
-      c.getContext('2d').drawImage(img,0,0,w,h);
-      chatPhotoB64=c.toDataURL('image/jpeg',0.82);
-      const kb=Math.round(chatPhotoB64.length*0.75/1024);
-      document.getElementById('chat-photo-thumb').src=chatPhotoB64;
-      document.getElementById('chat-photo-size').textContent=kb+' KB';
-      document.getElementById('chat-photo-bar').style.display='flex';
-      document.getElementById('chat-msg-input').placeholder='ПОДПИСЬ К ФОТО (НЕОБЯЗАТЕЛЬНО)...';
-      document.getElementById('chat-msg-input').focus();
-    };
-    img.src=e.target.result;
-  };
-  reader.readAsDataURL(file);
-};
-window.cancelChatPhoto = () => {
-  chatPhotoB64=null;
-  document.getElementById('chat-photo-input').value='';
-  document.getElementById('chat-photo-bar').style.display='none';
-  document.getElementById('chat-msg-input').placeholder='СООБЩЕНИЕ ИЛИ ПОДПИСЬ К ФОТО...';
-};
-
-function viewChatImg(src, msgId) {
-  pvPhotos=[]; pvIndex=0;
-  document.getElementById('chat-messages').querySelectorAll('.msg-img').forEach((img,i)=>{
-    const m=img.closest('.msg'), t=m?.querySelector('.msg-time'), mid=m?.dataset.msgid||'';
-    pvPhotos.push({src:img.src,senderName:m?.dataset.sender||'',time:t?.textContent?.trim()||'',msgId:mid});
-    if(img.src===src||mid===msgId) pvIndex=i;
-  });
-  if(!pvPhotos.length) pvPhotos=[{src,senderName:'',time:'',msgId:msgId||''}];
-  pvRender();
-  document.getElementById('photo-viewer').classList.add('open');
-  document.addEventListener('keydown',pvKeyHandler);
-}
-window.viewChatImg=viewChatImg;
-
-function pvRender(){
-  const p=pvPhotos[pvIndex];
-  document.getElementById('pv-main-img').src=p.src;
-  document.getElementById('pv-sender').textContent=(p.senderName?p.senderName+'  ·  ':'')+(p.time||'');
-  pvCurrentMsgId=p.msgId;
-  const strip=document.getElementById('pv-strip'); strip.innerHTML='';
-  pvPhotos.forEach((ph,i)=>{
-    const img=document.createElement('img');
-    img.src=ph.src; img.className='pv-thumb'+(i===pvIndex?' active':'');
-    img.onclick=()=>{pvIndex=i;pvRender();};
-    strip.appendChild(img);
-  });
-  strip.querySelector('.pv-thumb.active')?.scrollIntoView({inline:'center',behavior:'smooth'});
-}
-window.pvClose=()=>{document.getElementById('photo-viewer').classList.remove('open');document.removeEventListener('keydown',pvKeyHandler);};
-window.pvDownload=()=>{
-  const src=pvPhotos[pvIndex]?.src; if(!src)return;
-  const a=document.createElement('a'); a.href=src; a.download='photo_'+Date.now()+'.jpg'; a.click();
-};
-window.pvGoToMsg=()=>{
-  pvClose(); if(!pvCurrentMsgId)return;
-  const el=document.querySelector('[data-msgid="'+pvCurrentMsgId+'"]');
-  if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='2px solid var(--amber)';setTimeout(()=>el.style.outline='',1800);}
-};
-function pvKeyHandler(e){
-  if(e.key==='Escape')pvClose();
-  if(e.key==='ArrowRight'&&pvIndex<pvPhotos.length-1){pvIndex++;pvRender();}
-  if(e.key==='ArrowLeft'&&pvIndex>0){pvIndex--;pvRender();}
-}
-
-async function addReaction(emoji) {
-  closeCtxMenu();
-  if (!ctxMsgId||!ctxChatId) return;
-  const msgRef=doc(db,'chats',ctxChatId,'messages',ctxMsgId);
-  const existing=ctxMsgData.reactions||{};
-  const users=existing[emoji]||[];
-  const uid=currentUser.uid;
-  const newUsers=users.includes(uid)?users.filter(u=>u!==uid):[...users,uid];
-  const upd={}; upd['reactions.'+emoji]=newUsers;
-  await updateDoc(msgRef,upd);
 }
 
 function updateNavUnread() {
